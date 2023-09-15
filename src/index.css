@@ -23,7 +23,7 @@ body {
 }
 
 .track-body-item {
-  @apply p-5 flex flex-row items-center justify-center text-center text-base font-normal text-black-1
+  @apply p-5 flex flex-row items-center justify-center text-center text-base font-normal bg-pink-1
 }
 
 .race-table-header {
