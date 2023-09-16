@@ -2,7 +2,7 @@ import silk1Svg from '../../assets/silks/silk-1.svg'
 
 const RaceTable = () => {
     return (
-        <div className="grid grid-flow-row gap-[1px] w-full">
+        <div className="grid grid-flow-row gap-[1px] border rounded-[10px] bg-grey-2 w-full">
             <div className="p-5 grid grid-cols-2 bg-pink-1 rounded-t-[10px]">
                 <div className='flex flex-row items-center'>
                     <div className="text-black-2 text-xl leading-6 font-bold">Selections:</div>&nbsp;

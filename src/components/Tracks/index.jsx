@@ -5,7 +5,7 @@ import gbFlag from '../../assets/flags/GB.svg'
 const Tracks = () => {
 
     return (
-        <div className="w-full grid grid-flow-row gap-[1px] bg-grey-2 rounded-[10px] border border-[1px] border-grey-2">
+        <div className="w-full grid grid-flow-row gap-[1px] bg-grey-2 rounded-[10px] border border-grey-2">
             <div className="grid grid-cols-2 gap-[1px] w-full">
                 <div className="p-8 bg-pink-1 rounded-tl-[10px]">
                     <Datepicker />

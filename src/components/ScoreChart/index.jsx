@@ -98,7 +98,7 @@ const ScoreChart = () => {
   const hiddenClass = show ? "" : "hidden";
 
   return (
-    <div className="p-6 bg-pink-1 w-full">
+    <div className="p-6 bg-pink-1 w-full border rounded-[10px] border-grey-2">
       <div className="mb-6">
         <button
           id="dropdownDefaultButton"
