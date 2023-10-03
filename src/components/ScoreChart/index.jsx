@@ -54,12 +54,13 @@ const options = {
       grid: {
         display: true,
         color: "#98A2B3",
+        offset: false,
       },
       border: {
         dash: [5, 5],
         color: "#667085",
+        offset: 5
       },
-      beginAtZero: false,
       ticks: {
         color: "#667085",
       },
@@ -89,6 +90,7 @@ const data = {
       borderWidth: 0,
       backgroundColor: "#2E90FA",
       borderRadius: 10,
+      borderOffset: 50
     },
   ],
 };

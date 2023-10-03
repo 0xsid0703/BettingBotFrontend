@@ -1,13 +1,13 @@
-import { useState, forwardRef } from 'react'
+import { forwardRef } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.min.css'
 import { format } from 'date-fns';
 
 import CalendarSVG from '../../assets/calendar.svg'
 
-const Datepicker = () => {
+// eslint-disable-next-line react/prop-types
+const Datepicker = ({date, onChangeDate}) => {
 
-    const [startDate, setStartDate] = useState(new Date());
   // eslint-disable-next-line react/display-name, react/prop-types
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div className="flex flex-row items-center cursor-pointer text-2xl font-bold" onClick={onClick} ref={ref}>
@@ -23,8 +23,8 @@ const Datepicker = () => {
 
   return (
     <DatePicker
-      selected={startDate}
-      onChange={(date) => setStartDate(date)}
+      selected={date}
+      onChange={(date) => onChangeDate(date)}
       customInput={<ExampleCustomInput />}
     />
   );

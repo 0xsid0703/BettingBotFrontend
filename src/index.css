@@ -7,7 +7,7 @@ body {
 }
 
 .track-row {
-  @apply grid grid-flow-col grid-cols-12 gap-[1px]
+  @apply grid grid-flow-col grid-cols-12
 }
 
 .track-header {
@@ -23,11 +23,11 @@ body {
 }
 
 .track-body-item {
-  @apply p-5 flex flex-row items-center justify-center text-center text-base font-normal bg-pink-1
+  @apply p-5 text-center text-base font-normal bg-pink-1
 }
 
 .race-table-header {
-  @apply grid grid-cols-14 gap-[1px]
+  @apply grid grid-cols-14
 }
 
 .race-table-header-item-1 {
@@ -43,7 +43,7 @@ body {
 }
 
 .race-table-row {
-  @apply grid grid-cols-14 gap-[1px]
+  @apply grid grid-cols-14
 }
 
 .race-table-col-1 {
@@ -55,11 +55,11 @@ body {
 }
 
 .selection-table-header {
-  @apply grid grid-cols-12 gap-[1px]
+  @apply grid grid-cols-12
 }
 
 .selection-table-row {
-  @apply grid grid-cols-12 gap-[1px]
+  @apply grid grid-cols-12
 }
 
 .chart-dropdown-button {
