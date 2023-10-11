@@ -119,18 +119,18 @@ const Tracks = ({ setEventsObj }) => {
                     {
                         events.map ((event, idx) => {
                             return (
-                                <div className='flex flex-row' key={idx}>
-                                    <div className='track-body-header' style={{width: `${pWidth/6}px`}}>
+                                <div className='flex flex-row cursor-pointer group' key={idx}>
+                                    <div className='track-body-header group-hover:bg-pink-2' style={{width: `${pWidth/6}px`}}>
                                         <img src={auFlag} className='w-4 h-4 mr-[9px]'/>
                                         {event.venue}
                                     </div>
                                     {
                                         event?.markets.map((market, idx) => (
-                                            <div className='track-body-item' key={idx} style={{width: `${pWidth/12}px`}}>
+                                            <div className='track-body-item group-hover:bg-pink-2' key={idx} style={{width: `${pWidth/12}px`}}>
                                                 {
                                                     new Date(market.startTime).getTime() < new Date().getTime() ? 
-                                                    (<span className='text-shadow-sm shadow-green-600 text-green-1'>Closed</span>)
-                                                    : (<span className='track-body-item text-grey-2'>{getTimeString (market.startTime)}</span>)
+                                                    (<span className='text-shadow-sm shadow-green-600 text-green-1 group-hover:bg-pink-2'>Closed</span>)
+                                                    : (<span className='track-body-item text-grey-2 group-hover:bg-pink-2'>{getTimeString (market.startTime)}</span>)
                                                 }
                                             </div>
                                         ))

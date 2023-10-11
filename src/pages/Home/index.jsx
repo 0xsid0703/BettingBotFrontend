@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useContext } from 'react'
 
 import Tracks from '../../components/Tracks'
 import Event from '../../components/Event'
@@ -6,20 +6,22 @@ import RaceTable from '../../components/RaceTable'
 import SelectionTable from '../../components/SelectionTable'
 import ScoreChart from '../../components/ScoreChart'
 
+import { marketContext } from '../../contexts/marketContext'
+
 import { getMarketBooks } from '../../apis';
 
 const Home = () => {
     const [upcomingMarkets, setUpcomingMarkets] = useState ([])
     const [events, setEvents] = useState ([])
 
+    const {setMarket} = useContext(marketContext)
+
     const getUpcomingMarkets = useCallback(async() => {
-        console.log ("FFFFFF")
         if (events.length === 0) return
         let tmp = []
         events.map((item)=>{
             item?.markets.map((market, idx)=> {
                 market["raceNum"] = idx + 1
-                console.log (market, ">>>")
                 tmp.push (market)
             })
         })
@@ -41,11 +43,12 @@ const Home = () => {
                     marketPercent: ((Number(resp.data.totalMatched) / Number(resp.data.totalAvailable)) * 100).toFixed(2),
                     runnerLen: resp.data.runnerLen,
                     leftTime: getLeftTimeString(m.startTime),
-                    venue: m.venue + " R" + m.raceNum.toString()
+                    venue: m.venue + " R" + m.raceNum.toString(),
+                    marketId: m.marketId,
                 })
             }
         }
-        console.log (tmpUpcomingData)
+        setMarket ({marketId: tmpUpcomingData[0]['marketId'], venue: tmpUpcomingData[0]['venue']})
         setUpcomingMarkets (tmpUpcomingData)
     }, [events])
 
@@ -80,6 +83,7 @@ const Home = () => {
                         percent={item['marketPercent']}
                         runners={item['runnerLen']}
                         leftTime={item['leftTime']}
+                        marketId={item['marketId']}
                     /> 
                 )}
             </div>

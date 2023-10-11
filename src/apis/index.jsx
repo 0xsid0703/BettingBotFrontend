@@ -31,3 +31,18 @@ export const getMarketBooks = async({marketId}) => {
         return null
     }
 }
+
+export const getRunnersInfo = async(marketId) => {
+    try{
+        const resp = await axios({
+            url: `/basic/events/getrunners/${marketId}`,
+            method: "GET"
+        })
+        if (resp.status === 200) return resp.data
+        console.log ("Axios getMarketBooks function status ===> ", resp.status)
+        return null
+    } catch (e) {
+        console.log ("Axios getMarketBooks failed ==>", e.message)
+        return null
+    }
+}
