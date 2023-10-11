@@ -16,9 +16,10 @@ const Home = () => {
         console.log ("FFFFFF")
         if (events.length === 0) return
         let tmp = []
-        events.map((item, idx)=>{
-            item?.markets.map(market=> {
+        events.map((item)=>{
+            item?.markets.map((market, idx)=> {
                 market["raceNum"] = idx + 1
+                console.log (market, ">>>")
                 tmp.push (market)
             })
         })
@@ -40,10 +41,11 @@ const Home = () => {
                     marketPercent: ((Number(resp.data.totalMatched) / Number(resp.data.totalAvailable)) * 100).toFixed(2),
                     runnerLen: resp.data.runnerLen,
                     leftTime: getLeftTimeString(m.startTime),
-                    venue: m.venue
+                    venue: m.venue + " R" + m.raceNum.toString()
                 })
             }
         }
+        console.log (tmpUpcomingData)
         setUpcomingMarkets (tmpUpcomingData)
     }, [events])
 
@@ -73,7 +75,7 @@ const Home = () => {
                 { upcomingMarkets.map((item, idx) => 
                     <Event 
                         key={idx}
-                        venue={item['venue'] + ` R${item['raceNum']}`}
+                        venue={`${item['venue']}`}
                         pool={item['totalMatched']}
                         percent={item['marketPercent']}
                         runners={item['runnerLen']}
