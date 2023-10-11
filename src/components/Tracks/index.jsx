@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { format } from 'date-fns';
 
@@ -7,7 +8,7 @@ import auFlag from '../../assets/flags/AU.svg'
 
 import { getEvents } from '../../apis';
 
-const Tracks = () => {
+const Tracks = ({ setEventsObj }) => {
     const [pWidth, setPWidth] = useState (0)
     const ref = useRef(null)
     const isClient = typeof window === 'object'
@@ -16,26 +17,34 @@ const Tracks = () => {
     const [startDate, setStartDate] = useState (new Date())
     const [maxEvents, setMaxEvents] = useState (0)
     const [loading, setLoading] = useState (false)
-
+    
     const initialize = useCallback(async() => {
         setLoading (false)
         // eslint-disable-next-line no-undef
         const resp = await getEvents({
             date: format (startDate, "yyyy-MM-d"),
         })
-        console.log (resp, startDate)
         setLoading (true)
         if (resp?.success) {
             const data = resp.data.sort((a, b) => {
-                return new Date(a.startTimes[0]).getTime() - new Date(b.startTimes[0]).getTime()
+                if (new Date(a?.markets[0].startTime).getTime() > new Date(b?.markets[0].startTime).getTime()) return 1
+                else return -1
             })
             setEvents (data)
-            const maxValue = Math.max(...resp.data.map(item => item.startTimes.length));
+            setEventsObj(data)
+            data.map(item=>{
+                item?.markets.sort((a, b)=>{
+                    if (new Date(a.startTime).getTime() < new Date(b.startTime).getTime()) return -1
+                    else return 1
+                })
+            })
+            const maxValue = Math.max(...resp.data.map(item => item?.markets.length));
             setMaxEvents (maxValue)
         }
     }, [startDate])
 
     const getTimeString = (datetimeStr) => {
+        
         try{
             // Parse the string into a Date object
             let date = new Date(datetimeStr);
@@ -100,10 +109,10 @@ const Tracks = () => {
             { events.length > 0 && loading &&
                 <div className='w-full overflow-x-scroll' style={{maxWidth: `${pWidth}px`}}>
                     <div className='flex flex-row'>
-                        <div className='track-header' style={{minWidth: `${pWidth/6}px`}}>Track</div>
+                        <div className='track-header' style={{width: `${pWidth/6}px`}}>Track</div>
                         {
                             Array.from ({length: maxEvents}).map((_, idx) => (
-                                <div className='track-header-item' style={{minWidth: `${pWidth/12}px`}} key={idx}>{`R${idx + 1}`}</div>
+                                <div className='track-header-item' style={{width: `${pWidth/12}px`}} key={idx}>{`R${idx + 1}`}</div>
                             ))
                         }
                     </div>
@@ -111,17 +120,17 @@ const Tracks = () => {
                         events.map ((event, idx) => {
                             return (
                                 <div className='flex flex-row' key={idx}>
-                                    <div className='track-body-header' style={{minWidth: `${pWidth/6}px`}}>
+                                    <div className='track-body-header' style={{width: `${pWidth/6}px`}}>
                                         <img src={auFlag} className='w-4 h-4 mr-[9px]'/>
                                         {event.venue}
                                     </div>
                                     {
-                                        event.startTimes.map((datetimeStr, idx) => (
-                                            <div className='track-body-item' key={idx} style={{minWidth: `${pWidth/12}px`}}>
+                                        event?.markets.map((market, idx) => (
+                                            <div className='track-body-item' key={idx} style={{width: `${pWidth/12}px`}}>
                                                 {
-                                                    new Date(datetimeStr).getTime() < new Date().getTime() ? 
+                                                    new Date(market.startTime).getTime() < new Date().getTime() ? 
                                                     (<span className='text-shadow-sm shadow-green-600 text-green-1'>Closed</span>)
-                                                    : (<span className='track-body-item text-grey-2'>{getTimeString (datetimeStr)}</span>)
+                                                    : (<span className='track-body-item text-grey-2'>{getTimeString (market.startTime)}</span>)
                                                 }
                                             </div>
                                         ))
