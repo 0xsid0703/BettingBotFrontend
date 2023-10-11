@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useRef, useState, useEffect, useCallback, useContext } from 'react'
 import { format } from 'date-fns';
 
 import Datepicker from '../Datepicker';
@@ -7,16 +7,20 @@ import auFlag from '../../assets/flags/AU.svg'
 // import gbFlag from '../../assets/flags/GB.svg'
 
 import { getEvents } from '../../apis';
+import { marketContext } from '../../contexts/marketContext';
+import { eventsContext } from '../../contexts/eventsContext';
 
-const Tracks = ({ setEventsObj }) => {
+const Tracks = () => {
     const [pWidth, setPWidth] = useState (0)
     const ref = useRef(null)
     const isClient = typeof window === 'object'
-    const [events, setEvents] = useState([])
+    const {events, setEvents} = useContext (eventsContext)
 
     const [startDate, setStartDate] = useState (new Date())
     const [maxEvents, setMaxEvents] = useState (0)
     const [loading, setLoading] = useState (false)
+
+    const { setMarket } = useContext (marketContext)
     
     const initialize = useCallback(async() => {
         setLoading (false)
@@ -31,7 +35,6 @@ const Tracks = ({ setEventsObj }) => {
                 else return -1
             })
             setEvents (data)
-            setEventsObj(data)
             data.map(item=>{
                 item?.markets.sort((a, b)=>{
                     if (new Date(a.startTime).getTime() < new Date(b.startTime).getTime()) return -1
@@ -46,6 +49,7 @@ const Tracks = ({ setEventsObj }) => {
     const getTimeString = (datetimeStr) => {
         
         try{
+            let delta = new Date(datetimeStr) - new Date()
             // Parse the string into a Date object
             let date = new Date(datetimeStr);
 
@@ -53,7 +57,13 @@ const Tracks = ({ setEventsObj }) => {
             let hours = String(date.getHours()).padStart(2, '0');
             let minutes = String(date.getMinutes()).padStart(2, '0');
 
-            return `${hours}:${minutes}`;
+            if (delta >= 3600000) return `${hours}:${minutes}`;
+            date = new Date(delta);
+
+            minutes = String(date.getMinutes()).padStart(2, '0');
+            let seconds = String(date.getSeconds()).padStart(2, '0');
+            return `${minutes}:${seconds}`;
+
         }catch (e) {
             console.log ("getTimeString() call failed.", e)
             return "00:00"
@@ -119,18 +129,28 @@ const Tracks = ({ setEventsObj }) => {
                     {
                         events.map ((event, idx) => {
                             return (
-                                <div className='flex flex-row cursor-pointer group' key={idx}>
-                                    <div className='track-body-header group-hover:bg-pink-2' style={{width: `${pWidth/6}px`}}>
+                                <div className='flex flex-row' key={idx}>
+                                    <div className='track-body-header' style={{width: `${pWidth/6}px`}}>
                                         <img src={auFlag} className='w-4 h-4 mr-[9px]'/>
                                         {event.venue}
                                     </div>
                                     {
                                         event?.markets.map((market, idx) => (
-                                            <div className='track-body-item group-hover:bg-pink-2' key={idx} style={{width: `${pWidth/12}px`}}>
+                                            <div 
+                                                className='track-body-item' 
+                                                key={idx} 
+                                                style={{width: `${pWidth/12}px`}}
+                                            >
                                                 {
                                                     new Date(market.startTime).getTime() < new Date().getTime() ? 
-                                                    (<span className='text-shadow-sm shadow-green-600 text-green-1 group-hover:bg-pink-2'>Closed</span>)
-                                                    : (<span className='track-body-item text-grey-2 group-hover:bg-pink-2'>{getTimeString (market.startTime)}</span>)
+                                                    (<span className='text-shadow-sm shadow-green-600 text-green-1'>Closed</span>)
+                                                    : (<span 
+                                                            className='track-body-item cursor-pointer text-grey-2 hover:bg-pink-2'
+                                                            onClick={() => setMarket({"marketId":market.marketId, venue: `${market.venue} R${idx+1}`})}
+                                                        >
+                                                        {getTimeString (market.startTime)}
+                                                        </span>
+                                                    )
                                                 }
                                             </div>
                                         ))

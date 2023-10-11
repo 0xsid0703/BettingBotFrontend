@@ -3,21 +3,30 @@ import { Route, Routes } from "react-router-dom";
 import Home from './pages/Home'
 
 import { marketContext } from "./contexts/marketContext";
+import { eventsContext } from "./contexts/eventsContext";
 
 function App() {
   const [market, setMarket] = useState ('')
+  const [events, setEvents] = useState ([])
 
-  const contextValue = useMemo(
+  const marketValue = useMemo(
     () => ({ market, setMarket }),
     [market]
   );
 
+  const eventsValue = useMemo(
+    () => ({ events, setEvents }),
+    [events]
+  );
+
   return (
-    <marketContext.Provider value={contextValue}>
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </marketContext.Provider>
+    <eventsContext.Provider value={eventsValue}>
+      <marketContext.Provider value={marketValue}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </marketContext.Provider>
+    </eventsContext.Provider>
   )
 }
 

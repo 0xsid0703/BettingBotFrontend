@@ -1,4 +1,4 @@
-import { useContext, useCallback, useEffect, useState } from 'react'
+import { useContext, useCallback, useEffect, useState, useRef } from 'react'
 
 import successSvg from '../../assets/success.svg'
 import uploadSvg from '../../assets/upload.svg'
@@ -10,21 +10,32 @@ const RaceTable = () => {
     
     const {market} = useContext(marketContext)
     const [runners, setRunners] = useState ([])
+    const [loading, setLoading] = useState (0) // 0: loading, -1: no display data, 1: display data
+
+    const loadImages = useRef (0)
 
     const initialize = useCallback(async() => {
         if (market === undefined) return
         if (market?.marketId === undefined) return
         if (market?.marketId.length === 0) return
+        setLoading (0)
         const resp = await getRunnersInfo(market?.marketId)
-        console.log (resp, "KKKKKKKKKKKKKKK")
+        if (!resp) setLoading (-1)
         if (resp.success) {
             setRunners (resp.data)
+        } else {
+            setLoading (-1)
         }
     }, [market])
 
     useEffect(() => {
         initialize ()
     }, [initialize])
+
+    useEffect(() => {
+        // if (loadImages.current > 0 && loadImages.current === runners.length) setLoading (1)
+        if (runners.length > 0) setLoading (1)
+    }, [runners])
 
     return (
         <div className="grid grid-flow-row bg-grey-2 border rounded-[10px] gap-[1px] w-full">
@@ -47,7 +58,7 @@ const RaceTable = () => {
                     <div className='race-table-header-item-2'>Contender</div>
                     <div className='race-table-header-item-2'>Combined</div>
                 </div>
-                {runners.length > 0 &&
+                {loading === 1 &&
                     <div className='race-table-body'>{
                         runners.slice(0, runners.length - 1).map ((item, idx) =>
                             <div className='race-table-row' key={idx}>
@@ -76,6 +87,10 @@ const RaceTable = () => {
                             <div className='race-table-col-2 rounded-br-[10px]'>20</div>
                         </div>
                     </div>
+                }{ loading === 0 &&
+                    <div className='race-table-body text-2xl py-3 mx-auto'>Loading data...</div>
+                }{ loading === -1 &&
+                    <div className='race-table-body text-2xl py-3 mx-auto'>No display data...</div>
                 }
             </div>
         </div>

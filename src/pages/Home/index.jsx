@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useContext } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
 
 import Tracks from '../../components/Tracks'
 import Event from '../../components/Event'
@@ -6,76 +6,64 @@ import RaceTable from '../../components/RaceTable'
 import SelectionTable from '../../components/SelectionTable'
 import ScoreChart from '../../components/ScoreChart'
 
-import { marketContext } from '../../contexts/marketContext'
-
-import { getMarketBooks } from '../../apis';
-
 const Home = () => {
-    const [upcomingMarkets, setUpcomingMarkets] = useState ([])
-    const [events, setEvents] = useState ([])
+    // const [upcomingMarkets, setUpcomingMarkets] = useState ([])
+    // const [events, setEvents] = useState ([])
 
-    const {setMarket} = useContext(marketContext)
+    // const {market, setMarket} = useContext(marketContext)
 
-    const getUpcomingMarkets = useCallback(async() => {
-        if (events.length === 0) return
-        let tmp = []
-        events.map((item)=>{
-            item?.markets.map((market, idx)=> {
-                market["raceNum"] = idx + 1
-                tmp.push (market)
-            })
-        })
-        tmp = tmp.sort ((a, b)=>{
-            if (new Date(a.startTime).getTime() < new Date(b.startTime).getTime()) return -1
-            else return 1
-        }).filter((a)=> {
-            if (new Date(a.startTime).getTime() < new Date().getTime()) return false
-            else return true
-        }).slice(0, 4)
-        let tmpUpcomingData = []
-        for (let m of tmp) {
-            const resp = await getMarketBooks({
-                marketId: m.marketId,
-            })
-            if (resp.success) {
-                tmpUpcomingData.push ({
-                    totalMatched: Number(resp.data.totalMatched),
-                    marketPercent: ((Number(resp.data.totalMatched) / Number(resp.data.totalAvailable)) * 100).toFixed(2),
-                    runnerLen: resp.data.runnerLen,
-                    leftTime: getLeftTimeString(m.startTime),
-                    venue: m.venue + " R" + m.raceNum.toString(),
-                    marketId: m.marketId,
-                })
-            }
-        }
-        setMarket ({marketId: tmpUpcomingData[0]['marketId'], venue: tmpUpcomingData[0]['venue']})
-        setUpcomingMarkets (tmpUpcomingData)
-    }, [events])
 
-    useEffect (() => {
-        getUpcomingMarkets ()
-    }, [getUpcomingMarkets])
+    // const getUpcomingMarkets = async() => {
+    //     if (events.length === 0) return
+    //     let tmp = []
+    //     events.map((item)=>{
+    //         item?.markets.map((market, idx)=> {
+    //             market["raceNum"] = idx + 1
+    //             tmp.push (market)
+    //         })
+    //     })
+    //     tmp = tmp.sort ((a, b)=>{
+    //         if (new Date(a.startTime).getTime() < new Date(b.startTime).getTime()) return -1
+    //         else return 1
+    //     })
+    //     .filter((a)=> new Date(a.startTime).getTime() > new Date().getTime())
+    //     .slice(0, 4)
+    //     let tmpUpcomingData = []
+    //     for (let m of tmp) {
+    //         const resp = await getMarketBooks({
+    //             marketId: m.marketId,
+    //         })
+    //         let totalMatched = 0
+    //         let marketPercent = 0
+    //         let runnerLen = 0
+    //         if (resp.success) {
+    //             totalMatched = Number(resp.data.totalMatched)
+    //             marketPercent = ((Number(resp.data.totalMatched) / Number(resp.data.totalAvailable)) * 100).toFixed(2)
+    //             runnerLen = resp.data.runnerLen
+    //         }
+    //         tmpUpcomingData.push ({
+    //             totalMatched: totalMatched,
+    //             marketPercent: marketPercent,
+    //             runnerLen: runnerLen,
+    //             leftTime: getLeftTimeString(m.startTime),
+    //             venue: m.venue + " R" + m.raceNum.toString(),
+    //             marketId: m.marketId,
+    //         })
+    //     }
+    //     if (tmpUpcomingData.length > 0) {
+    //         if (!market) setMarket ({marketId: tmpUpcomingData[0]['marketId'], venue: tmpUpcomingData[0]['venue']})
+    //         setUpcomingMarkets (tmpUpcomingData)
+    //     }
+    // }
 
-    const getLeftTimeString = (datetimeStr) => {
-        try {
-            let date = new Date(datetimeStr) - new Date();
-
-            // Extract hours and minutes, then format them
-            let minutes = String(new Date(date).getMinutes());
-            let seconds = String(new Date(date).getSeconds());
-
-            return `${minutes}m ${seconds}s`;
-        }catch (e) {
-            console.log ("getLeftTimeString() call failed.", e)
-            return "0m 0s"
-        }
-    }
 
     return (
         <div className="grid grid-flow-row gap-5 p-8 sm:p-15 md:p-20 lg:p-28">
-            <Tracks setEventsObj={val => setEvents (val)}/>
+            <Tracks />
+            {/* <Tracks setEventsObj={val => setEvents (val)}/> */}
             <div className='grid grid-cols-4 gap-4'>
-                { upcomingMarkets.map((item, idx) => 
+                <Event />
+                {/* { upcomingMarkets.map((item, idx) => 
                     <Event 
                         key={idx}
                         venue={`${item['venue']}`}
@@ -85,7 +73,7 @@ const Home = () => {
                         leftTime={item['leftTime']}
                         marketId={item['marketId']}
                     /> 
-                )}
+                )} */}
             </div>
             <RaceTable />
             <SelectionTable />
