@@ -21,6 +21,7 @@ export default {
         "grey-1": "#98A2B3",
         "grey-2": "#667085",
         "green-1": "#054F31",
+        "green-2": "#32D583",
         "pink-2": "#FEE4E2",
         "red-1": "#D92D20",
         "red-2": "#7A271A"

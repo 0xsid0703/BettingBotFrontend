@@ -63,17 +63,6 @@ const Home = () => {
             {/* <Tracks setEventsObj={val => setEvents (val)}/> */}
             <div className='grid grid-cols-4 gap-4'>
                 <Event />
-                {/* { upcomingMarkets.map((item, idx) => 
-                    <Event 
-                        key={idx}
-                        venue={`${item['venue']}`}
-                        pool={item['totalMatched']}
-                        percent={item['marketPercent']}
-                        runners={item['runnerLen']}
-                        leftTime={item['leftTime']}
-                        marketId={item['marketId']}
-                    /> 
-                )} */}
             </div>
             <RaceTable />
             <SelectionTable />

@@ -72,3 +72,37 @@ export const formattedNum = (number, usd = false, acceptNegatives = false, abr =
 
   return Number(parseFloat(num).toFixed(4)).toString()
 }
+
+export const getTimeString = (datetimeStr) => {
+  try{
+      let delta = new Date(datetimeStr) - new Date()
+      // Parse the string into a Date object
+      let date = new Date(datetimeStr);
+
+      // Extract hours and minutes, then format them
+      let hours = String(date.getHours()).padStart(2, '0');
+      let minutes = String(date.getMinutes()).padStart(2, '0');
+
+      if (delta >= 3600000) return `${hours}:${minutes}`;
+
+      return this.getLeftTimeString(datetimeStr);
+
+  }catch (e) {
+      console.log ("getTimeString() call failed.", e)
+      return "00:00"
+  }
+}
+
+export const getLeftTimeString = (datetimeStr) => {
+  try {
+      let date = (new Date(datetimeStr) - new Date())/1000;
+      // Extract hours and minutes, then format them
+      let hours = parseInt(date/3600);
+      let minutes = parseInt((date - 3600 * hours)/60);
+      let seconds = parseInt(date - 3600 * hours - minutes * 60);
+      return [hours, minutes, seconds];
+  }catch (e) {
+      console.log ("getLeftTimeString() call failed.", e)
+      return [0,0,0]
+  }
+}

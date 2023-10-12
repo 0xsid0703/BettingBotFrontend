@@ -1,13 +1,15 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Route, Routes } from "react-router-dom";
 import Home from './pages/Home'
 
 import { marketContext } from "./contexts/marketContext";
 import { eventsContext } from "./contexts/eventsContext";
+import { clockContext } from "./contexts/clockContext";
 
 function App() {
   const [market, setMarket] = useState ('')
   const [events, setEvents] = useState ([])
+  const [clock, setClock] = useState (new Date().getTime())
 
   const marketValue = useMemo(
     () => ({ market, setMarket }),
@@ -18,13 +20,25 @@ function App() {
     () => ({ events, setEvents }),
     [events]
   );
+  
+  const clockValue = useMemo(
+    () => ({ clock, setClock }),
+    [clock]
+  );
+
+  useEffect(() => {
+    const interval = setInterval(()=>setClock(new Date().getTime()), 1000)
+    return () => clearInterval (interval)
+  })
 
   return (
     <eventsContext.Provider value={eventsValue}>
       <marketContext.Provider value={marketValue}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-        </Routes>
+        <clockContext.Provider value={clockValue}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+          </Routes>
+        </clockContext.Provider>
       </marketContext.Provider>
     </eventsContext.Provider>
   )

@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState, useRef } from 'react'
+import { useContext, useEffect, useState, useRef } from 'react'
 
-import { useContext } from "react"
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
 import { marketContext } from "../../contexts/marketContext"
 import { eventsContext } from "../../contexts/eventsContext"
 
 import Item from './Item'
-
 import { getMarketBooks } from "../../apis"
 
 /* eslint-disable react/prop-types */
@@ -49,7 +50,7 @@ const Event = () => {
                 totalMatched: totalMatched,
                 marketPercent: marketPercent,
                 runnerLen: runnerLen,
-                leftTime: getLeftTimeString(m.startTime),
+                startTime: m.startTime,
                 venue: m.venue + " R" + m.raceNum.toString(),
                 marketId: m.marketId,
             })
@@ -62,21 +63,6 @@ const Event = () => {
         }
     }
 
-    const getLeftTimeString = (datetimeStr) => {
-        try {
-            let date = new Date(datetimeStr) - new Date();
-
-            // Extract hours and minutes, then format them
-            let hours = Number(new Date(date).getHours());
-            let minutes = Number(new Date(date).getMinutes());
-            let seconds = Number(new Date(date).getSeconds());
-            return [hours, minutes, seconds];
-        }catch (e) {
-            console.log ("getLeftTimeString() call failed.", e)
-            return "0m 0s"
-        }
-    }
-    
     useEffect (() => {
         const interval = setInterval (async() => {
             await getUpcomingMarkets()
@@ -101,11 +87,22 @@ const Event = () => {
                     pool={item['totalMatched']}
                     percent={item['marketPercent']}
                     runners={item['runnerLen']}
-                    leftTime={item['leftTime']}
+                    startTime={item['startTime']}
                     marketId={item['marketId']}
                 /> 
             )}
-        
+            {
+                upcomingMarkets.length === 0 &&
+                Array.from({length: 4}).map((item, idx) =>
+                    <div key={idx} className="p-5 w-full bg-pink-1 rounded-[10px] border border-grey-2 cursor-pointer h-[162px]">
+                        <Skeleton
+                                baseColor="#D9D9D9"
+                                style={{ height: "100%" }}
+                                highlightColor="#444157"
+                            />
+                    </div>
+                )
+            }
         </>
     )
 }
