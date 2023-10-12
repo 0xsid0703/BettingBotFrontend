@@ -19,7 +19,10 @@ const Event = () => {
     const marketRef = useRef(market)
 
     const getUpcomingMarkets = async() => {
-        if (events.length === 0) return
+        if (events.length === 0) {
+            setUpcomingMarkets (undefined)
+            return
+        }
         let tmp = []
         events.map((item)=>{
             item?.markets.map((m, idx)=> {
@@ -80,7 +83,7 @@ const Event = () => {
         marketRef.current = market
     }, [market])
 
-    if (typeof upcomingMarkets === 'object')
+    if (typeof upcomingMarkets === 'object'){
         return (
             <>
                 { upcomingMarkets.map((item, idx) => 
@@ -108,6 +111,7 @@ const Event = () => {
                 }
             </>
         )
+    }
     else return null
 }
 

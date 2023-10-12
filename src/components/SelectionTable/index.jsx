@@ -48,7 +48,7 @@ const RaceTable = () => {
                         <div className='race-table-col-2'>+24%</div>
                         <div className='race-table-col-2 text-right rounded-br-[10px]'>10</div>
                     </div> */}
-                    <div className='py-3 text-2xl text-grey-2 mx-auto'>
+                    <div className='py-5 text-2xl text-grey-2 mx-auto'>
                         No selections
                     </div>
                 </div>

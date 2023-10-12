@@ -16,9 +16,9 @@ const RaceTable = () => {
     const [loading, setLoading] = useState (0) // 0: loading, -1: no display data, 1: display data
 
     const initialize = useCallback(async() => {
-        if (market === undefined) return
-        if (market?.marketId === undefined) return
-        if (market?.marketId.length === 0) return
+        if (market === undefined) {setLoading(-1); return}
+        if (market?.marketId === undefined) {setLoading(-1); return}
+        if (market?.marketId.length === 0) {setLoading(-1); return}
         setLoading (0)
         const resp = await getRunnersInfo(market?.marketId)
         if (!resp) setLoading (-1)
@@ -97,7 +97,7 @@ const RaceTable = () => {
                         />
                     </div>
                 }{ loading === -1 &&
-                    <div className='race-table-body text-2xl py-3 mx-auto'>No display data...</div>
+                    <div className='race-table-body text-grey-2 text-2xl py-5 mx-auto'>No display data...</div>
                 }
             </div>
         </div>

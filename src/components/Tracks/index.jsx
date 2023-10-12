@@ -145,7 +145,7 @@ const Tracks = () => {
             }
             {
                 events.length == 0 && loading &&
-                <div className='text-center text-2xl py-3'>
+                <div className='text-center text-2xl text-grey-2 py-5'>
                     No displayed data.
                 </div>
             }
