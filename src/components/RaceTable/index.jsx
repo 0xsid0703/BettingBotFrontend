@@ -1,5 +1,5 @@
 import { useContext, useCallback, useEffect, useState } from 'react'
-
+import clsx from 'clsx';
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
@@ -39,7 +39,7 @@ const RaceTable = () => {
     }, [runners])
 
     return (
-        <div className="grid grid-flow-row bg-grey-2 border rounded-[10px] gap-[1px] w-full">
+        <div className={clsx(`grid grid-flow-row ${loading===0?"bg-pink-1":"bg-grey-2"} border rounded-[10px] gap-[1px] w-full`)}>
             <div className="p-5 grid grid-cols-2 bg-pink-1 rounded-t-[10px]">
                 <div className="text-black-2 text-xl leading-6 font-bold">{market?.venue}</div>
                 {/* <div className="flex flex-row items-center justify-end gap-2 ">

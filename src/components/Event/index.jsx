@@ -60,6 +60,8 @@ const Event = () => {
                 setMarket ({marketId: tmpUpcomingData[0]['marketId'], venue: tmpUpcomingData[0]['venue']})
             }
             setUpcomingMarkets (tmpUpcomingData)
+        } else {
+            setUpcomingMarkets (undefined)
         }
     }
 
@@ -78,33 +80,35 @@ const Event = () => {
         marketRef.current = market
     }, [market])
 
-    return (
-        <>
-            { upcomingMarkets.map((item, idx) => 
-                <Item 
-                    key={idx}
-                    venue={`${item['venue']}`}
-                    pool={item['totalMatched']}
-                    percent={item['marketPercent']}
-                    runners={item['runnerLen']}
-                    startTime={item['startTime']}
-                    marketId={item['marketId']}
-                /> 
-            )}
-            {
-                upcomingMarkets.length === 0 &&
-                Array.from({length: 4}).map((item, idx) =>
-                    <div key={idx} className="p-5 w-full bg-pink-1 rounded-[10px] border border-grey-2 cursor-pointer h-[162px]">
-                        <Skeleton
-                                baseColor="#D9D9D9"
-                                style={{ height: "100%" }}
-                                highlightColor="#EAECF0"
-                            />
-                    </div>
-                )
-            }
-        </>
-    )
+    if (typeof upcomingMarkets === 'object')
+        return (
+            <>
+                { upcomingMarkets.map((item, idx) => 
+                    <Item 
+                        key={idx}
+                        venue={`${item['venue']}`}
+                        pool={item['totalMatched']}
+                        percent={item['marketPercent']}
+                        runners={item['runnerLen']}
+                        startTime={item['startTime']}
+                        marketId={item['marketId']}
+                    /> 
+                )}
+                {
+                    upcomingMarkets.length === 0 &&
+                    Array.from({length: 4}).map((item, idx) =>
+                        <div key={idx} className="p-5 w-full bg-pink-1 rounded-[10px] border border-grey-2 cursor-pointer h-[162px]">
+                            <Skeleton
+                                    baseColor="#D9D9D9"
+                                    style={{ height: "100%" }}
+                                    highlightColor="#EAECF0"
+                                />
+                        </div>
+                    )
+                }
+            </>
+        )
+    else return null
 }
 
 export default Event

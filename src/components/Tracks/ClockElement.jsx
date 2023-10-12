@@ -10,10 +10,10 @@ import { clockContext } from '../../contexts/clockContext';
 const ClockElement = ({market, idx}) => {
     const { setMarket } = useContext (marketContext)
     const { clock } = useContext (clockContext)
-    const [[h,m,s], setTime] = useState(['0','0','0'])
+    const [[h,m], setTime] = useState(['0','0'])
     const clockFlg = useRef (false)
     
-    let tmpH, tmpM, tmpS
+    let tmpH, tmpM
     useEffect(() => {
         const delta = (new Date(market.startTime) - clock)/1000
         if (delta < 3600) clockFlg.current = true
@@ -21,25 +21,24 @@ const ClockElement = ({market, idx}) => {
         if (clockFlg.current) {
             tmpH = parseInt (delta/3600)
             tmpM = parseInt ((delta - tmpH * 3600)/60)
-            tmpS = parseInt (delta - tmpH * 3600 - tmpM * 60)
-            setTime ([tmpH.toString(), tmpM.toString(), tmpS.toString()])
+            setTime ([tmpH.toString(), tmpM.toString()])
         }else {
             let date = new Date(market.startTime);
 
             // Extract hours and minutes, then format them
             tmpH = String(date.getHours()).padStart(2, '0');
             tmpM = String(date.getMinutes()).padStart(2, '0');
-            setTime ([tmpH, tmpM, '0'])
+            setTime ([tmpH, tmpM])
         }
     }, [market.startTime, clock])
 
     return (
         <span 
-            className={clsx(`track-body-item cursor-pointer ${clockFlg.current === true? "text-green-2" : "text-grey-2"} hover:bg-grey-2`)}
+            className={clsx(`track-body-item cursor-pointer ${clockFlg.current === true? "text-green-2" : "text-black-2"} hover:bg-grey-2`)}
             onClick={() => setMarket({"marketId":market.marketId, venue: `${market.venue} R${idx+1}`})}
         >
             {clockFlg.current === true ? 
-                (Number(h) > 0 ? `${h}h ${m}m ${s}s` : Number(m) > 0 ? `${m}m ${s}s` : `${s}s`):
+                (Number(h) > 0 ? `${h}h ${m}m` : `${m}m`):
                 (`${h}:${m}`)
             }
         </span>

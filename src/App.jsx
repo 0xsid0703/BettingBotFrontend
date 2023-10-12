@@ -27,7 +27,7 @@ function App() {
   );
 
   useEffect(() => {
-    const interval = setInterval(()=>setClock(new Date().getTime()), 1000)
+    const interval = setInterval(()=>setClock(new Date().getTime()), 60000)
     return () => clearInterval (interval)
   })
 

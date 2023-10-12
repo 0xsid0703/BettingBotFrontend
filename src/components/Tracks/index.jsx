@@ -68,7 +68,7 @@ const Tracks = () => {
     }, [isClient, pWidth])
 
     return (
-        <div className="w-full grid grid-flow-row gap-[1px] bg-grey-2 rounded-[10px] border border-grey-2" ref={ref}>
+        <div className="w-full grid grid-flow-row gap-[1px] bg-pink-1 rounded-[10px] border border-grey-2" ref={ref}>
             <div className="grid grid-cols-2 gap-[1px] w-full">
                 <div className="p-8 bg-pink-1 rounded-tl-[10px]">
                     <Datepicker date={startDate} onChangeDate={(d) => {
@@ -96,7 +96,7 @@ const Tracks = () => {
             </div>
             { events.length > 0 && loading &&
                 <div className='w-full overflow-x-scroll' style={{maxWidth: `${pWidth}px`}}>
-                    <div className='flex flex-row'>
+                    <div className='flex flex-row border-d border-t border-grey-2'>
                         <div className='track-header' style={{width: `${pWidth/6}px`}}>Track</div>
                         {
                             Array.from ({length: maxEvents}).map((_, idx) => (
@@ -110,7 +110,7 @@ const Tracks = () => {
                     {
                         events.map ((event, idx) => {
                             return (
-                                <div className='flex flex-row' key={idx}>
+                                <div className='flex flex-row border-d border-t border-grey-2' key={idx}>
                                     <div className='track-body-header' style={{width: `${pWidth/6}px`}}>
                                         <img src={auFlag} className='w-4 h-4 mr-[9px]'/>
                                         {event.venue}
@@ -124,7 +124,7 @@ const Tracks = () => {
                                             >
                                                 {
                                                     new Date(market.startTime).getTime() < new Date().getTime() ? 
-                                                    (<span className='text-shadow-sm text-grey-2'>$0</span>)
+                                                    (<span className='text-shadow-sm text-grey-1'>$0</span>)
                                                     // (<span className='text-shadow-sm shadow-green-600 text-green-1'>Closed</span>)
                                                     : ( <ClockElement market={market} idx={idx}/> )
                                                 }
