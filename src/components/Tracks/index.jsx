@@ -77,7 +77,7 @@ const Tracks = () => {
                         setStartDate (d)
                     }}/>
                 </div>
-                <div className="flex flex-row items-center bg-pink-1 text-2xl font-bold justify-end rounded-tr-[10px]">
+                <div className="flex flex-row items-center bg-pink-1 text-2xl font-bold justify-end rounded-tr-[10px] mr-4">
                     <span className='text-black-2 px-5 py-4'>
                         <div className='text-right text-xl font-bold leading-5'>$0</div>
                         <div className='text-right text-[10px] font-normal leading-5'>BANKROLL</div>
