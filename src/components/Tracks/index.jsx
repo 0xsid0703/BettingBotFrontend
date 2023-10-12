@@ -3,6 +3,7 @@ import { useRef, useState, useEffect, useCallback, useContext } from 'react'
 import { format } from 'date-fns';
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import clsx from 'clsx';
 
 import Datepicker from '../Datepicker';
 import auFlag from '../../assets/flags/AU.svg'
@@ -112,7 +113,7 @@ const Tracks = () => {
                     {
                         events.map ((event, idx) => {
                             return (
-                                <div className='flex flex-row border-d border-t border-grey-2 cursor-pointer' key={idx}>
+                                <div className='flex flex-row border-d border-t border-grey-2' key={idx}>
                                     <div className='track-body-header' style={{width: `${pWidth/6}px`}}>
                                         <img src={auFlag} className='w-4 h-4 mr-[9px]'/>
                                         {event.venue}
@@ -120,10 +121,13 @@ const Tracks = () => {
                                     {
                                         event?.markets.map((market, idx) => (
                                             <div 
-                                                className='track-body-item hover:bg-grey-2' 
+                                                className={clsx(`track-body-item ${new Date(market.startTime).getTime() < new Date().getTime()?"":"hover:bg-grey-2 cursor-pointer"}`)} 
                                                 key={idx} 
                                                 style={{width: `${pWidth/12}px`}}
-                                                onClick={() => setMarket({"marketId":market.marketId, venue: `${market.venue} R${idx+1}`})}
+                                                onClick={() => {
+                                                    if (new Date(market.startTime).getTime() >= new Date().getTime())
+                                                        setMarket({"marketId":market.marketId, venue: `${market.venue} R${idx+1}`})
+                                                }}
                                             >
                                                 {
                                                     new Date(market.startTime).getTime() < new Date().getTime() ? 

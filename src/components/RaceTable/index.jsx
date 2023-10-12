@@ -1,4 +1,4 @@
-import { useContext, useCallback, useEffect, useState } from 'react'
+import { useContext, useCallback, useEffect, useState, useRef } from 'react'
 import clsx from 'clsx';
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -7,34 +7,57 @@ import "react-loading-skeleton/dist/skeleton.css";
 // import uploadSvg from '../../assets/upload.svg'
 
 import { marketContext } from '../../contexts/marketContext'
+import { clockContext } from '../../contexts/clockContext'
 import { getRunnersInfo } from '../../apis'
 
 const RaceTable = () => {
     
     const {market} = useContext(marketContext)
+    const {clock} = useContext(clockContext)
     const [runners, setRunners] = useState ([])
     const [loading, setLoading] = useState (0) // 0: loading, -1: no display data, 1: display data
 
+    let marketRef = useRef ()
+
+    useEffect (() => {
+        marketRef.current = market
+    }, [market])
+
     const initialize = useCallback(async() => {
-        if (market === undefined) {setLoading(-1); return}
-        if (market?.marketId === undefined) {setLoading(-1); return}
-        if (market?.marketId.length === 0) {setLoading(-1); return}
+        if (marketRef.current === undefined) {setLoading(-1); return}
+        if (marketRef.current?.marketId === undefined) {setLoading(-1); return}
+        if (marketRef.current?.marketId.length === 0) {setLoading(-1); return}
         setLoading (0)
-        const resp = await getRunnersInfo(market?.marketId)
+        const resp = await getRunnersInfo(marketRef.current?.marketId)
         if (!resp) setLoading (-1)
         if (resp.success) {
             setRunners (resp.data)
         } else {
             setLoading (-1)
         }
-    }, [market])
+    }, [marketRef.current])
 
     useEffect(() => {
         initialize ()
     }, [initialize])
 
+    useEffect (() => {
+        async function fetchRunners(){
+            if (marketRef.current === undefined) {return}
+            if (marketRef.current?.marketId === undefined) {return}
+            if (marketRef.current?.marketId.length === 0) {return}
+            const resp = await getRunnersInfo(marketRef.current?.marketId)
+            if (!resp) return
+            if (resp.success) {
+                setRunners (resp.data)
+            } else {
+                return
+            }
+        }
+        fetchRunners ()
+    }, [clock])
+
     useEffect(() => {
-        // if (loadImages.current > 0 && loadImages.current === runners.length) setLoading (1)
         if (runners.length > 0) setLoading (1)
     }, [runners])
 
@@ -97,7 +120,7 @@ const RaceTable = () => {
                         />
                     </div>
                 }{ loading === -1 &&
-                    <div className='race-table-body text-grey-2 text-2xl py-5 mx-auto'>No display data...</div>
+                    <div className='race-table-body text-grey-2 text-2xl py-5 mx-auto'>No display data</div>
                 }
             </div>
         </div>

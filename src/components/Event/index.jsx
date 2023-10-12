@@ -16,7 +16,11 @@ const Event = () => {
     const {market, setMarket} = useContext (marketContext)
     const {events} = useContext (eventsContext)
     
-    const marketRef = useRef(market)
+    let marketRef = useRef()
+
+    useEffect (() => {
+        marketRef.current = market
+    }, [market])
 
     const getUpcomingMarkets = async() => {
         if (events.length === 0) {
