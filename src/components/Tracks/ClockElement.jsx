@@ -4,11 +4,9 @@
 import clsx from "clsx";
 
 import { useContext, useState, useEffect, useRef } from "react";
-import { marketContext } from '../../contexts/marketContext';
 import { clockContext } from '../../contexts/clockContext';
 
-const ClockElement = ({market, idx}) => {
-    const { setMarket } = useContext (marketContext)
+const ClockElement = ({market}) => {
     const { clock } = useContext (clockContext)
     const [[h,m], setTime] = useState(['0','0'])
     const clockFlg = useRef (false)
@@ -34,8 +32,7 @@ const ClockElement = ({market, idx}) => {
 
     return (
         <span 
-            className={clsx(`track-body-item cursor-pointer ${clockFlg.current === true? "text-green-2" : "text-black-2"} hover:bg-grey-2`)}
-            onClick={() => setMarket({"marketId":market.marketId, venue: `${market.venue} R${idx+1}`})}
+            className={clsx(`cursor-pointer ${clockFlg.current === true? "text-green-2" : "text-black-2"}`)}
         >
             {clockFlg.current === true ? 
                 (Number(h) > 0 ? `${h}h ${m}m` : `${m}m`):

@@ -10,6 +10,7 @@ import auFlag from '../../assets/flags/AU.svg'
 
 import { getEvents } from '../../apis';
 import { eventsContext } from '../../contexts/eventsContext';
+import { marketContext } from '../../contexts/marketContext';
 
 import ClockElement from './ClockElement';
 
@@ -18,6 +19,7 @@ const Tracks = () => {
     const ref = useRef(null)
     const isClient = typeof window === 'object'
     const {events, setEvents} = useContext (eventsContext)
+    const { setMarket } = useContext (marketContext)
 
     const [startDate, setStartDate] = useState (new Date())
     const [maxEvents, setMaxEvents] = useState (0)
@@ -110,7 +112,7 @@ const Tracks = () => {
                     {
                         events.map ((event, idx) => {
                             return (
-                                <div className='flex flex-row border-d border-t border-grey-2' key={idx}>
+                                <div className='flex flex-row border-d border-t border-grey-2 cursor-pointer' key={idx}>
                                     <div className='track-body-header' style={{width: `${pWidth/6}px`}}>
                                         <img src={auFlag} className='w-4 h-4 mr-[9px]'/>
                                         {event.venue}
@@ -118,9 +120,10 @@ const Tracks = () => {
                                     {
                                         event?.markets.map((market, idx) => (
                                             <div 
-                                                className='track-body-item' 
+                                                className='track-body-item hover:bg-grey-2' 
                                                 key={idx} 
                                                 style={{width: `${pWidth/12}px`}}
+                                                onClick={() => setMarket({"marketId":market.marketId, venue: `${market.venue} R${idx+1}`})}
                                             >
                                                 {
                                                     new Date(market.startTime).getTime() < new Date().getTime() ? 

@@ -1,4 +1,4 @@
-import silk1Svg from '../../assets/silks/silk-1.svg'
+// import silk1Svg from '../../assets/silks/silk-1.svg'
 
 const RaceTable = () => {
     return (
