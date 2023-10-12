@@ -93,7 +93,7 @@ const RaceTable = () => {
                         <Skeleton
                                 baseColor="#D9D9D9"
                                 style={{ height: "100%" }}
-                                highlightColor="#444157"
+                                highlightColor="#EAECF0"
                         />
                     </div>
                 }{ loading === -1 &&

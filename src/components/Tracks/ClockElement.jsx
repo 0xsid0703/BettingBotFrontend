@@ -1,5 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
+
+import clsx from "clsx";
+
 import { useContext, useState, useEffect, useRef } from "react";
 import { marketContext } from '../../contexts/marketContext';
 import { clockContext } from '../../contexts/clockContext';
@@ -32,7 +35,7 @@ const ClockElement = ({market, idx}) => {
 
     return (
         <span 
-            className='track-body-item cursor-pointer text-grey-2 hover:bg-grey-2'
+            className={clsx(`track-body-item cursor-pointer ${clockFlg.current === true? "text-green-2" : "text-grey-2"} hover:bg-grey-2`)}
             onClick={() => setMarket({"marketId":market.marketId, venue: `${market.venue} R${idx+1}`})}
         >
             {clockFlg.current === true ? 

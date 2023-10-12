@@ -18,7 +18,7 @@ const Tracks = () => {
     const ref = useRef(null)
     const isClient = typeof window === 'object'
     const {events, setEvents} = useContext (eventsContext)
-    console.log (">>>>>>>>>>>")
+
     const [startDate, setStartDate] = useState (new Date())
     const [maxEvents, setMaxEvents] = useState (0)
     const [loading, setLoading] = useState (false)
@@ -155,7 +155,7 @@ const Tracks = () => {
                     <Skeleton
                         baseColor="#D9D9D9"
                         style={{ height: "100%" }}
-                        highlightColor="#444157"
+                        highlightColor="#EAECF0"
                     />
                 </div>
             }
