@@ -153,9 +153,9 @@ const Tracks = () => {
                 !loading &&
                 <div className='text-center text-2xl p-5 h-[100px]'>
                     <Skeleton
-                        baseColor="#D9D9D9"
+                        baseColor="#EAECF0"
                         style={{ height: "100%" }}
-                        highlightColor="#EAECF0"
+                        highlightColor="#D9D9D9"
                     />
                 </div>
             }

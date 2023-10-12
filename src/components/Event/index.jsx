@@ -99,9 +99,9 @@ const Event = () => {
                     Array.from({length: 4}).map((item, idx) =>
                         <div key={idx} className="p-5 w-full bg-pink-1 rounded-[10px] border border-grey-2 cursor-pointer h-[162px]">
                             <Skeleton
-                                    baseColor="#D9D9D9"
+                                    baseColor="#EAECF0"
                                     style={{ height: "100%" }}
-                                    highlightColor="#EAECF0"
+                                    highlightColor="#D9D9D9"
                                 />
                         </div>
                     )

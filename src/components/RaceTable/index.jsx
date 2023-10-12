@@ -91,9 +91,9 @@ const RaceTable = () => {
                 }{ loading === 0 &&
                     <div className='race-table-body text-2xl p-5 mx-auto w-full h-[515px]'>
                         <Skeleton
-                                baseColor="#D9D9D9"
+                                baseColor="#EAECF0"
                                 style={{ height: "100%" }}
-                                highlightColor="#EAECF0"
+                                highlightColor="#D9D9D9"
                         />
                     </div>
                 }{ loading === -1 &&
