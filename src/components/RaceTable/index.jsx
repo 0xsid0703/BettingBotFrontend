@@ -24,9 +24,9 @@ const RaceTable = () => {
     }, [market])
 
     const initialize = useCallback(async() => {
-        if (marketRef.current === undefined) {setLoading(-1); return}
-        if (marketRef.current?.marketId === undefined) {setLoading(-1); return}
-        if (marketRef.current?.marketId.length === 0) {setLoading(-1); return}
+        if (marketRef.current === undefined) { return}
+        if (marketRef.current?.marketId === undefined) {return}
+        if (marketRef.current?.marketId.length === 0) {return}
         setLoading (0)
         const resp = await getRunnersInfo(marketRef.current?.marketId)
         if (!resp) setLoading (-1)
