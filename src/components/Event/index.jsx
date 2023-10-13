@@ -24,7 +24,7 @@ const Event = () => {
 
     const getUpcomingMarkets = async() => {
         if (events.length === 0) {
-            setUpcomingMarkets (undefined)
+            // setUpcomingMarkets (undefined)
             return
         }
         let tmp = []

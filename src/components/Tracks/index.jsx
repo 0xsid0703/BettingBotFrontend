@@ -39,6 +39,7 @@ const Tracks = () => {
                 else return -1
             })
             setEvents (data)
+            console.log (data)
             data.map(item=>{
                 item?.markets.sort((a, b)=>{
                     if (new Date(a.startTime).getTime() < new Date(b.startTime).getTime()) return -1
@@ -79,10 +80,10 @@ const Tracks = () => {
                     }}/>
                 </div>
                 <div className="flex flex-row items-center bg-pink-1 text-2xl font-bold justify-end rounded-tr-[10px] mr-4">
-                    <span className='text-black-2 px-5 py-4'>
+                    {/* <span className='text-black-2 px-5 py-4'>
                         <div className='text-right text-xl font-bold leading-5'>$0</div>
                         <div className='text-right text-[10px] font-normal leading-5'>BANKROLL</div>
-                    </span>
+                    </span> */}
                     <span className='text-black-2 px-5 py-4'>
                         <div className='text-right text-xl font-bold leading-5'>$0</div>
                         <div className='text-right text-[10px] font-normal leading-5'>TURNOVER</div>
