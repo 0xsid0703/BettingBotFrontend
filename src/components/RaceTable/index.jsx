@@ -112,7 +112,7 @@ const RaceTable = () => {
                         </div>
                     </div>
                 }{ loading === 0 &&
-                    <div className='race-table-body text-2xl p-5 mx-auto w-full h-[515px]'>
+                    <div className='race-table-body text-2xl p-5 mx-auto w-full h-[300px]'>
                         <Skeleton
                                 baseColor="#EAECF0"
                                 style={{ height: "100%" }}
@@ -120,7 +120,7 @@ const RaceTable = () => {
                         />
                     </div>
                 }{ loading === -1 &&
-                    <div className='race-table-body text-grey-2 text-2xl py-5 mx-auto'>No display data</div>
+                    <div className='race-table-body text-grey-2 text-2xl py-5 mx-auto h-[300px]'>No display data</div>
                 }
             </div>
         </div>

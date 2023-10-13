@@ -153,13 +153,13 @@ const Tracks = () => {
             }
             {
                 events.length == 0 && loading &&
-                <div className='text-center text-2xl text-grey-2 py-5'>
+                <div className='text-center text-2xl text-grey-2 py-5 h-[300px]'>
                     No displayed data.
                 </div>
             }
             {
                 !loading &&
-                <div className='text-center text-2xl p-5 h-[100px]'>
+                <div className='text-center text-2xl p-5 h-[300px]'>
                     <Skeleton
                         baseColor="#EAECF0"
                         style={{ height: "100%" }}
