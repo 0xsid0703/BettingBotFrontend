@@ -65,3 +65,59 @@ body {
 .chart-dropdown-button {
   @apply text-black-2 bg-white font-medium rounded-[5px] border border-grey-1 text-sm pl-4 py-2.5 flex flex-row justify-between items-center w-[200px] h-8
 }
+
+.horse-header-core {
+  @apply flex flex-row items-center justify-center col-span-1 row-span-1 leading-6 border-t border-grey-2 text-xs
+}
+
+.horse-header-normal {
+  @apply horse-header-core font-normal
+}
+
+.horse-header {
+  @apply horse-header-core font-bold
+}
+
+.horse-item-normal-black {
+  @apply horse-header-normal text-black-2
+}
+
+.horse-header-black {
+  @apply horse-header text-black-2
+}
+
+.horse-header-green {
+  @apply horse-header text-green-3
+}
+
+.horse-header-yellow {
+  @apply horse-header text-yellow-1
+}
+
+.horse-header-red {
+  @apply horse-header text-red-1
+}
+
+.racehistory-header-core {
+  @apply flex flex-row text-xs leading-6 items-center py-5
+}
+
+.racehistory-header-center {
+  @apply racehistory-header-core justify-center
+}
+
+.racehistory-header {
+  @apply racehistory-header-center font-bold text-black-2
+}
+
+.racehistory-header-start {
+  @apply racehistory-header-core font-bold justify-start
+}
+
+.racehistory-item {
+  @apply racehistory-header-center font-normal
+}
+
+.racehistory-item-start {
+  @apply racehistory-header-core font-normal justify-start
+}

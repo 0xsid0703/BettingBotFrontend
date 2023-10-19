@@ -46,3 +46,20 @@ export const getRunnersInfo = async(marketId) => {
         return null
     }
 }
+
+export const getRaces = async(type, id) => {
+    try{
+        if (type === "horse") {
+            const resp = await axios({
+                url: `/profile/races/horse/${id}`,
+                method: 'GET'
+            })
+            if (resp.status === 200) return resp.data
+            console.log ("Axios getRaces function status ===> ", resp.status)
+            return null
+        }
+    }catch(e) {
+        console.log ("Axios getRaces failed ==>", e.message)
+        return null
+    }
+}

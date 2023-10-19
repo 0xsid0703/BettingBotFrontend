@@ -22,9 +22,11 @@ export default {
         "grey-2": "#667085",
         "green-1": "#054F31",
         "green-2": "#32D583",
+        "green-3": "#039855",
         "pink-2": "#FEE4E2",
         "red-1": "#D92D20",
-        "red-2": "#7A271A"
+        "red-2": "#7A271A",
+        "yellow-1": "#DC6803",
       },
       borderColor: {
         'grey-2': '#EAECF0',
@@ -32,6 +34,7 @@ export default {
       },
       gridTemplateColumns: {
         '14': 'repeat(14, minmax(0, 1fr))',
+        '24': 'repeat(24, minmax(0, 1fr))',
       }
     },
     textShadow: {
