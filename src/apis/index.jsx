@@ -57,7 +57,24 @@ export const getRaces = async(type, id) => {
             if (resp.status === 200) return resp.data
             console.log ("Axios getRaces function status ===> ", resp.status)
             return null
+        } else if (type === "trainer") {
+            const resp = await axios({
+                url: `/profile/races/trainer/${id}`,
+                method: 'GET'
+            })
+            if (resp.status === 200) return resp.data
+            console.log ("Axios getRaces function status ===> ", resp.status)
+            return null
+        } else if (type === "jockey") {
+            const resp = await axios({
+                url: `/profile/races/jockey/${id}`,
+                method: 'GET'
+            })
+            if (resp.status === 200) return resp.data
+            console.log ("Axios getRaces function status ===> ", resp.status)
+            return null
         }
+        return null
     }catch(e) {
         console.log ("Axios getRaces failed ==>", e.message)
         return null

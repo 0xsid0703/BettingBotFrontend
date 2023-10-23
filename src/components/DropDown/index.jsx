@@ -2,10 +2,10 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState, useRef } from "react";
 
-const DropDown = ({btnStr, data}) => {
-    
+const DropDown = ({btnStr, data, kind, setValue}) => {
     const [selected, setSelected] = useState (false)
     const [width, setWidth] = useState (105)
+    const [selectedVal, setSelectedVal] = useState (btnStr)
 
     const wrapperRef = useRef(null);
 
@@ -28,8 +28,13 @@ const DropDown = ({btnStr, data}) => {
 
     useEffect(() => {
         setWidth (wrapperRef.current.offsetWidth)
-      }, [wrapperRef.current]);
+    }, [wrapperRef.current]);
 
+    const onChange = (val) => {
+        setValue ([kind, val])
+        setSelectedVal (val)
+    }
+    
     return (
         <div className="w-full">
             <button
@@ -42,7 +47,7 @@ const DropDown = ({btnStr, data}) => {
                 }}
                 ref={wrapperRef}
             >
-                {btnStr}
+                {selectedVal}
                 <svg
                     className="w-2.5 h-2.5 ml-2.5"
                     aria-hidden="true"
@@ -63,7 +68,7 @@ const DropDown = ({btnStr, data}) => {
                 id="dropdown"
                 className={
                     selected
-                        ? `z-20 bg-v3-primary border absolute border-primary divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 mt-[8px] overflow-y-auto`
+                        ? `z-20 bg-v3-primary border absolute border-primary divide-y divide-gray-100 rounded-lg shadow bg-white mt-[8px] overflow-y-auto`
                         : `hidden`
                 }
                 style={{ width: `${width}px` }}
@@ -72,15 +77,15 @@ const DropDown = ({btnStr, data}) => {
                     className={`py-2 text-sm text-v3-primary font-medium dark:text-gray-200`}
                     aria-labelledby="dropdownButton"
                 >
-                    {data.map((item, idx) => {
-                        <li key={idx}>
-                            <a
-                                className="flex flex-row items-center px-4 py-2 hover:bg-dropdown dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer"
-                            >
-                                {item}
-                            </a>
-                        </li>
-                    })}
+                    {
+                        Array.from(data).map((item, idx) =>
+                            <li key={idx} onClick={() => onChange(item)}>
+                                <a className="flex flex-row items-center px-4 py-2 hover:bg-dropdown cursor-pointer">
+                                    {item}
+                                </a>
+                            </li>
+                        )
+                    }
                 </ul>
             </div>
         </div>

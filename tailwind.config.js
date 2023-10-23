@@ -20,6 +20,7 @@ export default {
         "blue-1": "#2E90FA",
         "grey-1": "#98A2B3",
         "grey-2": "#667085",
+        "grey-3": "#3E4784",
         "green-1": "#054F31",
         "green-2": "#32D583",
         "green-3": "#039855",

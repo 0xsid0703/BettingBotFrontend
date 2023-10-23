@@ -7,15 +7,14 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 import DropDown from "../../components/DropDown";
-import HorseSVG from "../../assets/horse.svg";
 import SilkSVG from "../../assets/silk.svg";
 
 import { getRaces } from "../../apis";
 import { formattedNum } from "../../utils";
 
 const initialValue = {
-    jockey: "ALL JOCKEY",
-    trainer: "ALL TRAINERS",
+    jockey: "ALL JOCKEYS",
+    horse: "ALL HORSES",
     track: "ALL TRACKS",
     condition: "ALL CONDITIONS",
     distance: "ALL DISTANCES",
@@ -23,13 +22,13 @@ const initialValue = {
 }
 const KEY_NAME = {
     "jockey": "jockey_name",
-    "trainer": "trainer_name",
+    "horse": "horse_name",
     "condition": "track_condition",
     "track": "track_name",
     "distance": "distance"
 }
 
-const HorseProfile = () => {
+const TrainerProfile = () => {
   const { id } = useParams();
 
   const [races, setRaces] = useState([]);
@@ -39,23 +38,23 @@ const HorseProfile = () => {
   const [filterObj, setFilter] = useState (initialValue)
   const [data, setData] = useState ([])
 
-  let jockeys = new Set(), trainers = new Set(), tracks = new Set(), conditions = new Set(), distances = new Set()
+  let jockeys = new Set(), horses = new Set(), tracks = new Set(), conditions = new Set(), distances = new Set()
   jockeys.add (initialValue['jockey'])
-  trainers.add (initialValue['trainer'])
+  horses.add (initialValue['horse'])
   tracks.add (initialValue['track'])
   conditions.add (initialValue['condition'])
   distances.add (initialValue['distance'])
 
   races.map((item) => {
     if (item['jockey_name'].length > 0) jockeys.add (item['jockey_name'])
-    if (item['trainer_name'].length > 0) trainers.add (item['trainer_name'])
+    if (item['horse_name'].length > 0) horses.add (item['horse_name'])
     if (item['track_name'].length > 0) tracks.add (item['track_name'])
     if (item['track_condition'].length > 0) conditions.add (item['track_condition'])
     if (item['distance'].length > 0) distances.add (item['distance'])
   })
 
   const initialize = useCallback(async () => {
-    const tmp = await getRaces("horse", id);
+    const tmp = await getRaces("trainer", id);
     setRaces(tmp);
     if (tmp.length > 0) setHomeRace(tmp[0]);
 
@@ -172,11 +171,11 @@ const HorseProfile = () => {
   return (
     <div className="p-[112px] bg-white min-w-[1920px]">
       <div className="flex flex-col gap-8">
-        <div className="grid grid-rows-3 grid-cols-12 bg-pink-1 border border-grey-2 rounded-[10px]">
+        <div className="grid grid-rows-2 grid-cols-12 bg-pink-1 border border-grey-2 rounded-[10px]">
           <div className="grid grid-cols-12 col-span-12 border-b border-grey-2">
             {homeRace ? (
               <div className="flex flex-row items-center col-span-3 text-2xl font-bold leading-6 py-6 px-5 w-full">
-                {homeRace && homeRace["horse_name"]}
+                {homeRace && homeRace["trainer_name"]}
               </div>
             ) : (
               <div className="col-span-3 h-[30px] w-[200px] px-5 self-center">
@@ -192,7 +191,7 @@ const HorseProfile = () => {
                 <DropDown btnStr={initialValue['jockey']} data={jockeys} kind="jockey" setValue={(val) => setValue(val)}/>
               </div>
               <div className="col-span-2 flex flex-row items-center justify-center">
-                <DropDown btnStr={initialValue['trainer']} data={trainers} kind="trainer" setValue={(val) => setValue(val)}/>
+                <DropDown btnStr={initialValue['horse']} data={horses} kind="horse" setValue={(val) => setValue(val)}/>
               </div>
               <div className="col-span-2 flex flex-row items-center justify-center">
                 <DropDown btnStr={initialValue['track']} data={tracks} kind="track" setValue={(val) => setValue(val)}/>
@@ -209,15 +208,13 @@ const HorseProfile = () => {
             </div>
           </div>
           <div className="grid grid-cols-12 grid-rows-2 col-span-12">
-            <div className="row-span-2 col-span-1 flex flex-row items-center justify-center border border-grey-2">
-              <img src={HorseSVG} className="w-16 h-16" />
-            </div>
-            <div className="horse-header-black">Country</div>
-            <div className="horse-header-black">Age</div>
-            <div className="horse-header-black">Sex</div>
-            <div className="horse-header-black">Home Track</div>
-            <div className="horse-header-black">600m</div>
-            <div className="horse-header-black">Speed</div>
+            <div className="horse-header-black">Total $</div>
+            <div className="horse-header-black">AVG $</div>
+            <div className="horse-header-gray">Synthetic</div>
+            <div className="horse-header-black">Firm</div>
+            <div className="horse-header-green">Good</div>
+            <div className="horse-header-yellow">Soft</div>
+            <div className="horse-header-red">Heavy</div>
             <div className="horse-header-black">Finish %</div>
             <div className="horse-header-black">Win %</div>
             <div className="horse-header-black">Place %</div>
@@ -225,9 +222,9 @@ const HorseProfile = () => {
             <div className="horse-header-black">ROI</div>
 
             {
-                homeRace ? (
+                sum ? (
                     <div className="horse-item-normal-black">
-                        {homeRace["horse_country"]}
+                        {`$${formattedNum(sum["sumPrize"], false)}`}
                     </div>
                 ) : (
                     <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -240,9 +237,9 @@ const HorseProfile = () => {
                 )
             }
             {
-                homeRace ? (
+                sum && races.length > 0 ? (
                     <div className="horse-item-normal-black">
-                        {`${homeRace["horse_age"]}yo`}
+                        {`$${formattedNum(sum["sumPrize"] / races.length, false)}`}
                     </div>
                 ) : (
                     <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -255,8 +252,8 @@ const HorseProfile = () => {
                 )
             }
             {
-                homeRace ? (
-                    <div className="horse-item-normal-black">{`${homeRace["horse_sex"]}`}</div>
+                sum && races.length > 0 ? (
+                    <div className="horse-item-normal-black">{`${((sum["Synthetic"] * 100) / races.length).toFixed(2)}%`}</div>
                 ) : (
                     <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
                         <Skeleton
@@ -268,8 +265,8 @@ const HorseProfile = () => {
                 )
             }
             {
-                homeRace ? (
-                    <div className="horse-item-normal-black">{homeRace["home_track_name"]}</div>
+                sum && races.length ? (
+                    <div className="horse-item-normal-black">{`${((sum["Firm"] * 100) / races.length).toFixed(2)}%`}</div>
                 ) : (
                     <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
                         <Skeleton
@@ -282,7 +279,7 @@ const HorseProfile = () => {
             }
             {
                 sum && races ? (
-                    <div className="horse-item-normal-black">{(sum["sumLast600"] / races.length).toFixed(2)}</div>
+                    <div className="horse-item-normal-black">{`${((sum["Good"] * 100) / races.length).toFixed(2)}%`}</div>
                 ) : (
                     <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
                         <Skeleton
@@ -295,7 +292,20 @@ const HorseProfile = () => {
             }
             {
                 sum && races ? (
-                    <div className="horse-item-normal-black">{`${((sum["sumSpeed"] * 3.6) / races.length).toFixed(2)}km/h`}</div>
+                    <div className="horse-item-normal-black">{`${((sum["Soft"] * 100) / races.length).toFixed(2)}%`}</div>
+                ) : (
+                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                        <Skeleton
+                            baseColor="#EAECF0"
+                            style={{ height: "100%" }}
+                            highlightColor="#D9D9D9"
+                        />
+                    </div>
+                )
+            }
+            {
+                sum && races ? (
+                    <div className="horse-item-normal-black">{`${((sum["Heavy"] * 100) / races.length).toFixed(2)}%`}</div>
                 ) : (
                     <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
                         <Skeleton
@@ -370,171 +380,12 @@ const HorseProfile = () => {
                 )
             }
           </div>
-          <div className="grid grid-cols-12 grid-rows-2 col-span-12">
-            <div className="row-span-2 col-span-1 flex flex-row items-center justify-center border border-grey-2">
-              <img src={SilkSVG} className="w-16 h-16" />
-            </div>
-            <div className="horse-header-black">Sire</div>
-            <div className="horse-header-black">Dam</div>
-            <div className="horse-header-black">Trainer</div>
-            <div className="horse-header-black">Total $</div>
-            <div className="horse-header-black">AVG $</div>
-            <div className="horse-header-black">Settling</div>
-            <div className="horse-header-gray">Synthetic</div>
-            <div className="horse-header-black">Firm</div>
-            <div className="horse-header-green">Good</div>
-            <div className="horse-header-yellow">Soft</div>
-            <div className="horse-header-red">Heavy</div>
-            {
-                homeRace ? (
-                    <div className="horse-item-normal-black">{homeRace["sire_name"]}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                homeRace ? (
-                    <div className="horse-item-normal-black">{homeRace["dam_name"]}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                homeRace ? (
-                    <div className="horse-item-normal-black">{homeRace["trainer_name"]}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum ? (
-                    <div className="horse-item-normal-black">{`$${formattedNum(sum["sumPrize"], false)}`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`$${formattedNum((sum["sumPrize"] / races.length).toFixed(2), false)}`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${(sum["sumSettling"] / races.length).toFixed(2)}%`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${((sum["Synthetic"] * 100) / races.length).toFixed(2)}%`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${((sum["Firm"] * 100) / races.length ).toFixed(2)}%`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${((sum["Good"] * 100) /  races.length ).toFixed(2)}%`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${((sum["Soft"] * 100) / races.length).toFixed(2)}%`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${((sum["Heavy"] * 100) / races.length).toFixed(2)}%`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-          </div>
         </div>
         <div className="flex flex-col bg-pink-1 border border-grey-2 rounded-[10px]">
             <div className="grid grid-cols-24">
                 <div className="racehistory-header">Date</div>
                 <div className="racehistory-header-start col-span-3 px-5">
-                Jockey
+                Horse
                 </div>
                 <div className="racehistory-header-start col-span-3 px-5">
                 Track
@@ -567,7 +418,7 @@ const HorseProfile = () => {
                         {item["date"]}
                     </div>
                     <div className="racehistory-item-start text-black-2 col-span-3 px-5">
-                        {item["jockey_name"]}
+                        {item["horse_name"]}
                     </div>
                     <div className="racehistory-item-start text-black-2 col-span-3 px-5">
                         {item["track_name"]}
@@ -644,4 +495,4 @@ const HorseProfile = () => {
   );
 };
 
-export default HorseProfile;
+export default TrainerProfile;

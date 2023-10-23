@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { Route, Routes } from "react-router-dom";
 import Home from './pages/Home'
 import HorseProfile from './pages/HorseProfile'
+import TrainerProfile from './pages/TrainerProfile'
 
 import { marketContext } from "./contexts/marketContext";
 import { eventsContext } from "./contexts/eventsContext";
@@ -39,6 +40,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/horse/au/:id" element={<HorseProfile />} />
+            <Route path="/trainer/au/:id" element={<TrainerProfile />} />
           </Routes>
         </clockContext.Provider>
       </marketContext.Provider>
