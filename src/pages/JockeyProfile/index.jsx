@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import clsx from "clsx";
@@ -7,7 +7,6 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 import DropDown from "../../components/DropDown";
-import SilkSVG from "../../assets/silk.svg";
 
 import { getRaces } from "../../apis";
 import { formattedNum } from "../../utils";
