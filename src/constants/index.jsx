@@ -26,3 +26,15 @@ export const CLASS_LEVEL = {
     "207": "Benchmark 95",
     "208": "Benchmark 100",
 }
+
+export const START_FILTER_CNT = {
+    "Last 10": 10,
+    "Last 20": 20,
+    "Last 50": 50,
+    "Last 100": 100,
+    "Last 200": 200,
+    "Last 500": 500,
+    "Last 1000": 1000,
+    "Last 2000": 2000,
+    "Last 5000": 5000,
+}

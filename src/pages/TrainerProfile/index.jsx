@@ -9,7 +9,8 @@ import "react-loading-skeleton/dist/skeleton.css";
 import DropDown from "../../components/DropDown";
 
 import { getRaces } from "../../apis";
-import { formattedNum } from "../../utils";
+import { formattedNum, getDateObj } from "../../utils";
+import { START_FILTER_CNT } from "../../constants"
 
 const initialValue = {
     jockey: "ALL JOCKEYS",
@@ -17,7 +18,7 @@ const initialValue = {
     track: "ALL TRACKS",
     condition: "ALL CONDITIONS",
     distance: "ALL DISTANCES",
-    start: "ALL STARTS"
+    start: "Last 500"
 }
 const KEY_NAME = {
     "jockey": "jockey_name",
@@ -41,7 +42,8 @@ const TrainerProfile = () => {
         horses = new Set([initialValue['horse']]), 
         tracks = new Set([initialValue['track']]), 
         conditions = new Set([initialValue['condition'], 'Firm', 'Synthetic', 'Good', 'Heavy', 'Soft']), 
-        distances = new Set([initialValue['distance'], '1000 - 1200', '1300 - 1600', '1800 - 2200', '2400+'])
+        distances = new Set([initialValue['distance'], '1000 - 1200', '1300 - 1600', '1800 - 2200', '2400+']),
+        starts = new Set(['Last 100', 'Last 200', 'Last 500', 'Last 1000', 'Last 2000', 'Last 5000', 'This Season', 'Last Season'])
 
   races.map((item) => {
     if (item['jockey_name'].length > 0) jockeys.add (item['jockey_name'])
@@ -143,8 +145,9 @@ const TrainerProfile = () => {
         realFilter[key] = filterObj[key];
       }
     }
-    const tmpData = races.filter((race) => {
+    let tmpData = races.filter((race) => {
       for (let key of Object.keys(realFilter)) {
+        if (key === 'start') continue
         if (key !== 'distance' && realFilter[key] !== race[KEY_NAME[key]]) return false;
         if (key === 'distance') {
             if (realFilter[key] === '1000 - 1200') if (race[KEY_NAME[key]] < 1000 || race[KEY_NAME[key]] > 1200) return false
@@ -155,20 +158,42 @@ const TrainerProfile = () => {
       }
       return true;
     });
+    if (realFilter['start'] !== "This Season" && realFilter['start'] !== "Last Season") tmpData = tmpData.slice (0, Math.min(tmpData.length, START_FILTER_CNT[realFilter['start']]))
+    else {
+        if (realFilter['start'] === "This Season") {
+            tmpData = tmpData.filter ((race) => {
+                if (Date.now() < new Date((new Date().getFullYear()).toString() + "-08-01"))
+                    if (getDateObj(race['date']) > new Date((new Date().getFullYear() - 1).toString() + "-07-31")) return true
+                    else return false
+                else
+                    if (getDateObj(race['date']) > new Date((new Date().getFullYear()).toString() + "-08-01")) return true
+                    else return false
+            })
+        } else if (realFilter['start'] === "Last Season") {
+            tmpData = tmpData.filter ((race) => {
+                if (Date.now() < new Date((new Date().getFullYear()).toString() + "-08-01"))
+                    if (getDateObj(race['date']) > new Date((new Date().getFullYear() - 2).toString() + "-07-31") && getDateObj(race['date']) < new Date((new Date().getFullYear() - 1).toString() + "-08-01")) return true
+                    else return false
+                else
+                    if (getDateObj(race['date']) > new Date((new Date().getFullYear() - 1).toString() + "-07-31") && getDateObj(race['date']) < new Date((new Date().getFullYear()).toString() + "-08-01")) return true
+                    else return false
+            })
+        }
+    }
     setData(tmpData);
   }, [filterObj, races])
   
   return (
-    <div className="p-[112px] bg-white min-w-[1920px]">
+    <div className="p-[16px] 2xl:p-[58px] 4xl:p-[112px] bg-white min-w-[1440px]">
       <div className="flex flex-col gap-8">
         <div className="grid grid-rows-2 grid-cols-12 bg-pink-1 border border-grey-2 rounded-[10px]">
           <div className="grid grid-cols-12 col-span-12 border-b border-grey-2">
             {homeRace ? (
-              <div className="flex flex-row items-center col-span-3 text-2xl font-bold leading-6 py-6 px-5 w-full">
+              <div className="flex flex-row items-center col-span-2 text-2xl font-bold leading-6 py-6 px-5 w-full">
                 {homeRace && homeRace["trainer_name"]}
               </div>
             ) : (
-              <div className="col-span-3 h-[30px] w-[200px] px-5 self-center">
+              <div className="col-span-2 h-[30px] w-[200px] px-5 self-center">
                 <Skeleton
                   baseColor="#EAECF0"
                   style={{ height: "100%" }}
@@ -176,7 +201,7 @@ const TrainerProfile = () => {
                 />
               </div>
             )}
-            <div className="col-span-9 grid grid-cols-12 gap-2 px-5 py-6">
+            <div className="col-span-10 grid grid-cols-12 gap-2 px-5 py-6">
               <div className="col-span-2 flex flex-row items-center justify-center">
                 <DropDown btnStr={initialValue['jockey']} data={jockeys} kind="jockey" setValue={(val) => setValue(val)}/>
               </div>
@@ -193,7 +218,7 @@ const TrainerProfile = () => {
                 <DropDown btnStr={initialValue['distance']} data={distances} kind="distance" setValue={(val) => setValue(val)}/>
               </div>
               <div className="col-span-2 flex flex-row items-center justify-center">
-                <DropDown btnStr={initialValue['start']} data={[1, 2, 3]} />
+                <DropDown btnStr={initialValue['start']} data={starts} kind="start" setValue={(val) => setValue(val)} />
               </div>
             </div>
           </div>
@@ -419,7 +444,7 @@ const TrainerProfile = () => {
                     <div className="racehistory-item text-black-2">
                         {item["starters"]}
                     </div>
-                    <div className="racehistory-item text-black-2">7.5</div>
+                    <div className="racehistory-item text-black-2">{item['class']}</div>
                     <div className="racehistory-item text-black-2">
                         {item["barrier"]}
                     </div>

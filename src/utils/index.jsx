@@ -106,3 +106,11 @@ export const getLeftTimeString = (datetimeStr) => {
       return [0,0,0]
   }
 }
+
+export const getDateObj = (dateString) => {
+  var parts = dateString.split("/"); // Split the string into an array of parts
+
+  var dateObject = new Date("20" + parts[2], parts[1] - 1, parts[0]);
+
+  return dateObject
+}

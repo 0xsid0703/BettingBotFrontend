@@ -11,7 +11,8 @@ import HorseSVG from "../../assets/horse.svg";
 import SilkSVG from "../../assets/silk.svg";
 
 import { getRaces } from "../../apis";
-import { formattedNum } from "../../utils";
+import { formattedNum, getDateObj } from "../../utils";
+import { START_FILTER_CNT } from "../../constants"
 
 const initialValue = {
   jockey: "ALL JOCKEY",
@@ -19,7 +20,7 @@ const initialValue = {
   track: "ALL TRACKS",
   condition: "ALL CONDITIONS",
   distance: "ALL DISTANCES",
-  start: "ALL STARTS",
+  start: "Last 50",
 };
 const KEY_NAME = {
   jockey: "jockey_name",
@@ -28,6 +29,7 @@ const KEY_NAME = {
   track: "track_name",
   distance: "distance",
 };
+
 
 const HorseProfile = () => {
   const { id } = useParams();
@@ -43,14 +45,14 @@ const HorseProfile = () => {
         trainers = new Set([initialValue['trainer']]), 
         tracks = new Set([initialValue['track']]), 
         conditions = new Set([initialValue['condition'], 'Firm', 'Synthetic', 'Good', 'Heavy', 'Soft']), 
-        distances = new Set([initialValue['distance'], '1000 - 1200', '1300 - 1600', '1800 - 2200', '2400+'])
+        distances = new Set([initialValue['distance'], '1000 - 1200', '1300 - 1600', '1800 - 2200', '2400+']),
+        starts = new Set(['Last 10', 'Last 20', 'Last 50', 'Last 100', 'This Season', 'Last Season'])
 
   races.map((item) => {
     if (item["jockey_name"].length > 0) jockeys.add(item["jockey_name"]);
     if (item["trainer_name"].length > 0) trainers.add(item["trainer_name"]);
     if (item["track_name"].length > 0) tracks.add(item["track_name"]);
-    if (item["track_condition"].length > 0)
-      conditions.add(item["track_condition"]);
+    if (item["track_condition"].length > 0) conditions.add(item["track_condition"]);
   });
 
   const initialize = useCallback(async () => {
@@ -146,8 +148,9 @@ const HorseProfile = () => {
         realFilter[key] = filterObj[key];
       }
     }
-    const tmpData = races.filter((race) => {
+    let tmpData = races.filter((race) => {
       for (let key of Object.keys(realFilter)) {
+        if (key === 'start') continue
         if (key !== 'distance' && realFilter[key] !== race[KEY_NAME[key]]) return false;
         if (key === 'distance') {
             if (realFilter[key] === '1000 - 1200') if (race[KEY_NAME[key]] < 1000 || race[KEY_NAME[key]] > 1200) return false
@@ -158,20 +161,42 @@ const HorseProfile = () => {
       }
       return true;
     });
+    if (realFilter['start'] !== "This Season" && realFilter['start'] !== "Last Season") tmpData = tmpData.slice (0, Math.min(tmpData.length, START_FILTER_CNT[realFilter['start']]))
+    else {
+        if (realFilter['start'] === "This Season") {
+            tmpData = tmpData.filter ((race) => {
+                if (Date.now() < new Date((new Date().getFullYear()).toString() + "-08-01"))
+                    if (getDateObj(race['date']) > new Date((new Date().getFullYear() - 1).toString() + "-07-31")) return true
+                    else return false
+                else
+                    if (getDateObj(race['date']) > new Date((new Date().getFullYear()).toString() + "-08-01")) return true
+                    else return false
+            })
+        } else if (realFilter['start'] === "Last Season") {
+            tmpData = tmpData.filter ((race) => {
+                if (Date.now() < new Date((new Date().getFullYear()).toString() + "-08-01"))
+                    if (getDateObj(race['date']) > new Date((new Date().getFullYear() - 2).toString() + "-07-31") && getDateObj(race['date']) < new Date((new Date().getFullYear() - 1).toString() + "-08-01")) return true
+                    else return false
+                else
+                    if (getDateObj(race['date']) > new Date((new Date().getFullYear() - 1).toString() + "-07-31") && getDateObj(race['date']) < new Date((new Date().getFullYear()).toString() + "-08-01")) return true
+                    else return false
+            })
+        }
+    }
     setData(tmpData);
   }, [filterObj, races])
 
   return (
-    <div className="p-[112px] bg-white min-w-[1920px]">
+    <div className="p-[16px] 2xl:p-[58px] 4xl:p-[112px] bg-white min-w-[1440px]">
       <div className="flex flex-col gap-8">
         <div className="grid grid-rows-3 grid-cols-12 bg-pink-1 border border-grey-2 rounded-[10px]">
           <div className="grid grid-cols-12 col-span-12 border-b border-grey-2">
             {homeRace ? (
-              <div className="flex flex-row items-center col-span-3 text-2xl font-bold leading-6 py-6 px-5 w-full">
+              <div className="flex flex-row items-center col-span-2 text-2xl font-bold leading-6 py-6 px-5 w-full">
                 {homeRace && homeRace["horse_name"]}
               </div>
             ) : (
-              <div className="col-span-3 h-[30px] w-[200px] px-5 self-center">
+              <div className="col-span-2 h-[30px] w-[200px] px-5 self-center">
                 <Skeleton
                   baseColor="#EAECF0"
                   style={{ height: "100%" }}
@@ -179,7 +204,7 @@ const HorseProfile = () => {
                 />
               </div>
             )}
-            <div className="col-span-9 grid grid-cols-12 gap-2 px-5 py-6">
+            <div className="col-span-10 grid grid-cols-12 gap-2 px-5 py-6">
               <div className="col-span-2 flex flex-row items-center justify-center">
                 <DropDown
                   btnStr={initialValue["jockey"]}
@@ -221,7 +246,7 @@ const HorseProfile = () => {
                 />
               </div>
               <div className="col-span-2 flex flex-row items-center justify-center">
-                <DropDown btnStr={initialValue["start"]} data={[1, 2, 3]} />
+                <DropDown btnStr={initialValue["start"]} data={starts} kind="start" setValue={(val) => setValue(val)} />
               </div>
             </div>
           </div>
@@ -590,7 +615,7 @@ const HorseProfile = () => {
                   <div className="racehistory-item text-black-2">
                     {item["starters"]}
                   </div>
-                  <div className="racehistory-item text-black-2">7.5</div>
+                  <div className="racehistory-item text-black-2">{item['class']}</div>
                   <div className="racehistory-item text-black-2">
                     {item["barrier"]}
                   </div>
