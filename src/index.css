@@ -67,7 +67,7 @@ body {
 }
 
 .horse-header-core {
-  @apply flex flex-row items-center justify-center col-span-1 row-span-1 leading-6 border-t border-grey-2 text-xs
+  @apply flex flex-row items-center justify-center col-span-1 row-span-1 leading-6 border-t border-grey-2 text-xs py-3
 }
 
 .horse-header-normal {

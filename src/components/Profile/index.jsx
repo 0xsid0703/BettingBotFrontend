@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 
 import clsx from "clsx";
 
@@ -15,15 +14,6 @@ import { getRaces } from "../../apis";
 import { formattedNum, getDateObj } from "../../utils";
 import { START_FILTER_CNT } from "../../constants";
 
-const initialValue = {
-  jockey: "ALL JOCKEYS",
-  trainer: "ALL TRAINERS",
-  horse: "ALL HORSES",
-  track: "ALL TRACKS",
-  condition: "ALL CONDITIONS",
-  distance: "ALL DISTANCES",
-  start: "Last 50",
-};
 const KEY_NAME = {
   jockey: "jockey_name",
   trainer: "trainer_name",
@@ -37,6 +27,16 @@ const Profile = ({ kind, id }) => {
   const [races, setRaces] = useState([]);
   const [homeRace, setHomeRace] = useState();
   const [sum, setSum] = useState();
+
+  const initialValue = {
+    jockey: "ALL JOCKEYS",
+    trainer: "ALL TRAINERS",
+    horse: "ALL HORSES",
+    track: "ALL TRACKS",
+    condition: "ALL CONDITIONS",
+    distance: "ALL DISTANCES",
+    start: kind === "horse" ? "Last 50" : "Last 500",
+  };
 
   const [filterObj, setFilter] = useState(initialValue);
   const [data, setData] = useState([]);
@@ -90,13 +90,17 @@ const Profile = ({ kind, id }) => {
   });
 
   const initialize = useCallback(async () => {
-    const tmp = await getRaces("horse", id);
+    const tmp = await getRaces(kind, id);
     setRaces(tmp);
+    console.log (tmp, ">>>>")
     if (tmp.length > 0) setHomeRace(tmp[0]);
+  }, [id, kind]);
 
+  useEffect (() => {
+    console.log (data, "LLLL")
     let tmpSum = { Synthetic: 0, Firm: 0, Good: 0, Soft: 0, Heavy: 0 };
 
-    for (let item of tmp) {
+    for (let item of data) {
       if ("sumLast600" in tmpSum) {
         if (parseFloat(item["last_600"]) >= 0)
           tmpSum["sumLast600"] += item["last_600"];
@@ -162,7 +166,7 @@ const Profile = ({ kind, id }) => {
       if (item["track_condition"] === "Heavy") tmpSum["Heavy"] += 1;
     }
     setSum(tmpSum);
-  }, [id]);
+  }, [data])
 
   useEffect(() => {
     initialize();
@@ -323,7 +327,7 @@ const Profile = ({ kind, id }) => {
                 </>
               )}
 
-              {kind === "trainer" && (
+              {kind === "jockey" && (
                 <>
                   <div className="col-span-2 flex flex-row items-center justify-center">
                     <DropDown
@@ -445,9 +449,9 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && races ? (
+                {sum && data.lengh > 0 ? (
                   <div className="horse-item-normal-black">
-                    {(sum["sumLast600"] / races.length).toFixed(2)}
+                    {(sum["sumLast600"] / data.length).toFixed(2)}
                   </div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -458,10 +462,10 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && races ? (
+                {sum && data.lengh > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     (sum["sumSpeed"] * 3.6) /
-                    races.length
+                    data.length
                   ).toFixed(2)}km/h`}</div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -472,9 +476,9 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && races ? (
+                {sum && data.lengh > 0 ? (
                   <div className="horse-item-normal-black">{`${(
-                    sum["sumFinishPercent"] / races.length
+                    sum["sumFinishPercent"] / data.length
                   ).toFixed(2)}%`}</div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -485,9 +489,9 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && races ? (
+                {sum && data.lengh > 0 ? (
                   <div className="horse-item-normal-black">{`${(
-                    sum["sumWinPercent"] / races.length
+                    sum["sumWinPercent"] / data.length
                   ).toFixed(2)}%`}</div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -498,9 +502,9 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && races ? (
+                {sum && data.lengh > 0 ? (
                   <div className="horse-item-normal-black">{`${(
-                    sum["sumPlacePercent"] / races.length
+                    sum["sumPlacePercent"] / data.length
                   ).toFixed(2)}%`}</div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -511,14 +515,14 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && races ? (
+                {sum && data.lengh > 0 ? (
                   <div className="horse-item-normal-black">$3.50</div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
                     <Skeleton baseColor="#EAECF0" highlightColor="#D9D9D9" />
                   </div>
                 )}
-                {sum && races ? (
+                {sum && data.lengh > 0 ? (
                   <div className="horse-item-normal-black">$3.50</div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -594,9 +598,9 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && races ? (
+                {sum && data.lengh > 0 ? (
                   <div className="horse-item-normal-black">{`$${formattedNum(
-                    (sum["sumPrize"] / races.length).toFixed(2),
+                    (sum["sumPrize"] / data.length).toFixed(2),
                     false
                   )}`}</div>
                 ) : (
@@ -608,9 +612,9 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && races ? (
+                {sum && data.lengh > 0 ? (
                   <div className="horse-item-normal-black">{`${(
-                    sum["sumSettling"] / races.length
+                    sum["sumSettling"] / data.length
                   ).toFixed(2)}%`}</div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -621,10 +625,10 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && races ? (
+                {sum && data.lengh > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     (sum["Synthetic"] * 100) /
-                    races.length
+                    data.length
                   ).toFixed(2)}%`}</div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -635,10 +639,10 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && races ? (
+                {sum && data.lengh > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     (sum["Firm"] * 100) /
-                    races.length
+                    data.length
                   ).toFixed(2)}%`}</div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -649,10 +653,10 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && races ? (
+                {sum && data.lengh > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     (sum["Good"] * 100) /
-                    races.length
+                    data.length
                   ).toFixed(2)}%`}</div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -663,10 +667,10 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && races ? (
+                {sum && data.lengh > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     (sum["Soft"] * 100) /
-                    races.length
+                    data.length
                   ).toFixed(2)}%`}</div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -677,10 +681,10 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && races ? (
+                {sum && data.lengh > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     (sum["Heavy"] * 100) /
-                    races.length
+                    data.length
                   ).toFixed(2)}%`}</div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -722,9 +726,9 @@ const Profile = ({ kind, id }) => {
                   />
                 </div>
               )}
-              {sum && races.length > 0 ? (
+              {sum && data.length > 0 ? (
                 <div className="horse-item-normal-black">
-                  {`$${formattedNum(sum["sumPrize"] / races.length, false)}`}
+                  {`$${formattedNum(sum["sumPrize"] / data.length, false)}`}
                 </div>
               ) : (
                 <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -735,10 +739,10 @@ const Profile = ({ kind, id }) => {
                   />
                 </div>
               )}
-              {sum && races.length > 0 ? (
+              {sum && data.length > 0 ? (
                 <div className="horse-item-normal-black">{`${(
                   (sum["Synthetic"] * 100) /
-                  races.length
+                  data.length
                 ).toFixed(2)}%`}</div>
               ) : (
                 <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -749,10 +753,10 @@ const Profile = ({ kind, id }) => {
                   />
                 </div>
               )}
-              {sum && races.length ? (
+              {sum && data.length ? (
                 <div className="horse-item-normal-black">{`${(
                   (sum["Firm"] * 100) /
-                  races.length
+                  data.length
                 ).toFixed(2)}%`}</div>
               ) : (
                 <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -763,10 +767,10 @@ const Profile = ({ kind, id }) => {
                   />
                 </div>
               )}
-              {sum && races ? (
+              {sum && data ? (
                 <div className="horse-item-normal-black">{`${(
                   (sum["Good"] * 100) /
-                  races.length
+                  data.length
                 ).toFixed(2)}%`}</div>
               ) : (
                 <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -777,10 +781,10 @@ const Profile = ({ kind, id }) => {
                   />
                 </div>
               )}
-              {sum && races ? (
+              {sum && data ? (
                 <div className="horse-item-normal-black">{`${(
                   (sum["Soft"] * 100) /
-                  races.length
+                  data.length
                 ).toFixed(2)}%`}</div>
               ) : (
                 <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -791,10 +795,10 @@ const Profile = ({ kind, id }) => {
                   />
                 </div>
               )}
-              {sum && races ? (
+              {sum && data ? (
                 <div className="horse-item-normal-black">{`${(
                   (sum["Heavy"] * 100) /
-                  races.length
+                  data.length
                 ).toFixed(2)}%`}</div>
               ) : (
                 <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -805,9 +809,9 @@ const Profile = ({ kind, id }) => {
                   />
                 </div>
               )}
-              {sum && races ? (
+              {sum && data ? (
                 <div className="horse-item-normal-black">{`${(
-                  sum["sumFinishPercent"] / races.length
+                  sum["sumFinishPercent"] / data.length
                 ).toFixed(2)}%`}</div>
               ) : (
                 <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -818,9 +822,9 @@ const Profile = ({ kind, id }) => {
                   />
                 </div>
               )}
-              {sum && races ? (
+              {sum && data ? (
                 <div className="horse-item-normal-black">{`${(
-                  sum["sumWinPercent"] / races.length
+                  sum["sumWinPercent"] / data.length
                 ).toFixed(2)}%`}</div>
               ) : (
                 <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -831,9 +835,9 @@ const Profile = ({ kind, id }) => {
                   />
                 </div>
               )}
-              {sum && races ? (
+              {sum && data ? (
                 <div className="horse-item-normal-black">{`${(
-                  sum["sumPlacePercent"] / races.length
+                  sum["sumPlacePercent"] / data.length
                 ).toFixed(2)}%`}</div>
               ) : (
                 <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -844,14 +848,14 @@ const Profile = ({ kind, id }) => {
                   />
                 </div>
               )}
-              {sum && races ? (
+              {sum && data ? (
                 <div className="horse-item-normal-black">$3.50</div>
               ) : (
                 <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
                   <Skeleton baseColor="#EAECF0" highlightColor="#D9D9D9" />
                 </div>
               )}
-              {sum && races ? (
+              {sum && data ? (
                 <div className="horse-item-normal-black">$3.50</div>
               ) : (
                 <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
