@@ -12,7 +12,7 @@ import { getRaces } from "../../apis";
 import { formattedNum } from "../../utils";
 
 const initialValue = {
-    jockey: "ALL TRAINERS",
+    trainer: "ALL TRAINERS",
     horse: "ALL HORSES",
     track: "ALL TRACKS",
     condition: "ALL CONDITIONS",
@@ -37,19 +37,17 @@ const JockeyProfile = () => {
   const [filterObj, setFilter] = useState (initialValue)
   const [data, setData] = useState ([])
 
-  let trainers = new Set(), horses = new Set(), tracks = new Set(), conditions = new Set(), distances = new Set()
-  trainers.add (initialValue['trainer'])
-  horses.add (initialValue['horse'])
-  tracks.add (initialValue['track'])
-  conditions.add (initialValue['condition'])
-  distances.add (initialValue['distance'])
+  let trainers = new Set([initialValue['trainer']]), 
+        horses = new Set([initialValue['horse']]), 
+        tracks = new Set([initialValue['track']]), 
+        conditions = new Set([initialValue['condition'], 'Firm', 'Synthetic', 'Good', 'Heavy', 'Soft']), 
+        distances = new Set([initialValue['distance'], '1000 - 1200', '1300 - 1600', '1800 - 2200', '2400+'])
 
   races.map((item) => {
     if (item['trainer_name'].length > 0) trainers.add (item['trainer_name'])
     if (item['horse_name'].length > 0) horses.add (item['horse_name'])
     if (item['track_name'].length > 0) tracks.add (item['track_name'])
     if (item['track_condition'].length > 0) conditions.add (item['track_condition'])
-    if (item['distance'].length > 0) distances.add (item['distance'])
   })
 
   const initialize = useCallback(async () => {
@@ -99,11 +97,11 @@ const JockeyProfile = () => {
       }
 
       if ("sumPrize" in tmpSum) {
-        if (parseFloat(item["prizemoney_won"]) >= 0)
-          tmpSum["sumPrize"] += item["prizemoney_won"];
+        if (parseFloat(item["horse_prizemoney"]) >= 0)
+          tmpSum["sumPrize"] += item["horse_prizemoney"];
       } else {
-        if (parseFloat(item["prizemoney_won"]) >= 0)
-          tmpSum["sumPrize"] = item["prizemoney_won"];
+        if (parseFloat(item["horse_prizemoney"]) >= 0)
+          tmpSum["sumPrize"] = item["horse_prizemoney"];
       }
 
       if ("sumSettling" in tmpSum) {
@@ -132,39 +130,32 @@ const JockeyProfile = () => {
   }, [initialize]);
 
   const setValue = (val) => {
-    let [kind, value] = val
-    let tmp = filterObj
-    tmp[kind] = value
-
-    let realFilter = {}
-    for (let key of Object.keys(tmp)) {
-        if (tmp[key].startsWith("ALL ") === false) {
-            realFilter[key] = tmp[key]
-        }
-    }
-    const tmpData = races.filter((race) => {
-      for (let key of Object.keys(realFilter)) {
-          if (realFilter[key] !== race[KEY_NAME[key]]) return false
-      }
-      return true
-    })
-    setData (tmpData)
-  }
+    let [kind, value] = val;
+    let tmp = {...filterObj};
+    tmp[kind] = value;
+    setFilter (tmp)
+  };
 
   useEffect (() => {
-    let realFilter = {}
-    for (let key of Object.keys(initialValue)) {
-        if (filterObj[key] != initialValue[key]) {
-            realFilter[key] = filterObj[key]
-        }
+    let realFilter = {};
+    for (let key of Object.keys(filterObj)) {
+      if (filterObj[key].startsWith("ALL ") === false) {
+        realFilter[key] = filterObj[key];
+      }
     }
     const tmpData = races.filter((race) => {
       for (let key of Object.keys(realFilter)) {
-          if (realFilter[key] !== race[KEY_NAME[key]]) return false
+        if (key !== 'distance' && realFilter[key] !== race[KEY_NAME[key]]) return false;
+        if (key === 'distance') {
+            if (realFilter[key] === '1000 - 1200') if (race[KEY_NAME[key]] < 1000 || race[KEY_NAME[key]] > 1200) return false
+            if (realFilter[key] === '1300 - 1600') if (race[KEY_NAME[key]] < 1300 || race[KEY_NAME[key]] > 1600) return false
+            if (realFilter[key] === '1800 - 2200') if (race[KEY_NAME[key]] < 1800 || race[KEY_NAME[key]] > 2200) return false
+            if (realFilter[key] === '2400+') if (race[KEY_NAME[key]] < 2400) return false
+        }
       }
-      return true
-    })
-    setData (tmpData)
+      return true;
+    });
+    setData(tmpData);
   }, [filterObj, races])
   
   return (
@@ -394,7 +385,7 @@ const JockeyProfile = () => {
                 <div className="racehistory-header">Class</div>
                 <div className="racehistory-header">Barrier</div>
                 <div className="racehistory-header">Weight</div>
-                <div className="racehistory-header">Settling</div>
+                <div className="racehistory-header">Settling %</div>
                 <div className="racehistory-header">Condition</div>
                 <div className="racehistory-header">Distance</div>
                 <div className="racehistory-header">BSP / W</div>
@@ -403,7 +394,7 @@ const JockeyProfile = () => {
                 <div className="racehistory-header">Finish</div>
                 <div className="racehistory-header">Finish %</div>
                 <div className="racehistory-header">Time</div>
-                <div className="racehistory-header">Speed</div>
+                <div className="racehistory-header">km/h</div>
                 <div className="racehistory-header">Margin</div>
                 <div className="racehistory-header">$ Won</div>
             </div>
@@ -416,9 +407,9 @@ const JockeyProfile = () => {
                     <div className="racehistory-item text-black-2">
                         {item["date"]}
                     </div>
-                    <div className="racehistory-item-start text-black-2 col-span-3 px-5">
+                    <a className="racehistory-item-start text-link col-span-3 px-5" href={`/horse/au/${item['horse_id']}`}>
                         {item["horse_name"]}
-                    </div>
+                    </a>
                     <div className="racehistory-item-start text-black-2 col-span-3 px-5">
                         {item["track_name"]}
                     </div>
@@ -435,7 +426,7 @@ const JockeyProfile = () => {
                     <div className="racehistory-item text-black-2">
                         {item["weight"]}
                     </div>
-                    <div className="racehistory-item text-black-2">{`${item["settling"]} %`}</div>
+                    <div className="racehistory-item text-black-2">{`${item["settling"]}`}</div>
                     <div
                         className={clsx(
                         `racehistory-item ${
@@ -450,7 +441,7 @@ const JockeyProfile = () => {
                         {item["track_condition"]}
                     </div>
                     <div className="racehistory-item text-black-2">
-                        {item["distance"]}
+                        {Math.round(item["distance"] / 100) * 100}
                     </div>
                     <div className="racehistory-item text-black-2">$14.31</div>
                     <div className="racehistory-item text-black-2">$14.31</div>
@@ -460,19 +451,19 @@ const JockeyProfile = () => {
                     <div className="racehistory-item text-black-2">
                         {item["finish_number"]}
                     </div>
-                    <div className="racehistory-item text-black-2">{`${item["finish_percentage"]} %`}</div>
+                    <div className="racehistory-item text-black-2">{`${item["finish_percentage"]}`}</div>
                     <div className="racehistory-item text-black-2">{`${parseInt(
                         item["time"] / 60
-                    )}m ${parseInt(item["time"]) % 60}s`}</div>
+                    )}:${parseInt(item["time"]) % 60}`}</div>
                     <div className="racehistory-item text-black-2">{`${(
                         (item["speed"] * 3600) /
                         1000
-                    ).toFixed(2)} km/h`}</div>
+                    ).toFixed(2)}`}</div>
                     <div className="racehistory-item text-black-2">
                         {item["margin"]}
                     </div>
                     <div className="racehistory-item text-black-2">{`$${formattedNum(
-                        parseInt(item["prizemoney_won"]),
+                        parseInt(item["horse_prizemoney"]),
                         false
                     )}`}</div>
                     </div>

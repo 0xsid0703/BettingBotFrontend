@@ -28,6 +28,7 @@ export default {
         "red-1": "#D92D20",
         "red-2": "#7A271A",
         "yellow-1": "#DC6803",
+        "link": "#1570EF"
       },
       borderColor: {
         'grey-2': '#EAECF0',

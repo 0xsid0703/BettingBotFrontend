@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import clsx from "clsx";
@@ -14,20 +14,20 @@ import { getRaces } from "../../apis";
 import { formattedNum } from "../../utils";
 
 const initialValue = {
-    jockey: "ALL JOCKEY",
-    trainer: "ALL TRAINERS",
-    track: "ALL TRACKS",
-    condition: "ALL CONDITIONS",
-    distance: "ALL DISTANCES",
-    start: "ALL STARTS"
-}
+  jockey: "ALL JOCKEY",
+  trainer: "ALL TRAINERS",
+  track: "ALL TRACKS",
+  condition: "ALL CONDITIONS",
+  distance: "ALL DISTANCES",
+  start: "ALL STARTS",
+};
 const KEY_NAME = {
-    "jockey": "jockey_name",
-    "trainer": "trainer_name",
-    "condition": "track_condition",
-    "track": "track_name",
-    "distance": "distance"
-}
+  jockey: "jockey_name",
+  trainer: "trainer_name",
+  condition: "track_condition",
+  track: "track_name",
+  distance: "distance",
+};
 
 const HorseProfile = () => {
   const { id } = useParams();
@@ -36,23 +36,22 @@ const HorseProfile = () => {
   const [homeRace, setHomeRace] = useState();
   const [sum, setSum] = useState();
 
-  const [filterObj, setFilter] = useState (initialValue)
-  const [data, setData] = useState ([])
+  const [filterObj, setFilter] = useState(initialValue);
+  const [data, setData] = useState([]);
 
-  let jockeys = new Set(), trainers = new Set(), tracks = new Set(), conditions = new Set(), distances = new Set()
-  jockeys.add (initialValue['jockey'])
-  trainers.add (initialValue['trainer'])
-  tracks.add (initialValue['track'])
-  conditions.add (initialValue['condition'])
-  distances.add (initialValue['distance'])
+  let jockeys = new Set([initialValue['jockey']]), 
+        trainers = new Set([initialValue['trainer']]), 
+        tracks = new Set([initialValue['track']]), 
+        conditions = new Set([initialValue['condition'], 'Firm', 'Synthetic', 'Good', 'Heavy', 'Soft']), 
+        distances = new Set([initialValue['distance'], '1000 - 1200', '1300 - 1600', '1800 - 2200', '2400+'])
 
   races.map((item) => {
-    if (item['jockey_name'].length > 0) jockeys.add (item['jockey_name'])
-    if (item['trainer_name'].length > 0) trainers.add (item['trainer_name'])
-    if (item['track_name'].length > 0) tracks.add (item['track_name'])
-    if (item['track_condition'].length > 0) conditions.add (item['track_condition'])
-    if (item['distance'].length > 0) distances.add (item['distance'])
-  })
+    if (item["jockey_name"].length > 0) jockeys.add(item["jockey_name"]);
+    if (item["trainer_name"].length > 0) trainers.add(item["trainer_name"]);
+    if (item["track_name"].length > 0) tracks.add(item["track_name"]);
+    if (item["track_condition"].length > 0)
+      conditions.add(item["track_condition"]);
+  });
 
   const initialize = useCallback(async () => {
     const tmp = await getRaces("horse", id);
@@ -101,11 +100,11 @@ const HorseProfile = () => {
       }
 
       if ("sumPrize" in tmpSum) {
-        if (parseFloat(item["prizemoney_won"]) >= 0)
-          tmpSum["sumPrize"] += item["prizemoney_won"];
+        if (parseFloat(item["horse_prizemoney"]) >= 0)
+          tmpSum["sumPrize"] += item["horse_prizemoney"];
       } else {
-        if (parseFloat(item["prizemoney_won"]) >= 0)
-          tmpSum["sumPrize"] = item["prizemoney_won"];
+        if (parseFloat(item["horse_prizemoney"]) >= 0)
+          tmpSum["sumPrize"] = item["horse_prizemoney"];
       }
 
       if ("sumSettling" in tmpSum) {
@@ -134,41 +133,34 @@ const HorseProfile = () => {
   }, [initialize]);
 
   const setValue = (val) => {
-    let [kind, value] = val
-    let tmp = filterObj
-    tmp[kind] = value
-
-    let realFilter = {}
-    for (let key of Object.keys(tmp)) {
-        if (tmp[key].startsWith("ALL ") === false) {
-            realFilter[key] = tmp[key]
-        }
-    }
-    const tmpData = races.filter((race) => {
-      for (let key of Object.keys(realFilter)) {
-          if (realFilter[key] !== race[KEY_NAME[key]]) return false
-      }
-      return true
-    })
-    setData (tmpData)
-  }
+    let [kind, value] = val;
+    let tmp = {...filterObj};
+    tmp[kind] = value;
+    setFilter (tmp)
+  };
 
   useEffect (() => {
-    let realFilter = {}
-    for (let key of Object.keys(initialValue)) {
-        if (filterObj[key] != initialValue[key]) {
-            realFilter[key] = filterObj[key]
-        }
+    let realFilter = {};
+    for (let key of Object.keys(filterObj)) {
+      if (filterObj[key].startsWith("ALL ") === false) {
+        realFilter[key] = filterObj[key];
+      }
     }
     const tmpData = races.filter((race) => {
       for (let key of Object.keys(realFilter)) {
-          if (realFilter[key] !== race[KEY_NAME[key]]) return false
+        if (key !== 'distance' && realFilter[key] !== race[KEY_NAME[key]]) return false;
+        if (key === 'distance') {
+            if (realFilter[key] === '1000 - 1200') if (race[KEY_NAME[key]] < 1000 || race[KEY_NAME[key]] > 1200) return false
+            if (realFilter[key] === '1300 - 1600') if (race[KEY_NAME[key]] < 1300 || race[KEY_NAME[key]] > 1600) return false
+            if (realFilter[key] === '1800 - 2200') if (race[KEY_NAME[key]] < 1800 || race[KEY_NAME[key]] > 2200) return false
+            if (realFilter[key] === '2400+') if (race[KEY_NAME[key]] < 2400) return false
+        }
       }
-      return true
-    })
-    setData (tmpData)
+      return true;
+    });
+    setData(tmpData);
   }, [filterObj, races])
-  
+
   return (
     <div className="p-[112px] bg-white min-w-[1920px]">
       <div className="flex flex-col gap-8">
@@ -189,22 +181,47 @@ const HorseProfile = () => {
             )}
             <div className="col-span-9 grid grid-cols-12 gap-2 px-5 py-6">
               <div className="col-span-2 flex flex-row items-center justify-center">
-                <DropDown btnStr={initialValue['jockey']} data={jockeys} kind="jockey" setValue={(val) => setValue(val)}/>
+                <DropDown
+                  btnStr={initialValue["jockey"]}
+                  data={jockeys}
+                  kind="jockey"
+                  setValue={(val) => setValue(val)}
+                />
               </div>
               <div className="col-span-2 flex flex-row items-center justify-center">
-                <DropDown btnStr={initialValue['trainer']} data={trainers} kind="trainer" setValue={(val) => setValue(val)}/>
+                <DropDown
+                  btnStr={initialValue["trainer"]}
+                  data={trainers}
+                  kind="trainer"
+                  setValue={(val) => setValue(val)}
+                />
               </div>
               <div className="col-span-2 flex flex-row items-center justify-center">
-                <DropDown btnStr={initialValue['track']} data={tracks} kind="track" setValue={(val) => setValue(val)}/>
+                <DropDown
+                  btnStr={initialValue["track"]}
+                  data={tracks}
+                  kind="track"
+                  setValue={(val) => setValue(val)}
+                />
               </div>
               <div className="col-span-2 flex flex-row items-center justify-center">
-                <DropDown btnStr={initialValue['condition']} data={conditions} kind="condition" setValue={(val) => setValue(val)}/>
+                <DropDown
+                  btnStr={initialValue["condition"]}
+                  data={conditions}
+                  kind="condition"
+                  setValue={(val) => setValue(val)}
+                />
               </div>
               <div className="col-span-2 flex flex-row items-center justify-center">
-                <DropDown btnStr={initialValue['distance']} data={distances} kind="distance" setValue={(val) => setValue(val)}/>
+                <DropDown
+                  btnStr={initialValue["distance"]}
+                  data={distances}
+                  kind="distance"
+                  setValue={(val) => setValue(val)}
+                />
               </div>
               <div className="col-span-2 flex flex-row items-center justify-center">
-                <DropDown btnStr={initialValue['start']} data={[1, 2, 3]} />
+                <DropDown btnStr={initialValue["start"]} data={[1, 2, 3]} />
               </div>
             </div>
           </div>
@@ -224,151 +241,136 @@ const HorseProfile = () => {
             <div className="horse-header-black">AVG BSP / W</div>
             <div className="horse-header-black">ROI</div>
 
-            {
-                homeRace ? (
-                    <div className="horse-item-normal-black">
-                        {homeRace["horse_country"]}
-                    </div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                homeRace ? (
-                    <div className="horse-item-normal-black">
-                        {`${homeRace["horse_age"]}yo`}
-                    </div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                homeRace ? (
-                    <div className="horse-item-normal-black">{`${homeRace["horse_sex"]}`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                homeRace ? (
-                    <div className="horse-item-normal-black">{homeRace["home_track_name"]}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{(sum["sumLast600"] / races.length).toFixed(2)}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${((sum["sumSpeed"] * 3.6) / races.length).toFixed(2)}km/h`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${(sum["sumFinishPercent"] / races.length).toFixed(2)}%`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${(sum["sumWinPercent"] / races.length).toFixed(2)}%`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${(sum["sumPlacePercent"] / races.length).toFixed(2)}%`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">$3.50</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">$3.50</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
+            {homeRace ? (
+              <div className="horse-item-normal-black">
+                {homeRace["horse_country"]}
+              </div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {homeRace ? (
+              <div className="horse-item-normal-black">
+                {`${homeRace["horse_age"]}yo`}
+              </div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {homeRace ? (
+              <div className="horse-item-normal-black">{`${homeRace["horse_sex"]}`}</div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {homeRace ? (
+              <div className="horse-item-normal-black">
+                {homeRace["home_track_name"]}
+              </div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {sum && races ? (
+              <div className="horse-item-normal-black">
+                {(sum["sumLast600"] / races.length).toFixed(2)}
+              </div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {sum && races ? (
+              <div className="horse-item-normal-black">{`${(
+                (sum["sumSpeed"] * 3.6) /
+                races.length
+              ).toFixed(2)}km/h`}</div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {sum && races ? (
+              <div className="horse-item-normal-black">{`${(
+                sum["sumFinishPercent"] / races.length
+              ).toFixed(2)}%`}</div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {sum && races ? (
+              <div className="horse-item-normal-black">{`${(
+                sum["sumWinPercent"] / races.length
+              ).toFixed(2)}%`}</div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {sum && races ? (
+              <div className="horse-item-normal-black">{`${(
+                sum["sumPlacePercent"] / races.length
+              ).toFixed(2)}%`}</div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {sum && races ? (
+              <div className="horse-item-normal-black">$3.50</div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton baseColor="#EAECF0" highlightColor="#D9D9D9" />
+              </div>
+            )}
+            {sum && races ? (
+              <div className="horse-item-normal-black">$3.50</div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton baseColor="#EAECF0" highlightColor="#D9D9D9" />
+              </div>
+            )}
           </div>
           <div className="grid grid-cols-12 grid-rows-2 col-span-12">
             <div className="row-span-2 col-span-1 flex flex-row items-center justify-center border border-grey-2">
@@ -385,259 +387,267 @@ const HorseProfile = () => {
             <div className="horse-header-green">Good</div>
             <div className="horse-header-yellow">Soft</div>
             <div className="horse-header-red">Heavy</div>
-            {
-                homeRace ? (
-                    <div className="horse-item-normal-black">{homeRace["sire_name"]}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                homeRace ? (
-                    <div className="horse-item-normal-black">{homeRace["dam_name"]}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                homeRace ? (
-                    <div className="horse-item-normal-black">{homeRace["trainer_name"]}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum ? (
-                    <div className="horse-item-normal-black">{`$${formattedNum(sum["sumPrize"], false)}`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`$${formattedNum((sum["sumPrize"] / races.length).toFixed(2), false)}`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${(sum["sumSettling"] / races.length).toFixed(2)}%`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${((sum["Synthetic"] * 100) / races.length).toFixed(2)}%`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${((sum["Firm"] * 100) / races.length ).toFixed(2)}%`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${((sum["Good"] * 100) /  races.length ).toFixed(2)}%`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${((sum["Soft"] * 100) / races.length).toFixed(2)}%`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
-            {
-                sum && races ? (
-                    <div className="horse-item-normal-black">{`${((sum["Heavy"] * 100) / races.length).toFixed(2)}%`}</div>
-                ) : (
-                    <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                        <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                        />
-                    </div>
-                )
-            }
+            {homeRace ? (
+              <div className="horse-item-normal-black">
+                {homeRace["sire_name"]}
+              </div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {homeRace ? (
+              <div className="horse-item-normal-black">
+                {homeRace["dam_name"]}
+              </div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {homeRace ? (
+              <div className="horse-item-normal-black">
+                {homeRace["trainer_name"]}
+              </div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {sum ? (
+              <div className="horse-item-normal-black">{`$${formattedNum(
+                sum["sumPrize"],
+                false
+              )}`}</div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {sum && races ? (
+              <div className="horse-item-normal-black">{`$${formattedNum(
+                (sum["sumPrize"] / races.length).toFixed(2),
+                false
+              )}`}</div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {sum && races ? (
+              <div className="horse-item-normal-black">{`${(
+                sum["sumSettling"] / races.length
+              ).toFixed(2)}%`}</div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {sum && races ? (
+              <div className="horse-item-normal-black">{`${(
+                (sum["Synthetic"] * 100) /
+                races.length
+              ).toFixed(2)}%`}</div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {sum && races ? (
+              <div className="horse-item-normal-black">{`${(
+                (sum["Firm"] * 100) /
+                races.length
+              ).toFixed(2)}%`}</div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {sum && races ? (
+              <div className="horse-item-normal-black">{`${(
+                (sum["Good"] * 100) /
+                races.length
+              ).toFixed(2)}%`}</div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {sum && races ? (
+              <div className="horse-item-normal-black">{`${(
+                (sum["Soft"] * 100) /
+                races.length
+              ).toFixed(2)}%`}</div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
+            {sum && races ? (
+              <div className="horse-item-normal-black">{`${(
+                (sum["Heavy"] * 100) /
+                races.length
+              ).toFixed(2)}%`}</div>
+            ) : (
+              <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                <Skeleton
+                  baseColor="#EAECF0"
+                  style={{ height: "100%" }}
+                  highlightColor="#D9D9D9"
+                />
+              </div>
+            )}
           </div>
         </div>
         <div className="flex flex-col bg-pink-1 border border-grey-2 rounded-[10px]">
-            <div className="grid grid-cols-24">
-                <div className="racehistory-header">Date</div>
-                <div className="racehistory-header-start col-span-3 px-5">
-                Jockey
-                </div>
-                <div className="racehistory-header-start col-span-3 px-5">
-                Track
-                </div>
-                <div className="racehistory-header">Race</div>
-                <div className="racehistory-header">Starters</div>
-                <div className="racehistory-header">Class</div>
-                <div className="racehistory-header">Barrier</div>
-                <div className="racehistory-header">Weight</div>
-                <div className="racehistory-header">Settling</div>
-                <div className="racehistory-header">Condition</div>
-                <div className="racehistory-header">Distance</div>
-                <div className="racehistory-header">BSP / W</div>
-                <div className="racehistory-header">BSP / P</div>
-                <div className="racehistory-header">600m</div>
-                <div className="racehistory-header">Finish</div>
-                <div className="racehistory-header">Finish %</div>
-                <div className="racehistory-header">Time</div>
-                <div className="racehistory-header">Speed</div>
-                <div className="racehistory-header">Margin</div>
-                <div className="racehistory-header">$ Won</div>
+          <div className="grid grid-cols-24">
+            <div className="racehistory-header">Date</div>
+            <div className="racehistory-header-start col-span-3 px-5">
+              Jockey
             </div>
-            {data && data.length > 0 ? (
-                data.map((item, idx) => (
-                    <div
-                    className="grid grid-cols-24 border-t border-grey-2"
-                    key={idx}
-                    >
-                    <div className="racehistory-item text-black-2">
-                        {item["date"]}
-                    </div>
-                    <div className="racehistory-item-start text-black-2 col-span-3 px-5">
-                        {item["jockey_name"]}
-                    </div>
-                    <div className="racehistory-item-start text-black-2 col-span-3 px-5">
-                        {item["track_name"]}
-                    </div>
-                    <div className="racehistory-item text-black-2">
-                        {item["race_num"]}
-                    </div>
-                    <div className="racehistory-item text-black-2">
-                        {item["starters"]}
-                    </div>
-                    <div className="racehistory-item text-black-2">7.5</div>
-                    <div className="racehistory-item text-black-2">
-                        {item["barrier"]}
-                    </div>
-                    <div className="racehistory-item text-black-2">
-                        {item["weight"]}
-                    </div>
-                    <div className="racehistory-item text-black-2">{`${item["settling"]} %`}</div>
-                    <div
-                        className={clsx(
-                        `racehistory-item ${
-                            item["track_condition"] === "Good"
-                            ? "text-green-3"
-                            : item["track_condition"] === "Soft"
-                            ? "text-yellow-1"
-                            : "text-red-1"
-                        }`
-                        )}
-                    >
-                        {item["track_condition"]}
-                    </div>
-                    <div className="racehistory-item text-black-2">
-                        {item["distance"]}
-                    </div>
-                    <div className="racehistory-item text-black-2">$14.31</div>
-                    <div className="racehistory-item text-black-2">$14.31</div>
-                    <div className="racehistory-item text-black-2">
-                        {item["last_600"]}
-                    </div>
-                    <div className="racehistory-item text-black-2">
-                        {item["finish_number"]}
-                    </div>
-                    <div className="racehistory-item text-black-2">{`${item["finish_percentage"]} %`}</div>
-                    <div className="racehistory-item text-black-2">{`${parseInt(
-                        item["time"] / 60
-                    )}m ${parseInt(item["time"]) % 60}s`}</div>
-                    <div className="racehistory-item text-black-2">{`${(
-                        (item["speed"] * 3600) /
-                        1000
-                    ).toFixed(2)} km/h`}</div>
-                    <div className="racehistory-item text-black-2">
-                        {item["margin"]}
-                    </div>
-                    <div className="racehistory-item text-black-2">{`$${formattedNum(
-                        parseInt(item["prizemoney_won"]),
-                        false
-                    )}`}</div>
-                    </div>
-                ))): (
-                    Array.from({length: 20}).map((item, idx) =>
-                        <div className="py-4 px-2 border-t border-grey-2" key={idx}>
-                            <Skeleton
-                                baseColor="#EAECF0"
-                                style={{ height: "100%" }}
-                                highlightColor="#D9D9D9"
-                            />
-                        </div>
-                    )
-                )
-            }
+            <div className="racehistory-header-start col-span-3 px-5">
+              Track
+            </div>
+            <div className="racehistory-header">Race</div>
+            <div className="racehistory-header">Starters</div>
+            <div className="racehistory-header">Class</div>
+            <div className="racehistory-header">Barrier</div>
+            <div className="racehistory-header">Weight</div>
+            <div className="racehistory-header">Settling %</div>
+            <div className="racehistory-header">Condition</div>
+            <div className="racehistory-header">Distance</div>
+            <div className="racehistory-header">BSP / W</div>
+            <div className="racehistory-header">BSP / P</div>
+            <div className="racehistory-header">600m</div>
+            <div className="racehistory-header">Finish</div>
+            <div className="racehistory-header">Finish %</div>
+            <div className="racehistory-header">Time</div>
+            <div className="racehistory-header">km/h</div>
+            <div className="racehistory-header">Margin</div>
+            <div className="racehistory-header">$ Won</div>
+          </div>
+          {data && data.length > 0
+            ? data.map((item, idx) => (
+                <div
+                  className="grid grid-cols-24 border-t border-grey-2"
+                  key={idx}
+                >
+                  <div className="racehistory-item text-black-2">
+                    {item["date"]}
+                  </div>
+                  <a
+                    className="racehistory-item-start text-link col-span-3 px-5"
+                    href={`/jockey/au/${item['jockey_id']}`}
+                  >
+                    {item["jockey_name"]}
+                  </a>
+                  <div className="racehistory-item-start text-black-2 col-span-3 px-5">
+                    {item["track_name"]}
+                  </div>
+                  <div className="racehistory-item text-black-2">
+                    {item["race_num"]}
+                  </div>
+                  <div className="racehistory-item text-black-2">
+                    {item["starters"]}
+                  </div>
+                  <div className="racehistory-item text-black-2">7.5</div>
+                  <div className="racehistory-item text-black-2">
+                    {item["barrier"]}
+                  </div>
+                  <div className="racehistory-item text-black-2">
+                    {item["weight"]}
+                  </div>
+                  <div className="racehistory-item text-black-2">{`${item["settling"]}`}</div>
+                  <div
+                    className={clsx(
+                      `racehistory-item ${
+                        item["track_condition"] === "Good"
+                          ? "text-green-3"
+                          : item["track_condition"] === "Soft"
+                          ? "text-yellow-1"
+                          : "text-red-1"
+                      }`
+                    )}
+                  >
+                    {item["track_condition"]}
+                  </div>
+                  <div className="racehistory-item text-black-2">
+                    {Math.round(item["distance"] / 100) * 100}
+                  </div>
+                  <div className="racehistory-item text-black-2">$14.31</div>
+                  <div className="racehistory-item text-black-2">$14.31</div>
+                  <div className="racehistory-item text-black-2">
+                    {item["last_600"]}
+                  </div>
+                  <div className="racehistory-item text-black-2">
+                    {item["finish_number"]}
+                  </div>
+                  <div className="racehistory-item text-black-2">{`${item["finish_percentage"]}`}</div>
+                  <div className="racehistory-item text-black-2">{`${parseInt(
+                    item["time"] / 60
+                  )}:${parseInt(item["time"]) % 60}`}</div>
+                  <div className="racehistory-item text-black-2">{`${(
+                    (item["speed"] * 3600) /
+                    1000
+                  ).toFixed(2)}`}</div>
+                  <div className="racehistory-item text-black-2">
+                    {item["margin"]}
+                  </div>
+                  <div className="racehistory-item text-black-2">{`$${formattedNum(
+                    parseInt(item["horse_prizemoney"]),
+                    false
+                  )}`}</div>
+                </div>
+              ))
+            : Array.from({ length: 20 }).map((item, idx) => (
+                <div className="py-4 px-2 border-t border-grey-2" key={idx}>
+                  <Skeleton
+                    baseColor="#EAECF0"
+                    style={{ height: "100%" }}
+                    highlightColor="#D9D9D9"
+                  />
+                </div>
+              ))}
         </div>
       </div>
     </div>
