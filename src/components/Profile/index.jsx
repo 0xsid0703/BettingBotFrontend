@@ -92,12 +92,10 @@ const Profile = ({ kind, id }) => {
   const initialize = useCallback(async () => {
     const tmp = await getRaces(kind, id);
     setRaces(tmp);
-    console.log (tmp, ">>>>")
     if (tmp.length > 0) setHomeRace(tmp[0]);
   }, [id, kind]);
 
   useEffect (() => {
-    console.log (data, "LLLL")
     let tmpSum = { Synthetic: 0, Firm: 0, Good: 0, Soft: 0, Heavy: 0 };
 
     for (let item of data) {
