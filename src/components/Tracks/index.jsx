@@ -39,7 +39,6 @@ const Tracks = () => {
                 else return -1
             })
             setEvents (data)
-            console.log (data)
             data.map(item=>{
                 item?.markets.sort((a, b)=>{
                     if (new Date(a.startTime).getTime() < new Date(b.startTime).getTime()) return -1

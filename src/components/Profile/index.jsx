@@ -7,12 +7,13 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 import DropDown from "../../components/DropDown";
+import TrackDropDown from "../../components/DropDown/TrackDropDown";
 import HorseSVG from "../../assets/horse.svg";
 import SilkSVG from "../../assets/silk.svg";
 
 import { getRaces } from "../../apis";
 import { formattedNum, getDateObj } from "../../utils";
-import { START_FILTER_CNT } from "../../constants";
+import { START_FILTER_CNT, TRACKS, CLASS_POINT } from "../../constants";
 
 const KEY_NAME = {
   jockey: "jockey_name",
@@ -32,7 +33,7 @@ const Profile = ({ kind, id }) => {
     jockey: "ALL JOCKEYS",
     trainer: "ALL TRAINERS",
     horse: "ALL HORSES",
-    track: "ALL TRACKS",
+    track: ["Australia", "ALL"],
     condition: "ALL CONDITIONS",
     distance: "ALL DISTANCES",
     start: kind === "horse" ? "Last 50" : "Last 500",
@@ -44,7 +45,7 @@ const Profile = ({ kind, id }) => {
   let jockeys = new Set([initialValue["jockey"]]),
     horses = new Set([initialValue["horse"]]),
     trainers = new Set([initialValue["trainer"]]),
-    tracks = new Set([initialValue["track"]]),
+    // tracks = new Set([initialValue["track"]]),
     conditions = new Set([
       initialValue["condition"],
       "Firm",
@@ -84,7 +85,7 @@ const Profile = ({ kind, id }) => {
     if (item["jockey_name"].length > 0) jockeys.add(item["jockey_name"]);
     if (item["horse_name"].length > 0) horses.add(item["horse_name"]);
     if (item["trainer_name"].length > 0) trainers.add(item["trainer_name"]);
-    if (item["track_name"].length > 0) tracks.add(item["track_name"]);
+    // if (item["track_name"].length > 0) tracks.add(item["track_name"]);
     if (item["track_condition"].length > 0)
       conditions.add(item["track_condition"]);
   });
@@ -180,13 +181,14 @@ const Profile = ({ kind, id }) => {
   useEffect(() => {
     let realFilter = {};
     for (let key of Object.keys(filterObj)) {
-      if (filterObj[key].startsWith("ALL ") === false) {
-        realFilter[key] = filterObj[key];
-      }
+        if (key === "track") continue
+        if (filterObj[key].startsWith("ALL ") === false) {
+            realFilter[key] = filterObj[key];
+        }
     }
     let tmpData = races.filter((race) => {
       for (let key of Object.keys(realFilter)) {
-        if (key === "start") continue;
+        if (key === "start" || key === "track") continue;
         if (key !== "distance" && realFilter[key] !== race[KEY_NAME[key]])
           return false;
         if (key === "distance") {
@@ -205,6 +207,15 @@ const Profile = ({ kind, id }) => {
       }
       return true;
     });
+    if (filterObj['track']) {
+        const [trackKey, trackValue] = filterObj['track']
+        let tracks = {...TRACKS}
+        let tmpTrackAll = [...tracks[trackKey]["METRO"], ...tracks[trackKey]["PROVINCIAL"], ...tracks[trackKey]["COUNTRY"]]
+        tracks[trackKey]["ALL"] = tmpTrackAll
+        tmpData = tmpData.filter((race) => {
+            return tracks[trackKey][trackValue].includes(race['track_name'].toUpperCase())
+        })
+    }
     if (
       realFilter["start"] !== "This Season" &&
       realFilter["start"] !== "Last Season"
@@ -346,9 +357,8 @@ const Profile = ({ kind, id }) => {
                 </>
               )}
               <div className="col-span-2 flex flex-row items-center justify-center">
-                <DropDown
+                <TrackDropDown
                   btnStr={initialValue["track"]}
-                  data={tracks}
                   kind="track"
                   setValue={(val) => setValue(val)}
                 />
@@ -447,7 +457,7 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && data.lengh > 0 ? (
+                {sum && data.length > 0 ? (
                   <div className="horse-item-normal-black">
                     {(sum["sumLast600"] / data.length).toFixed(2)}
                   </div>
@@ -460,7 +470,7 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && data.lengh > 0 ? (
+                {sum && data.length > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     (sum["sumSpeed"] * 3.6) /
                     data.length
@@ -474,7 +484,7 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && data.lengh > 0 ? (
+                {sum && data.length > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     sum["sumFinishPercent"] / data.length
                   ).toFixed(2)}%`}</div>
@@ -487,7 +497,7 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && data.lengh > 0 ? (
+                {sum && data.length > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     sum["sumWinPercent"] / data.length
                   ).toFixed(2)}%`}</div>
@@ -500,7 +510,7 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && data.lengh > 0 ? (
+                {sum && data.length > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     sum["sumPlacePercent"] / data.length
                   ).toFixed(2)}%`}</div>
@@ -513,14 +523,14 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && data.lengh > 0 ? (
+                {sum && data.length > 0 ? (
                   <div className="horse-item-normal-black">$3.50</div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
                     <Skeleton baseColor="#EAECF0" highlightColor="#D9D9D9" />
                   </div>
                 )}
-                {sum && data.lengh > 0 ? (
+                {sum && data.length > 0 ? (
                   <div className="horse-item-normal-black">$3.50</div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -596,7 +606,7 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && data.lengh > 0 ? (
+                {sum && data.length > 0 ? (
                   <div className="horse-item-normal-black">{`$${formattedNum(
                     (sum["sumPrize"] / data.length).toFixed(2),
                     false
@@ -610,7 +620,7 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && data.lengh > 0 ? (
+                {sum && data.length > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     sum["sumSettling"] / data.length
                   ).toFixed(2)}%`}</div>
@@ -623,7 +633,7 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && data.lengh > 0 ? (
+                {sum && data.length > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     (sum["Synthetic"] * 100) /
                     data.length
@@ -637,7 +647,7 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && data.lengh > 0 ? (
+                {sum && data.length > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     (sum["Firm"] * 100) /
                     data.length
@@ -651,7 +661,7 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && data.lengh > 0 ? (
+                {sum && data.length > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     (sum["Good"] * 100) /
                     data.length
@@ -665,7 +675,7 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && data.lengh > 0 ? (
+                {sum && data.length > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     (sum["Soft"] * 100) /
                     data.length
@@ -679,7 +689,7 @@ const Profile = ({ kind, id }) => {
                     />
                   </div>
                 )}
-                {sum && data.lengh > 0 ? (
+                {sum && data.length > 0 ? (
                   <div className="horse-item-normal-black">{`${(
                     (sum["Heavy"] * 100) /
                     data.length
@@ -917,7 +927,7 @@ const Profile = ({ kind, id }) => {
                     {item["starters"]}
                   </div>
                   <div className="racehistory-item text-black-2">
-                    {item["class"]}
+                    {CLASS_POINT[item["class"]] ? CLASS_POINT[item["class"]] : item["class"]}
                   </div>
                   <div className="racehistory-item text-black-2">
                     {item["barrier"]}
