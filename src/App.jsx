@@ -4,6 +4,9 @@ import Home from './pages/Home'
 import HorseProfile from './pages/HorseProfile'
 import TrainerProfile from './pages/TrainerProfile'
 import JockeyProfile from './pages/JockeyProfile'
+import TrainerBoard from './pages/Leaderboard/TrainerBoard'
+import JockeyBoard from './pages/Leaderboard/JockeyBoard'
+import HorseBoard from './pages/Leaderboard/HorseBoard'
 
 import { marketContext } from "./contexts/marketContext";
 import { eventsContext } from "./contexts/eventsContext";
@@ -43,6 +46,9 @@ function App() {
             <Route path="/horse/au/:id" element={<HorseProfile />} />
             <Route path="/trainer/au/:id" element={<TrainerProfile />} />
             <Route path="/jockey/au/:id" element={<JockeyProfile />} />
+            <Route path="/board/trainer" element={<TrainerBoard />} />
+            <Route path="/board/horse" element={<HorseBoard />} />
+            <Route path="/board/jockey" element={<JockeyBoard />} />
           </Routes>
         </clockContext.Provider>
       </marketContext.Provider>

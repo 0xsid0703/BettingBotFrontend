@@ -34,7 +34,7 @@ const DropDown = ({btnStr, data, kind, setValue}) => {
         setValue ([kind, val])
         setSelectedVal (val)
     }
-    
+
     return (
         <div className="w-full">
             <button
@@ -68,7 +68,7 @@ const DropDown = ({btnStr, data, kind, setValue}) => {
                 id="dropdown"
                 className={
                     selected
-                        ? `z-20 bg-v3-primary border absolute border-primary divide-y divide-gray-100 rounded-lg shadow bg-white mt-[8px] overflow-y-auto`
+                        ? `z-20 bg-v3-primary border absolute border-primary divide-y divide-gray-100 rounded-lg shadow bg-white mt-[8px] overflow-y-auto max-h-[500px]`
                         : `hidden`
                 }
                 style={{ width: `${width}px` }}
