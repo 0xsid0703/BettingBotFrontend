@@ -9,6 +9,19 @@ import TrackDropDown from "../DropDown/TrackDropDown";
 
 import { getLeaderboards } from "../../apis";
 
+const SORT_FIELD = {
+    NAME: 'name',
+    WIN_PERCENT: 'winPercent',
+    AVG_BSPW: 'averageBspw',
+    WIN_ROI: 'winRoi',
+    PLACE_PERCENT: 'placePercent',
+    AVG_BSPP: 'averageBspp',
+    PLACE_ROI: 'placeRoi',
+    FINISH_PERCENT: 'finishPercent',
+    AVG: 'average',
+    TOTAL: 'total'
+}
+
 const LeaderBoard = ({kind}) => {
 
     const initialValue = {
@@ -60,6 +73,8 @@ const LeaderBoard = ({kind}) => {
     const [page, setPage] = useState (0)
     const [loadingMore, setLoadingMore] = useState (false)
     const [loading, setLoading] = useState (false)
+    const [sortedCol, setSortedCol] = useState (SORT_FIELD.TOTAL)
+    const [sortDirection, setSortDirection] = useState(1)
     
     const setValue = (val) => {
         setData (undefined)
@@ -75,23 +90,23 @@ const LeaderBoard = ({kind}) => {
 
     const initialize = useCallback(async() => {
         setLoading (true)
-        const [tmpRecords, tmpTrainers, tmpJockeys, tmpHorses] = await getLeaderboards (filterObj, kind, page)
+        const [tmpRecords, tmpTrainers, tmpJockeys, tmpHorses] = await getLeaderboards (filterObj, kind, page, sortedCol, sortDirection)
         setRecords (tmpRecords)
         setTrainernames (tmpTrainers)
         setJockeyNames (tmpJockeys)
         setHorseNames (tmpHorses)
         setLoading (false)
-    }, [filterObj, kind])
+    }, [filterObj, kind, sortedCol, sortDirection])
 
     const loadMore = useCallback(async() => {
         if (page === 0) return
         setLoading (true)
         setLoadingMore (true)
-        const [tmpRecords, , , ] = await getLeaderboards (filterObj, kind, page)
+        const [tmpRecords, , , ] = await getLeaderboards (filterObj, kind, page, sortedCol, sortDirection)
         if (tmpRecords.length > 0) setRecords ([...records, ...tmpRecords])
         setLoadingMore (false)
         setLoading (false)
-    }, [page])
+    }, [page, sortedCol, sortDirection])
 
     useEffect (() => {
         loadMore ()
@@ -106,31 +121,8 @@ const LeaderBoard = ({kind}) => {
         initialize ()
     }, [initialize])
 
-    useEffect(() => {
-        let tmp = []
-        setLoading (true)
-        records && records.map ((record) => {
-            let sumWinPercent = 0
-            let sumPlacePercent = 0
-            let sumFinishPercent = 0
-            let sumPrize = 0
-            record['races'].map ((race) => {
-                sumWinPercent += race['win_percentage']
-                sumPlacePercent += race['place_percentage']
-                sumFinishPercent += race['finish_percentage']
-                sumPrize += race['horse_prizemoney']
-            })
-            tmp.push ({
-                "winPercent": (sumWinPercent / record['races'].length).toFixed (2),
-                "placePercent": (sumPlacePercent / record['races'].length).toFixed (2),
-                "finishPercent": (sumFinishPercent / record['races'].length).toFixed (2),
-                "total": sumPrize,
-                "average": (sumPrize / record['races'].length).toFixed (2),
-                "name": record['name']
-            })
-        })
-        setData (tmp)
-        setLoading (false)
+    useEffect (() => {
+        setData (records)
     }, [records])
 
     return (
@@ -210,21 +202,99 @@ const LeaderBoard = ({kind}) => {
                 </div>
                 <div className="flex flex-col bg-grey-4 border border-grey-2 rounded-[10px]">
                     <div className="grid grid-cols-11">
-                        <div className="racehistory-header-start col-span-2 px-5">
-                            Name
+                        <div
+                            className="racehistory-header-start col-span-2 px-5 cursor-pointer"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.NAME)
+                                setSortDirection(sortedCol !== SORT_FIELD.NAME ? true : !sortDirection)
+                            }}
+                        >
+                            Name {sortedCol === SORT_FIELD.NAME ? (!sortDirection ? '↑' : '↓') : ''}
                         </div>
-                        <div className="racehistory-header">Win %</div>
-                        <div className="racehistory-header">AVG BSP / W</div>
-                        <div className="racehistory-header">Win ROI</div>
-                        <div className="racehistory-header">Place %</div>
-                        <div className="racehistory-header">AVG BSP / P</div>
-                        <div className="racehistory-header">Place ROI</div>
-                        <div className="racehistory-header">Finish %</div>
-                        <div className="racehistory-header">AVG $</div>
-                        <div className="racehistory-header">Total $</div>
+                        <div
+                            className="racehistory-header cursor-pointer"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.WIN_PERCENT)
+                                setSortDirection(sortedCol !== SORT_FIELD.WIN_PERCENT ? true : !sortDirection)
+                            }}
+                        >
+                            Win %  {sortedCol === SORT_FIELD.WIN_PERCENT ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="racehistory-header cursor-pointer"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.AVG_BSPW)
+                                setSortDirection(sortedCol !== SORT_FIELD.AVG_BSPW ? true : !sortDirection)
+                            }}
+                        >
+                            AVG BSP / W  {sortedCol === SORT_FIELD.AVG_BSPW ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="racehistory-header cursor-pointer"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.WIN_ROI)
+                                setSortDirection(sortedCol !== SORT_FIELD.WIN_ROI ? true : !sortDirection)
+                            }}
+                        >
+                                Win ROI  {sortedCol === SORT_FIELD.WIN_ROI ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div 
+                            className="racehistory-header cursor-pointer"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.PLACE_PERCENT)
+                                setSortDirection(sortedCol !== SORT_FIELD.PLACE_PERCENT ? true : !sortDirection)
+                            }}
+                        >
+                            Place % {sortedCol === SORT_FIELD.PLACE_PERCENT ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="racehistory-header cursor-pointer"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.AVG_BSPP)
+                                setSortDirection(sortedCol !== SORT_FIELD.AVG_BSPP ? true : !sortDirection)
+                            }}
+                        >
+                            AVG BSP / P {sortedCol === SORT_FIELD.AVG_BSPP ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="racehistory-header cursor-pointer"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.PLACE_ROI)
+                                setSortDirection(sortedCol !== SORT_FIELD.PLACE_ROI ? true : !sortDirection)
+                            }}
+                        >
+                            Place ROI {sortedCol === SORT_FIELD.PLACE_ROI ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="racehistory-header cursor-pointer"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.FINISH_PERCENT)
+                                setSortDirection(sortedCol !== SORT_FIELD.FINISH_PERCENT ? true : !sortDirection)
+                            }}
+                        >
+                            Finish %  {sortedCol === SORT_FIELD.FINISH_PERCENT ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="racehistory-header cursor-pointer"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.AVG)
+                                setSortDirection(sortedCol !== SORT_FIELD.AVG ? true : !sortDirection)
+                            }}
+                        >
+                            AVG $ {sortedCol === SORT_FIELD.AVG ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="racehistory-header cursor-pointer"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.TOTAL)
+                                setSortDirection(sortedCol !== SORT_FIELD.TOTAL ? true : !sortDirection)
+                            }}
+                        >
+                            Total $ {sortedCol === SORT_FIELD.TOTAL ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
                     </div>
                     {
-                        data && data.map ((t, idx) => 
+                        data && data.length > 0 && data.map ((t, idx) => 
                         <div  key={idx} className="grid grid-cols-11 border-t border-grey-2">
                             <a
                                 className="racehistory-item-start text-link col-span-2 px-5"

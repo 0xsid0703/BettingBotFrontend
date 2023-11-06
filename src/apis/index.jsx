@@ -81,12 +81,12 @@ export const getRaces = async(type, id) => {
     }
 }
 
-export const getLeaderboards = async(filterObj, kind, page = 0) => {
+export const getLeaderboards = async(filterObj, kind, page = 0, sortedCol, sortDirection) => {
     try {
         const resp = await axios({
             url: `/board/getrecords`,
             method: 'POST',
-            data: {"filter": filterObj, "kind": kind, "page": page}
+            data: {"filter": filterObj, "kind": kind, "page": page, 'sortedCol': sortedCol, sortDirection: sortDirection}
         })
         if (resp.status === 200) return resp.data
         console.log ("Axios getLeaderboards function status ===> ", resp.status)
