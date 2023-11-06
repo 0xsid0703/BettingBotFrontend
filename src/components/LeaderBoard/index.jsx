@@ -90,6 +90,7 @@ const LeaderBoard = ({kind}) => {
 
     const initialize = useCallback(async() => {
         setLoading (true)
+        setRecords ([])
         const [tmpRecords, tmpTrainers, tmpJockeys, tmpHorses] = await getLeaderboards (filterObj, kind, page, sortedCol, sortDirection)
         setRecords (tmpRecords)
         setTrainernames (tmpTrainers)
@@ -106,7 +107,7 @@ const LeaderBoard = ({kind}) => {
         if (tmpRecords.length > 0) setRecords ([...records, ...tmpRecords])
         setLoadingMore (false)
         setLoading (false)
-    }, [page, sortedCol, sortDirection])
+    }, [page])
 
     useEffect (() => {
         loadMore ()
@@ -298,7 +299,7 @@ const LeaderBoard = ({kind}) => {
                         <div  key={idx} className="grid grid-cols-11 border-t border-grey-2">
                             <a
                                 className="racehistory-item-start text-link col-span-2 px-5"
-                                href="#"
+                                href={`/${kind}/au/${t["id"]}`}
                             >
                                 {t?.name}
                             </a>
