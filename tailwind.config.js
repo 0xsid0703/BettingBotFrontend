@@ -13,6 +13,7 @@ export default {
         "pink-1": '#F2F4F7',
         "pink-2": "#FEE4E2",
         "green-2": "#D1FADF",
+        "grey-4": "#F9FAFB",
       },
       textColor: {
         "black-1": "#344054",

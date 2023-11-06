@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from 'react'
 
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-
+import { Icon } from '@iconify/react'
 import DropDown from "../DropDown";
 import TrackDropDown from "../DropDown/TrackDropDown";
 
@@ -52,9 +52,14 @@ const LeaderBoard = ({kind}) => {
 
     const [filterObj, setFilter] = useState(initialValue);
     const [records, setRecords] = useState ()
+    const [trainernames, setTrainernames] = useState ()
     const [jockeynames, setJockeyNames] = useState ()
     const [horsenames, setHorseNames] = useState ()
     const [data, setData] = useState ()
+
+    const [page, setPage] = useState (0)
+    const [loadingMore, setLoadingMore] = useState (false)
+    const [loading, setLoading] = useState (false)
     
     const setValue = (val) => {
         setData (undefined)
@@ -66,14 +71,36 @@ const LeaderBoard = ({kind}) => {
 
     jockeynames && jockeynames.map ((jockey) => {jockeys.add(jockey)})
     horsenames && horsenames.map ((horse) => {horses.add(horse)})
+    trainernames && trainernames.map ((trainer) => {trainers.add(trainer)})
 
     const initialize = useCallback(async() => {
-        const [tmpTrainers, tmpJockeys, tmpHorses] = await getLeaderboards (filterObj, kind)
-        console.log (tmpTrainers, ">>>>")
-        setRecords (tmpTrainers)
+        setLoading (true)
+        const [tmpRecords, tmpTrainers, tmpJockeys, tmpHorses] = await getLeaderboards (filterObj, kind, page)
+        setRecords (tmpRecords)
+        setTrainernames (tmpTrainers)
         setJockeyNames (tmpJockeys)
         setHorseNames (tmpHorses)
+        setLoading (false)
     }, [filterObj, kind])
+
+    const loadMore = useCallback(async() => {
+        if (page === 0) return
+        setLoading (true)
+        setLoadingMore (true)
+        const [tmpRecords, , , ] = await getLeaderboards (filterObj, kind, page)
+        if (tmpRecords.length > 0) setRecords ([...records, ...tmpRecords])
+        setLoadingMore (false)
+        setLoading (false)
+    }, [page])
+
+    useEffect (() => {
+        loadMore ()
+    }, [loadMore])
+
+    const onLoadMoreClick = () => {
+        if (loading) return
+        setPage (page + 1)
+    }
 
     useEffect (()=>{
         initialize ()
@@ -81,6 +108,7 @@ const LeaderBoard = ({kind}) => {
 
     useEffect(() => {
         let tmp = []
+        setLoading (true)
         records && records.map ((record) => {
             let sumWinPercent = 0
             let sumPlacePercent = 0
@@ -102,150 +130,155 @@ const LeaderBoard = ({kind}) => {
             })
         })
         setData (tmp)
+        setLoading (false)
     }, [records])
 
     return (
         <div className="p-[16px] 2xl:p-[58px] 4xl:p-[112px] bg-white min-w-[1024px]">
-        <div className="flex flex-col gap-8">
-            <div className="grid grid-cols-12 bg-pink-1 border border-grey-2 rounded-[10px]">
-                <div className="grid grid-cols-12 col-span-12 border-b border-grey-2">
-                    <div className="flex flex-row items-center col-span-2 text-2xl font-bold leading-6 py-6 px-5 w-full">
-                        {kind === "trainer" ? "Trainers" : kind === "jockey" ? "Jockeys" : "Horses"}
-                    </div>
-                    <div className="col-span-10 grid grid-cols-12 gap-2 px-5 py-6">
-                        {
-                            (kind === "trainer" || kind === "horse") &&
+            <div className="flex flex-col gap-8">
+                <div className="grid grid-cols-12 bg-grey-4 border border-grey-2 rounded-[10px]">
+                    <div className="grid grid-cols-12 col-span-12 border-b border-grey-2">
+                        <div className="flex flex-row items-center col-span-2 text-2xl font-bold leading-6 py-6 px-5 w-full">
+                            {kind === "trainer" ? "Trainers" : kind === "jockey" ? "Jockeys" : "Horses"}
+                        </div>
+                        <div className="col-span-10 grid grid-cols-12 gap-2 px-5 py-6">
+                            {
+                                (kind === "trainer" || kind === "horse") &&
+                                <div className="col-span-2 flex flex-row items-center justify-center">
+                                    <DropDown
+                                        btnStr={initialValue["jockey"]}
+                                        data={jockeys}
+                                        kind="jockey"
+                                        setValue={(val) => setValue(val)}
+                                    />
+                                </div>
+                            }
+                            {
+                                (kind === "jockey" || kind === "horse") &&
+                                <div className="col-span-2 flex flex-row items-center justify-center">
+                                    <DropDown
+                                        btnStr={initialValue["trainer"]}
+                                        data={trainers}
+                                        kind="trainer"
+                                        setValue={(val) => setValue(val)}
+                                    />
+                                </div>
+                            }
+                            { kind !== "horse" &&
+                                <div className="col-span-2 flex flex-row items-center justify-center">
+                                    <DropDown
+                                        btnStr={initialValue["horse"]}
+                                        data={horses}
+                                        kind="horse"
+                                        setValue={(val) => setValue(val)}
+                                    />
+                                </div>
+                            }
                             <div className="col-span-2 flex flex-row items-center justify-center">
-                                <DropDown
-                                    btnStr={initialValue["jockey"]}
-                                    data={jockeys}
-                                    kind="jockey"
+                                <TrackDropDown
+                                    btnStr={initialValue["track"]}
+                                    kind="track"
                                     setValue={(val) => setValue(val)}
                                 />
                             </div>
-                        }
-                        {
-                            (kind === "jockey" || kind === "horse") &&
                             <div className="col-span-2 flex flex-row items-center justify-center">
                                 <DropDown
-                                    btnStr={initialValue["trainer"]}
-                                    data={trainers}
-                                    kind="trainer"
+                                    btnStr={initialValue["condition"]}
+                                    data={conditions}
+                                    kind="condition"
                                     setValue={(val) => setValue(val)}
                                 />
                             </div>
-                        }
-                        { kind !== "horse" &&
                             <div className="col-span-2 flex flex-row items-center justify-center">
                                 <DropDown
-                                    btnStr={initialValue["horse"]}
-                                    data={horses}
-                                    kind="horse"
+                                    btnStr={initialValue["distance"]}
+                                    data={distances}
+                                    kind="distance"
                                     setValue={(val) => setValue(val)}
                                 />
                             </div>
-                        }
-                        <div className="col-span-2 flex flex-row items-center justify-center">
-                            <TrackDropDown
-                                btnStr={initialValue["track"]}
-                                kind="track"
-                                setValue={(val) => setValue(val)}
-                            />
-                        </div>
-                        <div className="col-span-2 flex flex-row items-center justify-center">
-                            <DropDown
-                                btnStr={initialValue["condition"]}
-                                data={conditions}
-                                kind="condition"
-                                setValue={(val) => setValue(val)}
-                            />
-                        </div>
-                        <div className="col-span-2 flex flex-row items-center justify-center">
-                            <DropDown
-                                btnStr={initialValue["distance"]}
-                                data={distances}
-                                kind="distance"
-                                setValue={(val) => setValue(val)}
-                            />
-                        </div>
-                        <div className="col-span-2 flex flex-row items-center justify-center">
-                            <DropDown
-                                btnStr={initialValue["start"]}
-                                data={starts}
-                                kind="start"
-                                setValue={(val) => setValue(val)}
-                            />
+                            <div className="col-span-2 flex flex-row items-center justify-center">
+                                <DropDown
+                                    btnStr={initialValue["start"]}
+                                    data={starts}
+                                    kind="start"
+                                    setValue={(val) => setValue(val)}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div className="flex flex-col bg-pink-1 border border-grey-2 rounded-[10px]">
-                <div className="grid grid-cols-11">
-                    <div className="racehistory-header-start col-span-2 px-5">
-                        Name
+                <div className="flex flex-col bg-grey-4 border border-grey-2 rounded-[10px]">
+                    <div className="grid grid-cols-11">
+                        <div className="racehistory-header-start col-span-2 px-5">
+                            Name
+                        </div>
+                        <div className="racehistory-header">Win %</div>
+                        <div className="racehistory-header">AVG BSP / W</div>
+                        <div className="racehistory-header">Win ROI</div>
+                        <div className="racehistory-header">Place %</div>
+                        <div className="racehistory-header">AVG BSP / P</div>
+                        <div className="racehistory-header">Place ROI</div>
+                        <div className="racehistory-header">Finish %</div>
+                        <div className="racehistory-header">AVG $</div>
+                        <div className="racehistory-header">Total $</div>
                     </div>
-                    <div className="racehistory-header">Win %</div>
-                    <div className="racehistory-header">AVG BSP / W</div>
-                    <div className="racehistory-header">Win ROI</div>
-                    <div className="racehistory-header">Place %</div>
-                    <div className="racehistory-header">AVG BSP / P</div>
-                    <div className="racehistory-header">Place ROI</div>
-                    <div className="racehistory-header">Finish %</div>
-                    <div className="racehistory-header">AVG $</div>
-                    <div className="racehistory-header">Total $</div>
+                    {
+                        data && data.map ((t, idx) => 
+                        <div  key={idx} className="grid grid-cols-11 border-t border-grey-2">
+                            <a
+                                className="racehistory-item-start text-link col-span-2 px-5"
+                                href="#"
+                            >
+                                {t?.name}
+                            </a>
+                            <div className="racehistory-item text-black-2">
+                                {t?.winPercent}
+                            </div>
+                            <div className="racehistory-item text-black-2">
+                                0
+                            </div>
+                            <div className="racehistory-item text-black-2">
+                                0
+                            </div>
+                            <div className="racehistory-item text-black-2">
+                                {t?.placePercent}
+                            </div>
+                            <div className="racehistory-item text-black-2">
+                                0
+                            </div>
+                            <div className="racehistory-item text-black-2">
+                                0
+                            </div>
+                            <div className="racehistory-item text-black-2">
+                                {t?.finishPercent}
+                            </div>
+                            <div className="racehistory-item text-black-2">
+                                {t?.average}
+                            </div>
+                            <div className="racehistory-item text-black-2">
+                                {t?.total}
+                            </div>
+                        </div>
+                        )
+                    }
+                    {
+                        (!data || (data && data.length === 0)) && Array.from({length: 20}).map((item, idx) => 
+                            <div key={idx} className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                                <Skeleton
+                                baseColor="#EAECF0"
+                                style={{ height: "100%" }}
+                                highlightColor="#D9D9D9"
+                                />
+                            </div>
+                        )
+                    }
                 </div>
-                {
-                    data && data.map ((t, idx) => 
-                    <div  key={idx} className="grid grid-cols-11 border-t border-grey-2">
-                        <a
-                            className="racehistory-item-start text-link col-span-2 px-5"
-                            href="#"
-                        >
-                            {t?.name}
-                        </a>
-                        <div className="racehistory-item text-black-2">
-                            {t?.winPercent}
-                        </div>
-                        <div className="racehistory-item text-black-2">
-                            0
-                        </div>
-                        <div className="racehistory-item text-black-2">
-                            0
-                        </div>
-                        <div className="racehistory-item text-black-2">
-                            {t?.placePercent}
-                        </div>
-                        <div className="racehistory-item text-black-2">
-                            0
-                        </div>
-                        <div className="racehistory-item text-black-2">
-                            0
-                        </div>
-                        <div className="racehistory-item text-black-2">
-                            {t?.finishPercent}
-                        </div>
-                        <div className="racehistory-item text-black-2">
-                            {t?.average}
-                        </div>
-                        <div className="racehistory-item text-black-2">
-                            {t?.total}
-                        </div>
-                    </div>
-                    )
-                }
-                {
-                    (!data || (data && data.length === 0)) && Array.from({length: 20}).map((item, idx) => 
-                        <div key={idx} className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
-                            <Skeleton
-                            baseColor="#EAECF0"
-                            style={{ height: "100%" }}
-                            highlightColor="#D9D9D9"
-                            />
-                        </div>
-                    )
-                }
+                <div className='flex flex-row items-center justify-center bg-grey-4 border border-grey-2 rounded-[10px] text-sm text-blue-1 h-12 text-center cursor-pointer' onClick={onLoadMoreClick}>
+                    Load More
+                    {loadingMore && <Icon icon="eos-icons:three-dots-loading" style={{fontSize: '48px'}}/>}
+                </div>
             </div>
-        </div>
         </div>
     );
 };
