@@ -38,8 +38,6 @@ const SearchableDropDown = ({btnStr, data, kind, setValue, setSearch}) => {
         setSelectedVal (val)
     }
 
-    console.log (!data, data, Array.from(data).length == 0, "???")
-
     return (
         <div className="w-full">
             <button
@@ -100,7 +98,7 @@ const SearchableDropDown = ({btnStr, data, kind, setValue, setSearch}) => {
                         )
                     }
                     {
-                        (!data || (data && Array.from(data).length == 1)) &&
+                        (!data || (data && Array.from(data).length <= 1)) &&
                         <div className="flex flex-row items-center justify-center text-gray-800"><Icon icon="eos-icons:three-dots-loading" style={{fontSize: 36}} /></div>
                     }
                 </ul>
