@@ -96,3 +96,48 @@ export const getLeaderboards = async(filterObj, kind, page = 0, sortedCol, sortD
         return null
     }
 }
+
+export const getHorsesInBoard = async(name) => {
+    try {
+        const resp = await axios({
+            url: `/board/gethorsenames?name=${name}`,
+            method: 'GET',
+        })
+        if (resp.status === 200) return resp.data
+        console.log ("Axios getHorsesInBoard function status ===> ", resp.status)
+        return null
+    } catch (e) {
+        console.log ("Axios getHorsesInBoard failed ==>", e.message)
+        return null
+    }
+}
+
+export const getTrainersInBoard = async(name) => {
+    try {
+        const resp = await axios({
+            url: `/board/gettrainernames?name=${name}`,
+            method: 'GET',
+        })
+        if (resp.status === 200) return resp.data
+        console.log ("Axios getTrainersInBoard function status ===> ", resp.status)
+        return null
+    } catch (e) {
+        console.log ("Axios getTrainersInBoard failed ==>", e.message)
+        return null
+    }
+}
+
+export const getJockeysInBoard = async(name) => {
+    try {
+        const resp = await axios({
+            url: `/board/getjockeynames?name=${name}`,
+            method: 'GET',
+        })
+        if (resp.status === 200) return resp.data
+        console.log ("Axios getJockeysInBoard function status ===> ", resp.status)
+        return null
+    } catch (e) {
+        console.log ("Axios getJockeysInBoard failed ==>", e.message)
+        return null
+    }
+}

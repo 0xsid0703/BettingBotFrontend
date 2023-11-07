@@ -3,11 +3,13 @@ import { useState, useCallback, useEffect } from 'react'
 
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { Icon } from '@iconify/react'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import DropDown from "../DropDown";
 import TrackDropDown from "../DropDown/TrackDropDown";
+import SearchableDropDown from "../DropDown/SearchableDropDown";
 
-import { getLeaderboards } from "../../apis";
+import { getLeaderboards, getTrainersInBoard, getJockeysInBoard, getHorsesInBoard } from "../../apis";
 
 const SORT_FIELD = {
     NAME: 'name',
@@ -75,6 +77,7 @@ const LeaderBoard = ({kind}) => {
     const [loading, setLoading] = useState (false)
     const [sortedCol, setSortedCol] = useState (SORT_FIELD.TOTAL)
     const [sortDirection, setSortDirection] = useState(1)
+    const [searchStr, setSearchStr] = useState ({})
     
     const setValue = (val) => {
         setData (undefined)
@@ -91,19 +94,20 @@ const LeaderBoard = ({kind}) => {
     const initialize = useCallback(async() => {
         setLoading (true)
         setRecords ([])
-        const [tmpRecords, tmpTrainers, tmpJockeys, tmpHorses] = await getLeaderboards (filterObj, kind, page, sortedCol, sortDirection)
+        const tmpRecords = await getLeaderboards (filterObj, kind, page, sortedCol, sortDirection)
         setRecords (tmpRecords)
-        setTrainernames (tmpTrainers)
-        setJockeyNames (tmpJockeys)
-        setHorseNames (tmpHorses)
         setLoading (false)
     }, [filterObj, kind, sortedCol, sortDirection])
+
+    useEffect (()=>{
+        initialize ()
+    }, [initialize])
 
     const loadMore = useCallback(async() => {
         if (page === 0) return
         setLoading (true)
         setLoadingMore (true)
-        const [tmpRecords, , , ] = await getLeaderboards (filterObj, kind, page, sortedCol, sortDirection)
+        const tmpRecords = await getLeaderboards (filterObj, kind, page, sortedCol, sortDirection)
         if (tmpRecords.length > 0) setRecords ([...records, ...tmpRecords])
         setLoadingMore (false)
         setLoading (false)
@@ -113,14 +117,43 @@ const LeaderBoard = ({kind}) => {
         loadMore ()
     }, [loadMore])
 
+    useEffect (() => {
+        const delayFn = setTimeout(async() => {
+            const {k, v} = searchStr
+            if (k && k !== "trainer") return
+            setTrainernames([initialValue["trainer"]])
+            const tmpTrainers = await getTrainersInBoard(v ? v : "")
+            setTrainernames (tmpTrainers)
+        }, 300)
+        return () => clearTimeout(delayFn);
+    }, [searchStr])
+
+    useEffect (() => {
+        const delayFn = setTimeout(async() => {
+            const {k, v} = searchStr
+            if (k && k !== "jockey") return
+            setJockeyNames([initialValue["jockey"]])
+            const tmpJockeys = await getJockeysInBoard(v ? v : "")
+            setJockeyNames (tmpJockeys)
+        }, 300)
+        return () => clearTimeout(delayFn);
+    }, [searchStr])
+
+    useEffect (() => {
+        const delayFn = setTimeout(async() => {
+            const {k, v} = searchStr
+            if (k && k !== "horse") return
+            setHorseNames([initialValue["horse"]])
+            const tmpHorses = await getHorsesInBoard(v ? v : "")
+            setHorseNames (tmpHorses)
+        }, 300)
+        return () => clearTimeout(delayFn);
+    }, [searchStr])
+
     const onLoadMoreClick = () => {
         if (loading) return
         setPage (page + 1)
     }
-
-    useEffect (()=>{
-        initialize ()
-    }, [initialize])
 
     useEffect (() => {
         setData (records)
@@ -130,7 +163,7 @@ const LeaderBoard = ({kind}) => {
         <div className="p-[16px] 2xl:p-[58px] 4xl:p-[112px] bg-white min-w-[1024px]">
             <div className="flex flex-col gap-8">
                 <div className="grid grid-cols-12 bg-grey-4 border border-grey-2 rounded-[10px]">
-                    <div className="grid grid-cols-12 col-span-12 border-b border-grey-2">
+                    <div className="grid grid-cols-12 col-span-12">
                         <div className="flex flex-row items-center col-span-2 text-2xl font-bold leading-6 py-6 px-5 w-full">
                             {kind === "trainer" ? "Trainers" : kind === "jockey" ? "Jockeys" : "Horses"}
                         </div>
@@ -138,32 +171,35 @@ const LeaderBoard = ({kind}) => {
                             {
                                 (kind === "trainer" || kind === "horse") &&
                                 <div className="col-span-2 flex flex-row items-center justify-center">
-                                    <DropDown
+                                    <SearchableDropDown
                                         btnStr={initialValue["jockey"]}
                                         data={jockeys}
                                         kind="jockey"
                                         setValue={(val) => setValue(val)}
+                                        setSearch={(val) => setSearchStr (val)}
                                     />
                                 </div>
                             }
                             {
                                 (kind === "jockey" || kind === "horse") &&
                                 <div className="col-span-2 flex flex-row items-center justify-center">
-                                    <DropDown
+                                    <SearchableDropDown
                                         btnStr={initialValue["trainer"]}
                                         data={trainers}
                                         kind="trainer"
                                         setValue={(val) => setValue(val)}
+                                        setSearch={(val) => setSearchStr (val)}
                                     />
                                 </div>
                             }
                             { kind !== "horse" &&
                                 <div className="col-span-2 flex flex-row items-center justify-center">
-                                    <DropDown
+                                    <SearchableDropDown
                                         btnStr={initialValue["horse"]}
                                         data={horses}
                                         kind="horse"
                                         setValue={(val) => setValue(val)}
+                                        setSearch={(val) => setSearchStr (val)}
                                     />
                                 </div>
                             }
@@ -345,10 +381,14 @@ const LeaderBoard = ({kind}) => {
                         )
                     }
                 </div>
-                <div className='flex flex-row items-center justify-center bg-grey-4 border border-grey-2 rounded-[10px] text-sm text-blue-1 h-12 text-center cursor-pointer' onClick={onLoadMoreClick}>
-                    Load More
-                    {loadingMore && <Icon icon="eos-icons:three-dots-loading" style={{fontSize: '48px'}}/>}
-                </div>
+                <button 
+                    className='flex flex-row items-center justify-center bg-grey-4 border border-grey-2 rounded-[10px] text-sm text-blue-1 h-12 text-center cursor-pointer' 
+                    disabled={loadingMore}
+                    onClick={onLoadMoreClick}
+                >
+                    {!loadingMore && "Load More"}
+                    {loadingMore && <FontAwesomeIcon icon={faSpinner} size="xl" className="animate-spin" />}
+                </button>
             </div>
         </div>
     );

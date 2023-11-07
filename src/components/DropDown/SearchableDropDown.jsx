@@ -1,17 +1,20 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useEffect, useState, useRef } from "react";
+import { Icon } from '@iconify/react'
 
-const DropDown = ({btnStr, data, kind, setValue}) => {
+const SearchableDropDown = ({btnStr, data, kind, setValue, setSearch}) => {
     const [selected, setSelected] = useState (false)
     const [width, setWidth] = useState (105)
     const [selectedVal, setSelectedVal] = useState (btnStr)
+    const [inputVal, setInputVal] = useState ("")
 
     const wrapperRef = useRef(null);
+    const searchInputRef = useRef(null);
 
     const handleClickOutside = (event) => {
         try {
-            if (wrapperRef && !wrapperRef.current.contains(event.target)) {
+            if (wrapperRef && !wrapperRef.current.contains(event.target) && !searchInputRef.current.contains(event.target)) {
                 setSelected(false);
             }
         } catch (e) {
@@ -34,6 +37,8 @@ const DropDown = ({btnStr, data, kind, setValue}) => {
         setValue ([kind, val])
         setSelectedVal (val)
     }
+
+    console.log (!data, data, Array.from(data).length == 0, "???")
 
     return (
         <div className="w-full">
@@ -68,23 +73,35 @@ const DropDown = ({btnStr, data, kind, setValue}) => {
                 id="dropdown"
                 className={
                     selected
-                        ? `z-20 bg-v3-primary border absolute border-primary divide-y divide-gray-100 rounded-lg shadow bg-white mt-[8px] overflow-y-auto max-h-[500px]`
+                        ? `z-20 bg-v3-primary border absolute border-primary divide-y divide-gray-100 rounded-lg shadow bg-gray-50 mt-[8px] overflow-y-auto max-h-[500px]`
                         : `hidden`
                 }
                 style={{ width: `${width}px` }}
             >
                 <ul
-                    className={`py-2 text-sm text-v3-primary font-medium dark:text-gray-200`}
+                    className={`py-2 text-sm text-v3-primary font-medium dark:text-gray-200 px-2`}
                     aria-labelledby="dropdownButton"
                 >
+                    <input
+                        type="search"
+                        className="w-full px-2 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:outline-none"
+                        placeholder="Search names..."
+                        ref={searchInputRef}
+                        value={inputVal}
+                        onChange={(e) => {setInputVal(e.target.value); setSearch({k: kind, v:e.target.value})}}
+                    />
                     {
-                        Array.from(data).map((item, idx) =>
+                        data && Array.from(data).length > 0 && Array.from(data).map((item, idx) =>
                             <li key={idx} onClick={() => onChange(item)}>
-                                <a className="flex flex-row items-center px-4 py-2 hover:bg-dropdown cursor-pointer">
+                                <a className="flex flex-row items-center px-2 py-2 hover:bg-dropdown cursor-pointer">
                                     {item}
                                 </a>
                             </li>
                         )
+                    }
+                    {
+                        (!data || (data && Array.from(data).length == 1)) &&
+                        <div className="flex flex-row items-center justify-center text-gray-800"><Icon icon="eos-icons:three-dots-loading" style={{fontSize: 36}} /></div>
                     }
                 </ul>
             </div>
@@ -92,4 +109,4 @@ const DropDown = ({btnStr, data, kind, setValue}) => {
     )
 }
 
-export default DropDown
+export default SearchableDropDown
