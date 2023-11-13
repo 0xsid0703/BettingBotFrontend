@@ -15,7 +15,7 @@ import { marketContext } from '../../contexts/marketContext';
 
 import ClockElement from './ClockElement';
 
-const Tracks = () => {
+const TracksForPlace = ({ setDate }) => {
     const [pWidth, setPWidth] = useState (0)
     const ref = useRef(null)
     const isClient = typeof window === 'object'
@@ -31,13 +31,27 @@ const Tracks = () => {
         // eslint-disable-next-line no-undef
         const resp = await getEvents({
             date: format (startDate, "yyyy-MM-d"),
-            type: 'WIN'
+            type: 'PLACE'
         })
         setLoading (true)
         if (resp?.success) {
-            const data = resp.data.sort((a, b) => {
+            let data = resp.data.sort((a, b) => {
                 if (new Date(a?.markets[0].startTime).getTime() > new Date(b?.markets[0].startTime).getTime()) return 1
                 else return -1
+            })
+            data = data.map((d) => {
+                let tmpD = {...d}
+                const tmpMarkets = d.markets.map((market) => {
+                    let winners = []
+                    let tmpMarket = {...market}
+                    market.runners.map((runner) => {
+                        if (runner['status'] === 'WINNER') winners.push(market['runnersId'][runner['selectionId']])
+                    })
+                    tmpMarket['winners'] = winners
+                    return tmpMarket
+                })
+                tmpD['markets'] = tmpMarkets
+                return tmpD
             })
             setEvents (data)
             data.map(item=>{
@@ -49,6 +63,7 @@ const Tracks = () => {
             const maxValue = Math.max(...resp.data.map(item => item?.markets.length));
             setMaxEvents (maxValue)
         }
+        setDate (startDate)
     }, [startDate])
 
 
@@ -73,30 +88,12 @@ const Tracks = () => {
 
     return (
         <div className="w-full grid grid-flow-row gap-[1px] bg-grey-2 rounded-[10px] border border-grey-2" ref={ref}>
-            <div className="grid grid-cols-2 w-full">
-                <div className="p-8 bg-grey-4 rounded-tl-[10px]">
+            <div className="grid grid-cols-2 w-full p-8 bg-grey-4 rounded-tl-[10px]">
+                {/* <div className=""> */}
                     <Datepicker date={startDate} onChangeDate={(d) => {
                         setStartDate (d)
                     }}/>
-                </div>
-                <div className="flex flex-row items-center bg-grey-4 text-2xl font-bold justify-end rounded-tr-[10px] pr-4">
-                    {/* <span className='text-black-2 px-5 py-4'>
-                        <div className='text-right text-xl font-bold leading-5'>$0</div>
-                        <div className='text-right text-[10px] font-normal leading-5'>BANKROLL</div>
-                    </span> */}
-                    <span className='text-black-2 px-5 py-4'>
-                        <div className='text-right text-xl font-bold leading-5'>$0</div>
-                        <div className='text-right text-[10px] font-normal leading-5'>TURNOVER</div>
-                    </span>
-                    <span className='text-black-2 px-5 py-4'>
-                        <div className='text-right text-xl font-bold leading-5'>$0</div>
-                        <div className='text-right text-[10px] font-normal leading-5'>PROFIT</div>
-                    </span>
-                    <span className='text-black-2 px-5 py-4'>
-                        <div className='text-right text-xl font-bold leading-5'>0%</div>
-                        <div className='text-right text-[10px] font-normal leading-5'>ROI</div>
-                    </span>
-                </div>
+                {/* </div> */}
             </div>
             { events.length > 0 && loading &&
                 <div className='w-full overflow-x-scroll' style={{maxWidth: `${pWidth}px`}}>
@@ -132,7 +129,7 @@ const Tracks = () => {
                                             >
                                                 {
                                                     new Date(market.startTime).getTime() < new Date().getTime() ? 
-                                                    (<span className='text-shadow-sm text-grey-1'>$0</span>)
+                                                    (<span className='text-shadow-sm text-grey-1'>{market["winners"].length > 0 ? market["winners"].join(",") : "$0"}</span>)
                                                     // (<span className='text-shadow-sm shadow-green-600 text-green-1'>Closed</span>)
                                                     : ( <ClockElement market={market} idx={idx}/> )
                                                 }
@@ -171,4 +168,4 @@ const Tracks = () => {
     )
 }
 
-export default Tracks
+export default TracksForPlace

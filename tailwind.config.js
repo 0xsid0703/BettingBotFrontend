@@ -9,6 +9,7 @@ export default {
   theme: {
     extend: {
       backgroundColor: {
+        "blue-1": "#2E90FA",
         'grey-2': '#EAECF0',
         "pink-1": '#F2F4F7',
         "pink-2": "#FEE4E2",
@@ -32,6 +33,7 @@ export default {
         "link": "#1570EF"
       },
       borderColor: {
+        "blue-1": "#2E90FA",
         'grey-2': '#EAECF0',
         'grey-1': '#D0D5DD',
       },

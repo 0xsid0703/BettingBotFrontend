@@ -1,9 +1,13 @@
 import { useState, useMemo, useEffect } from 'react'
 import { Route, Routes } from "react-router-dom";
+
+import LeaderboardLayout from './layouts/Leaderboard';
+
 import Home from './pages/Home'
 import HorseProfile from './pages/HorseProfile'
 import TrainerProfile from './pages/TrainerProfile'
 import JockeyProfile from './pages/JockeyProfile'
+import Predictor from './pages/Leaderboard/Predictor'
 import TrainerBoard from './pages/Leaderboard/TrainerBoard'
 import JockeyBoard from './pages/Leaderboard/JockeyBoard'
 import HorseBoard from './pages/Leaderboard/HorseBoard'
@@ -46,9 +50,12 @@ function App() {
             <Route path="/horse/au/:id" element={<HorseProfile />} />
             <Route path="/trainer/au/:id" element={<TrainerProfile />} />
             <Route path="/jockey/au/:id" element={<JockeyProfile />} />
-            <Route path="/board/trainer" element={<TrainerBoard />} />
-            <Route path="/board/horse" element={<HorseBoard />} />
-            <Route path="/board/jockey" element={<JockeyBoard />} />
+            <Route element={<LeaderboardLayout />}>
+              <Route path="/board/predictor" element={<Predictor />} />
+              <Route path="/board/trainer" element={<TrainerBoard />} />
+              <Route path="/board/horse" element={<HorseBoard />} />
+              <Route path="/board/jockey" element={<JockeyBoard />} />
+            </Route>
           </Routes>
         </clockContext.Provider>
       </marketContext.Provider>
