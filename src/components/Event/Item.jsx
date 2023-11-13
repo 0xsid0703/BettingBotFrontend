@@ -20,7 +20,7 @@ const Item = ({marketId, venue, pool, percent, runners, startTime}) => {
     }, [startTime, clock])
 
     return (
-        <div className="p-5 w-full bg-pink-1 rounded-[10px] border border-grey-2 cursor-pointer" onClick={() => setMarket({marketId, venue})}>
+        <div className="p-5 w-full bg-grey-4 rounded-[10px] border border-grey-2 cursor-pointer" onClick={() => setMarket({marketId, venue})}>
             <div className="text-black-2 text-base font-bold leading-6">{venue}</div>
             <div className="text-black-1 text-base font-medium leading-6">{`Pool: $${formattedNum(pool)}`}</div>
             <div className="text-black-1 text-base font-medium leading-6">{`Market: ${percent}%`}</div>

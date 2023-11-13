@@ -1,9 +1,9 @@
 import axios from "./axiosInstance";
 
-export const getEvents = async({date}) => {
+export const getEvents = async({date, type}) => {
     try{
         const resp = await axios({
-            url: `/basic/events/${date}`,
+            url: `/basic/events/${type}/${date}`,
             method: "GET", 
         })
         if (resp.status === 200) {
@@ -135,6 +135,36 @@ export const getJockeysInBoard = async(name) => {
         })
         if (resp.status === 200) return resp.data
         console.log ("Axios getJockeysInBoard function status ===> ", resp.status)
+        return null
+    } catch (e) {
+        console.log ("Axios getJockeysInBoard failed ==>", e.message)
+        return null
+    }
+}
+
+export const getRaceByNum = async(startDate, trackName, raceNum) => {
+    try {
+        const resp = await axios({
+            url: `/board/getracebynum?date=${startDate}&track=${trackName}&race=${raceNum}`,
+            method: 'GET',
+        })
+        if (resp.status === 200) return resp.data
+        console.log ("Axios getRaceByNum function status ===> ", resp.status)
+        return null
+    } catch (e) {
+        console.log ("Axios getJockeysInBoard failed ==>", e.message)
+        return null
+    }
+}
+
+export const getRaceHorseScores = async(startDate, trackName, raceNum) => {
+    try {
+        const resp = await axios({
+            url: `/board/gethorsescores?date=${startDate}&track=${trackName}&race=${raceNum}`,
+            method: 'GET',
+        })
+        if (resp.status === 200) return resp.data
+        console.log ("Axios getRaceByNum function status ===> ", resp.status)
         return null
     } catch (e) {
         console.log ("Axios getJockeysInBoard failed ==>", e.message)
