@@ -74,9 +74,65 @@ const options = {
   },
 };
 
+const Dropdown = () => {
+
+    const [val, setVal] = useState (1)
+    const [selected, setSelected] = useState (false)
+    
+    return (
+        <div className="relative w-full flex flex-col items-center">
+            <button
+                id="dropdownButton"
+                data-dropdown-toggle="dropdown"
+                className='text-black-2 w-full text-ellipsis overflow-hidden font-medium rounded-md text-sm px-4 tracking-wide text-center inline-flex items-center justify-center leading-8'
+                type="button"
+                onClick={()=>setSelected(!selected)}
+            >
+                {val}
+                <svg
+                    className="w-2.5 h-2.5 ml-1.5"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 10 6"
+                >
+                    <path
+                        stroke="#6F6E84"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="m1 1 4 4 4-4"
+                    />
+                </svg>
+            </button>
+            <div
+                id="dropdown"
+                className={
+                    selected
+                        ? `z-20 bg-v3-primary border absolute border-primary divide-y divide-gray-100 rounded-lg shadow bg-white mt-8 overflow-y-auto max-h-[500px]`
+                        : `hidden`
+                }
+                style={{ width: `${100}px` }}
+            >
+                { Array.from({length: 5}).map ((_, idx) => 
+                <ul
+                    className={`py-2 text-sm text-v3-primary font-medium dark:text-gray-200`}
+                    aria-labelledby="dropdownButton"
+                    key={idx}
+                >
+                    <li onClick={() => {setVal (idx + 1); setSelected(false)}}>
+                        <a className="flex flex-row items-center px-4 py-2 hover:bg-dropdown cursor-pointer">
+                            {idx + 1}
+                        </a>
+                    </li>
+                </ul>
+                )}
+            </div>
+        </div>
+    )
+}
+
 const PredictScoreChart = ({ startDate, venue, number }) => {
-  const [show, setShow] = useState(false);
-  const hiddenClass = show ? "" : "hidden";
   const [scores, setScores] = useState ()
   const [labels, setLabels] = useState ()
   const [data, setData] = useState ()
@@ -116,86 +172,125 @@ const PredictScoreChart = ({ startDate, venue, number }) => {
             },
             ],
         };
-        console.log (tmpData, ">>>>>")
         setData (tmpData)
     }, [scores])
     
   
     return (
-        <div className="p-6 bg-pink-1 w-full border rounded-[10px] border-grey-2">
-            <div className="mb-6">
-                <button
-                id="dropdownDefaultButton"
-                data-dropdown-toggle="dropdown"
-                className="chart-dropdown-button"
-                type="button"
-                onClick={() => setShow(!show)}
-                >
-                Form Score{" "}
-                <svg
-                    className="w-2 h-2 mr-3 ml-1"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 10 6"
-                >
-                    <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="m1 1 4 4 4-4"
-                    />
-                </svg>
-                </button>
-                <div
-                id="dropdown"
-                className={
-                    `absolute z-10 ${hiddenClass} bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 w-[200px] mt-2`
-                }
-                >
-                <ul
-                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                    aria-labelledby="dropdownDefaultButton"
-                >
-                    <li>
-                    <a
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                        Dashboard
-                    </a>
-                    </li>
-                    <li>
-                    <a
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                        Settings
-                    </a>
-                    </li>
-                    <li>
-                    <a
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                        Earnings
-                    </a>
-                    </li>
-                    <li>
-                    <a
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                        Sign out
-                    </a>
-                    </li>
-                </ul>
+        <div className="flex flex-col bg-pink-1 w-full border rounded-[10px] border-grey-2">
+            <div className="grid grid-cols-12 border-b border-grey-2">
+                <div className="flex flex-row items-center p-5 text-black-2 text-xl font-bold leading-6 col-span-2">Form Score</div>
+                <div className="col-span-10 grid grid-cols-17 border-l border-grey-2">
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">Barrier</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">Weight</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">Class</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">AVG$</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">Career/F</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">Career/W</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">Career/P</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">Condition</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">Distance</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">Track</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">Jockey</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">Trainer</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">Settling</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">600m</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">Speed</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">Lst/Fn</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-rows-2">
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6 border-b border-grey-2">Lst/Mgn</div>
+                        <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <Dropdown />
+                        </div>
+                    </div>
                 </div>
             </div>
+            <div className="">
             {
                 data &&
-                <Bar options={options} data={data} />
+                <div className="py-6">
+                <Bar options={options} data={data} width={"100%"} height={"50"}/>
+                </div>
             }
             {
                 !data &&
@@ -207,6 +302,7 @@ const PredictScoreChart = ({ startDate, venue, number }) => {
                 />
                 </div>
             }
+            </div>
         </div>
     );
 };
