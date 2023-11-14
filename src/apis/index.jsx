@@ -142,10 +142,10 @@ export const getJockeysInBoard = async(name) => {
     }
 }
 
-export const getRaceByNum = async(startDate, trackName, raceNum) => {
+export const getRaceByNum = async(startDate, trackName, raceNum, condition) => {
     try {
         const resp = await axios({
-            url: `/board/getracebynum?date=${startDate}&track=${trackName}&race=${raceNum}`,
+            url: `/board/getracebynum?date=${startDate}&track=${trackName}&race=${raceNum}&condition=${condition}`,
             method: 'GET',
         })
         if (resp.status === 200) return resp.data

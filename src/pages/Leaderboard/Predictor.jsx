@@ -13,7 +13,6 @@ import { getRaceByNum } from '../../apis'
 import ClockElement from "../../components/Tracks/ClockElement";
 import PredictScoreChart from "../../components/ScoreChart/PredictScoreChart";
 
-import silkImg from '../../assets/silks/silk.jpg'
 import gearSvg from '../../assets/gears/gear.svg'
 import { formattedNum,getDateString } from "../../utils";
 import { CLASS_POINT } from "../../constants";
@@ -23,35 +22,39 @@ const Predictor = () => {
     const { market } = useContext (marketContext)
     const { events } = useContext (eventsContext)
     const [startDate, setStartDate] = useState ()
+    const [curMarket, setCurMarket] = useState ()
     const [race, setRace] = useState ()
     const [venue, setVenue] = useState ()
     const [raceNum, setRaceNum] = useState ()
+    const [selected, setSelected] = useState (false)
+    const [curCondition, setCurCondition]=  useState ("Good")
 
     const initialize = useCallback(async() => {
         if (startDate === undefined) return
         let num = -1
         let venue =""
+        setRace ()
         events.map((event)=> {
             event.markets.map((m, idx) => {
                 if (market.marketId === m.marketId) {
                     num = idx + 1
                     venue = m.venue
+                    setVenue (m.venue)
+                    setRaceNum (idx + 1)
+                    setCurMarket (m)
                 }
             })
         })
-        setVenue (venue)
-        setRaceNum (num)
         if (num > 0 && venue !== "") {
             try {
-                const resp = await getRaceByNum(getDateString(startDate), venue, num)
-                console.log (resp)
+                const resp = await getRaceByNum(getDateString(startDate), venue, num, curCondition)
                 setRace (resp)
 
             } catch (e) {
                 console.log (e)
             }
         }
-    }, [startDate, market])
+    }, [startDate, events, market.marketId, curCondition])
 
     useEffect (() => {
         initialize ()
@@ -153,17 +156,55 @@ const Predictor = () => {
                         <div className="grid grid-rows-2">
                             <div className="text-center p-5 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Condition</div>
                             <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
-                                {
-                                    race && race['condition'] ? (
-                                        `${race['condition']}`
-                                    ) : (
-                                        <Skeleton
-                                            baseColor="#EAECF0"
-                                            style={{ width: "100%" }}
-                                            highlightColor="#D9D9D9"
+                                <div className="w-full relative flex flex-col items-center">
+                                <button
+                                    id="dropdownButton"
+                                    data-dropdown-toggle="dropdown"
+                                    className='text-black-2 w-full text-ellipsis overflow-hidden font-medium rounded-md text-sm px-4 tracking-wide text-center inline-flex items-center justify-center leading-8'
+                                    type="button"
+                                    onClick={()=>setSelected(!selected)}
+                                >
+                                    {curCondition}
+                                    <svg
+                                        className="w-2.5 h-2.5 ml-1.5"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 10 6"
+                                    >
+                                        <path
+                                            stroke="#6F6E84"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="m1 1 4 4 4-4"
                                         />
-                                    )
-                                }
+                                    </svg>
+                                </button>
+                                <div
+                                    id="dropdown"
+                                    className={
+                                        selected
+                                            ? `z-20 bg-v3-primary border absolute border-primary divide-y divide-gray-100 rounded-lg shadow bg-white mt-8 overflow-y-auto max-h-[500px]`
+                                            : `hidden`
+                                    }
+                                    style={{ width: `${100}px` }}
+                                >
+                                    { ["Good", "Heavy","Soft", "Synthetic", "Firm"].map ((item, idx) => 
+                                    <ul
+                                        className={`py-2 text-sm text-v3-primary font-medium dark:text-gray-200`}
+                                        aria-labelledby="dropdownButton"
+                                        key={idx}
+                                    >
+                                        <li onClick={() => {setCurCondition (item); setSelected(false)}}>
+                                            <a className="flex flex-row items-center px-4 py-2 hover:bg-dropdown cursor-pointer">
+                                                {item}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    )}
+                                </div>
+                                </div>
                             </div>
                         </div>
                         <div className="grid grid-rows-2">
@@ -173,7 +214,7 @@ const Predictor = () => {
                                     new Date(race['startTime']).getTime() < new Date().getTime() ? 
                                     (<span className='text-shadow-sm text-grey-1'>$0</span>)
                                     // (<span className='text-shadow-sm shadow-green-600 text-green-1'>Closed</span>)
-                                    : ( <ClockElement market={market}/> ))
+                                    : ( <ClockElement market={curMarket}/> ))
                                 }
                                 {   (!race || (race && !race['startTime'])) &&
                                     <Skeleton
