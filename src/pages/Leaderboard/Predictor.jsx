@@ -139,7 +139,7 @@ const Predictor = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="grid grid-cols-3 border-l border-grey-2">
+                    <div className="grid grid-cols-3">
                         <div className="grid grid-rows-2">
                             <div className="text-center p-5 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Distance</div>
                             <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
