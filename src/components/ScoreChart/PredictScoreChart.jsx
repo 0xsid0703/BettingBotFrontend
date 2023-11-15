@@ -193,9 +193,9 @@ const PredictScoreChart = ({ startDate, venue, number, condition }) => {
                             value += Number(d.data[v.value]);
                         }
                         ctx.textAlign = "center";
-                        ctx.font = "11px Arial";
-                        ctx.fillStyle = "#667085";
-                        ctx.fillText(value, x - 15, y);
+                        ctx.font = "12px Arial";
+                        ctx.fillStyle = "#fff";
+                        ctx.fillText(value, x - 15, y + 4);
                     } catch (e) {
                         console.log("afterDraw call failed", e.message)
                     }
@@ -318,7 +318,7 @@ const PredictScoreChart = ({ startDate, venue, number, condition }) => {
             <div className="">
             {
                 data &&
-                <div className="py-6">
+                <div className="py-6 px-6">
                 <Bar options={options} data={data} width={"100%"} height={"50"} plugins={plugins}/>
                 </div>
             }
