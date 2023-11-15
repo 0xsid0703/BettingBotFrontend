@@ -114,7 +114,7 @@ const Dropdown = () => {
                 }
                 style={{ width: `${100}px` }}
             >
-                { Array.from({length: 5}).map ((_, idx) => 
+                { Array.from({length: 10}).map ((_, idx) => 
                 <ul
                     className={`py-2 text-sm text-v3-primary font-medium dark:text-gray-200`}
                     aria-labelledby="dropdownButton"
