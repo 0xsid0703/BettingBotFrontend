@@ -50,7 +50,7 @@ const Event = () => {
             let runnerLen = 0
             if (resp.success) {
                 totalMatched = Number(resp.data.totalMatched)
-                marketPercent = ((Number(resp.data.totalMatched) / Number(resp.data.totalAvailable)) * 100).toFixed(2)
+                marketPercent = Number(resp.data.marketPercent).toFixed(2)
                 runnerLen = resp.data.runnerLen
             }
             tmpUpcomingData.push ({

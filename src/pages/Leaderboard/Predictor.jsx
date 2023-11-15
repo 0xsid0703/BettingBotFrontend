@@ -46,7 +46,6 @@ const Predictor = () => {
                 }
             })
         })
-        console.log (num, venue, "PPPPP")
         if (num > 0 && venue !== "") {
             try {
                 const resp = await getRaceByNum(getDateString(startDate), venue, num, curCondition)
@@ -281,7 +280,7 @@ const Predictor = () => {
                         <div className="col-span-1 predictor-race-body">{idx + 1}</div>
                         <div className="col-span-2 p-5 flex flex-row items-center justify-start">{horse['horse_name']}</div>
                         <div className="col-span-1 predictor-race-body">{horse['starts']}</div>
-                        <div className="col-span-1 predictor-race-body">Framed</div>
+                        <div className="col-span-1 predictor-race-body">{(horse['framed_odds']).toFixed(2)}</div>
                         <div className="col-span-1 predictor-race-body">{horse['horse_barrier']}</div>
                         <div className="col-span-1 predictor-race-body">{horse['weight']}</div>
                         <div className="col-span-1 predictor-race-body">{horse['class']}</div>
