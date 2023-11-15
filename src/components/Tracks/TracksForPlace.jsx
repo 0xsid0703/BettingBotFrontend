@@ -31,10 +31,11 @@ const TracksForPlace = ({ setDate }) => {
         // eslint-disable-next-line no-undef
         const resp = await getEvents({
             date: format (startDate, "yyyy-MM-d"),
-            type: 'PLACE'
+            type: 'WIN'
         })
         setLoading (true)
         if (resp?.success) {
+            console.log (resp.data)
             let data = resp.data.sort((a, b) => {
                 if (new Date(a?.markets[0].startTime).getTime() > new Date(b?.markets[0].startTime).getTime()) return 1
                 else return -1
@@ -119,11 +120,11 @@ const TracksForPlace = ({ setDate }) => {
                                     {
                                         event?.markets.map((market, idx) => (
                                             <div 
-                                                className={clsx(`track-body-item ${new Date(market.startTime).getTime() < new Date().getTime()?"":"hover:bg-grey-2 cursor-pointer"}`)} 
+                                                className={clsx(`track-body-item hover:bg-grey-2 cursor-pointer`)} 
                                                 key={idx} 
                                                 style={{width: `${pWidth/12}px`}}
                                                 onClick={() => {
-                                                    if (new Date(market.startTime).getTime() >= new Date().getTime())
+                                                    // if (new Date(market.startTime).getTime() >= new Date().getTime())
                                                         setMarket({"marketId":market.marketId, venue: `${market.venue} R${idx+1}`})
                                                 }}
                                             >
