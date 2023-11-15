@@ -14,6 +14,21 @@ import ClockElement from "../../components/Tracks/ClockElement";
 import PredictScoreChart from "../../components/ScoreChart/PredictScoreChart";
 
 import gearSvg from '../../assets/gears/gear.svg'
+import blackSvg from '../../assets/gears/Black.svg'
+import blackBSvg from '../../assets/gears/Black-Blinkers.svg'
+import blackBFSvg from '../../assets/gears/Black-BlinkersFirstTime.svg'
+import brownBSvg from '../../assets/gears/Brown-Blinkers.svg'
+import brownBFSvg from '../../assets/gears/Brown-BlinkersFirstTime.svg'
+import chestnutSvg from '../../assets/gears/Chestnut.svg'
+import chestnutBSvg from '../../assets/gears/Chestnut-Blinkers.svg'
+import chestnutBFSvg from '../../assets/gears/Chestnut-BlinkersFirstTime.svg'
+import darkBrownSvg from '../../assets/gears/DarkBrown.svg'
+import darkBrownBSvg from '../../assets/gears/DarkBrown-Blinkers.svg'
+import darkBrownBFSvg from '../../assets/gears/DarkBrown-BlinkersFirstTime.svg'
+import greySvg from '../../assets/gears/Grey.svg'
+import greyBSvg from '../../assets/gears/Grey-Blinkers.svg'
+import greyBFSvg from '../../assets/gears/Grey-BlinkersFirstTime.svg'
+
 import { formattedNum,getDateString } from "../../utils";
 import { CLASS_POINT } from "../../constants";
 
@@ -61,7 +76,7 @@ const Predictor = () => {
     useEffect (() => {
         initialize ()
     }, [initialize])
-
+    console.log (race, "PPP")
     return (
         <div className="flex flex-col gap-5 p-[16px] 2xl:p-[58px] 4xl:p-[112px] bg-white min-w-[1440px]">
             <TracksForPlace setDate={(val) => setStartDate(val)}/>
@@ -270,7 +285,7 @@ const Predictor = () => {
                 }
                 {race && race['horses'].length > 0 &&
                     race['horses'].map ((horse, idx) =>
-                        <div key={idx} className="grid grid-cols-24 text-black-2 font-normal text-sm leading-6">
+                        <div key={idx} className="grid grid-cols-24 text-black-2 font-normal text-sm leading-6 w-full">
                         <div className="col-span-1 predictor-race-body">
                             <img src={gearSvg} className="w-8 h-8"/>
                         </div>
@@ -278,25 +293,29 @@ const Predictor = () => {
                             <img src={horse['horse_silk']} className="w-8 h-8"/>
                         </div>
                         <div className="col-span-1 predictor-race-body">{idx + 1}</div>
-                        <div className="col-span-2 p-5 flex flex-row items-center justify-start">{horse['horse_name']}</div>
+                        <div className="col-span-2 p-5 flex flex-row items-center justify-start">
+                            <a href={`/horse/au/${horse['horse_id']}`} className="text-blue-1">
+                                {horse['horse_name']}
+                            </a>
+                        </div>
                         <div className="col-span-1 predictor-race-body">{horse['starts']}</div>
                         <div className="col-span-1 predictor-race-body">{(horse['framed_odds']).toFixed(2)}</div>
                         <div className="col-span-1 predictor-race-body">{horse['horse_barrier']}</div>
                         <div className="col-span-1 predictor-race-body">{horse['weight']}</div>
-                        <div className="col-span-1 predictor-race-body">{horse['class']}</div>
+                        <div className="col-span-1 predictor-race-body">{parseInt(horse['class'])}%</div>
                         <div className="col-span-1 predictor-race-body">{`$${formattedNum(horse['average'])}`}</div>
                         <div className="col-span-1 predictor-race-body">{horse['finishPercent']}%</div>
                         <div className="col-span-1 predictor-race-body">{horse['winPercent']}%</div>
                         <div className="col-span-1 predictor-race-body">{horse['placePercent']}%</div>
                         <div className="col-span-1 predictor-race-body">{parseInt(horse['condition'])}%</div>
                         <div className="col-span-1 predictor-race-body">{parseInt(horse['distance'])}%</div>
-                        <div className="col-span-1 predictor-race-body">{horse['track']}%</div>
-                        <div className="col-span-1 predictor-race-body">{horse['jockey']}%</div>
-                        <div className="col-span-1 predictor-race-body">{horse['trainer']}%</div>
+                        <div className="col-span-1 predictor-race-body">{parseInt(horse['track'])}%</div>
+                        <div className="col-span-1 predictor-race-body">{parseInt(horse['jockey'])}%</div>
+                        <div className="col-span-1 predictor-race-body">{parseInt(horse['trainer'])}%</div>
                         <div className="col-span-1 predictor-race-body">{parseInt(horse['settling'])}%</div>
-                        <div className="col-span-1 predictor-race-body">{parseInt(horse['last_600'])}</div>
+                        <div className="col-span-1 predictor-race-body">{Number(horse['last_600']).toFixed(2)}</div>
                         <div className="col-span-1 predictor-race-body">{horse['speed']}</div>
-                        <div className="col-span-1 predictor-race-body">{horse['lastFn']}</div>
+                        <div className="col-span-1 predictor-race-body">{parseInt(horse['lastFn'])}</div>
                         <div className="col-span-1 predictor-race-body">{horse['lastMgn']}</div>
                         </div>
                     )

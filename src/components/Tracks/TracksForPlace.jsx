@@ -45,7 +45,9 @@ const TracksForPlace = ({ setDate }) => {
                 const tmpMarkets = d.markets.map((market) => {
                     let winners = []
                     let tmpMarket = {...market}
+                    console.log ("PPPPPPPPPPP")
                     market.runners.map((runner) => {
+                        console.log (runner['status'], ">>>>")
                         if (runner['status'] === 'WINNER') winners.push(market['runnersId'][runner['selectionId']])
                     })
                     tmpMarket['winners'] = winners
