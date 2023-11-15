@@ -13,7 +13,6 @@ const ClockElement = ({market}) => {
     
     let tmpH, tmpM
     useEffect(() => {
-        console.log (market.startTime, "<<<<<<<<<<")
         const delta = (new Date(market.startTime) - clock)/1000
         if (delta < 3600) clockFlg.current = true
         else clockFlg.current = false

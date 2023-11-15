@@ -20,7 +20,7 @@ function App() {
   const [market, setMarket] = useState ('')
   const [events, setEvents] = useState ([])
   const [clock, setClock] = useState (new Date().getTime())
-
+  
   const marketValue = useMemo(
     () => ({ market, setMarket }),
     [market]

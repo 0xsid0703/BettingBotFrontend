@@ -63,9 +63,9 @@ const Event = () => {
             })
         }
         if (tmpUpcomingData.length > 0) {
-            // if (!marketRef.current) {
+            if (!marketRef.current) {
                 setMarket ({marketId: tmpUpcomingData[0]['marketId'], venue: tmpUpcomingData[0]['venue']})
-            // }
+            }
             setUpcomingMarkets (tmpUpcomingData)
         } else {
             setUpcomingMarkets (undefined)

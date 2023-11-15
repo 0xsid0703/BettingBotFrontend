@@ -34,6 +34,7 @@ const Predictor = () => {
         let num = -1
         let venue =""
         setRace ()
+
         events.map((event)=> {
             event.markets.map((m, idx) => {
                 if (market.marketId === m.marketId) {
@@ -45,16 +46,18 @@ const Predictor = () => {
                 }
             })
         })
+        console.log (num, venue, "PPPPP")
         if (num > 0 && venue !== "") {
             try {
                 const resp = await getRaceByNum(getDateString(startDate), venue, num, curCondition)
+                console.log (resp, ">>>>>")
                 setRace (resp)
 
             } catch (e) {
                 console.log (e)
             }
         }
-    }, [startDate, events, market.marketId, curCondition])
+    }, [startDate, events, market, curCondition])
 
     useEffect (() => {
         initialize ()
@@ -92,7 +95,7 @@ const Predictor = () => {
                             <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
                             {
                                 race && race['totalPrize'] ? (
-                                    formattedNum(race['totalPrize'], true)
+                                    `$${formattedNum(parseInt(race['totalPrize']))}`
                                 ) : (
                                     <Skeleton
                                         baseColor="#EAECF0"
@@ -108,7 +111,7 @@ const Predictor = () => {
                             <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
                                 {
                                     race && race['totalMatched'] ? (
-                                        formattedNum(race['totalMatched'], true)
+                                        `$${formattedNum(race['totalMatched'])}`
                                     ) : (
                                         <Skeleton
                                             baseColor="#EAECF0"
@@ -282,7 +285,7 @@ const Predictor = () => {
                         <div className="col-span-1 predictor-race-body">{horse['horse_barrier']}</div>
                         <div className="col-span-1 predictor-race-body">{horse['weight']}</div>
                         <div className="col-span-1 predictor-race-body">{horse['class']}</div>
-                        <div className="col-span-1 predictor-race-body">{formattedNum(horse['average'], true)}</div>
+                        <div className="col-span-1 predictor-race-body">{`$${formattedNum(horse['average'])}`}</div>
                         <div className="col-span-1 predictor-race-body">{horse['finishPercent']}</div>
                         <div className="col-span-1 predictor-race-body">{horse['winPercent']}</div>
                         <div className="col-span-1 predictor-race-body">{horse['placePercent']}</div>
@@ -291,8 +294,8 @@ const Predictor = () => {
                         <div className="col-span-1 predictor-race-body">{horse['track']}</div>
                         <div className="col-span-1 predictor-race-body">{horse['jockey']}</div>
                         <div className="col-span-1 predictor-race-body">{horse['trainer']}</div>
-                        <div className="col-span-1 predictor-race-body">{horse['settling']}</div>
-                        <div className="col-span-1 predictor-race-body">{horse['last_600']}</div>
+                        <div className="col-span-1 predictor-race-body">{parseInt(horse['settling'])}</div>
+                        <div className="col-span-1 predictor-race-body">{parseInt(horse['last_600'])}</div>
                         <div className="col-span-1 predictor-race-body">{horse['speed']}</div>
                         <div className="col-span-1 predictor-race-body">{horse['lastFn']}</div>
                         <div className="col-span-1 predictor-race-body">{horse['lastMgn']}</div>
@@ -300,7 +303,7 @@ const Predictor = () => {
                     )
                 }
             </div>
-            <PredictScoreChart startDate={startDate} venue={venue} number={raceNum}/>
+            <PredictScoreChart startDate={startDate} venue={venue} number={raceNum} condition={curCondition}/>
         </div>
     )
 }

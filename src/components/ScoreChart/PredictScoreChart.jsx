@@ -132,7 +132,7 @@ const Dropdown = () => {
     )
 }
 
-const PredictScoreChart = ({ startDate, venue, number }) => {
+const PredictScoreChart = ({ startDate, venue, number, condition }) => {
   const [scores, setScores] = useState ()
   const [labels, setLabels] = useState ()
   const [data, setData] = useState ()
@@ -142,14 +142,14 @@ const PredictScoreChart = ({ startDate, venue, number }) => {
     
     if (number > 0 && venue !== "") {
         try {
-            const resp = await getRaceHorseScores(getDateString(startDate), venue, number)
+            const resp = await getRaceHorseScores(getDateString(startDate), venue, number, condition)
             console.log (resp, "LLL")
             setScores (resp)
         } catch (e) {
             console.log (e)
         }
     }
-}, [startDate, venue, number])
+}, [startDate, venue, number, condition])
 
     useEffect(() => {
         initialize ()
@@ -175,7 +175,37 @@ const PredictScoreChart = ({ startDate, venue, number }) => {
         setData (tmpData)
     }, [scores])
     
-  
+    let plugins = [
+        {
+            afterDraw: function (chart) {
+                var ctx = chart.ctx;
+                ctx.save();
+                var xAxis = chart.scales["x"];
+
+                // eslint-disable-next-line react/prop-types
+                var barArray = chart.getDatasetMeta(data.datasets.length - 1).data
+
+                xAxis.ticks.forEach((v, i) => {
+                    try {
+                        const { x, y } = barArray[v.value];
+                        var value = 0;
+                        for (let d of chart.data.datasets) {
+                            value += Number(d.data[v.value]);
+                        }
+                        ctx.textAlign = "center";
+                        ctx.font = "11px Arial";
+                        ctx.fillStyle = "#667085";
+                        ctx.fillText(value, x - 15, y);
+                    } catch (e) {
+                        console.log("afterDraw call failed", e.message)
+                    }
+                });
+                ctx.restore();
+
+            },
+        },
+    ];
+
     return (
         <div className="flex flex-col bg-pink-1 w-full border rounded-[10px] border-grey-2">
             <div className="grid grid-cols-12 border-b border-grey-2">
@@ -289,7 +319,7 @@ const PredictScoreChart = ({ startDate, venue, number }) => {
             {
                 data &&
                 <div className="py-6">
-                <Bar options={options} data={data} width={"100%"} height={"50"}/>
+                <Bar options={options} data={data} width={"100%"} height={"50"} plugins={plugins}/>
                 </div>
             }
             {
