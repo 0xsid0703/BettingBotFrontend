@@ -324,7 +324,7 @@ const Predictor = () => {
                         <div className="col-span-1 predictor-race-body">
                             <img src={horse['horse_silk']} className="w-8 h-8"/>
                         </div>
-                        <div className="col-span-1 predictor-race-body">{idx + 1}</div>
+                        <div className="col-span-1 predictor-race-body">{horse['tab_no']}</div>
                         <div className="col-span-2 p-5 flex flex-row items-center justify-start">
                             <a href={`/horse/au/${horse['horse_id']}`} className="text-blue-1">
                                 {horse['horse_name']}

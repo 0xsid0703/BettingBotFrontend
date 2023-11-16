@@ -143,7 +143,7 @@ const PredictScoreChart = ({ startDate, venue, number, condition }) => {
     if (number > 0 && venue !== "") {
         try {
             const resp = await getRaceHorseScores(getDateString(startDate), venue, number, condition)
-            console.log (resp, "LLL")
+            
             setScores (resp)
         } catch (e) {
             console.log (e)
@@ -207,7 +207,7 @@ const PredictScoreChart = ({ startDate, venue, number, condition }) => {
     ];
 
     return (
-        <div className="flex flex-col bg-pink-1 w-full border rounded-[10px] border-grey-2">
+        <div className="flex flex-col bg-grey-4 w-full border rounded-[10px] border-grey-2">
             <div className="grid grid-cols-12 border-b border-grey-2">
                 <div className="flex flex-row items-center p-5 text-black-2 text-xl font-bold leading-6 col-span-2">Form Score</div>
                 <div className="col-span-10 grid grid-cols-17 border-l border-grey-2">
