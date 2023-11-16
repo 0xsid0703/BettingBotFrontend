@@ -23,9 +23,9 @@ import brownBFSvg from '../../assets/gears/Brown-BlinkersFirstTime.svg'
 import chestnutSvg from '../../assets/gears/Chestnut.svg'
 import chestnutBSvg from '../../assets/gears/Chestnut-Blinkers.svg'
 import chestnutBFSvg from '../../assets/gears/Chestnut-BlinkersFirstTime.svg'
-import darkBrownSvg from '../../assets/gears/DarkBrown.svg'
-import darkBrownBSvg from '../../assets/gears/DarkBrown-Blinkers.svg'
-import darkBrownBFSvg from '../../assets/gears/DarkBrown-BlinkersFirstTime.svg'
+import baySvg from '../../assets/gears/Bay.svg'
+import bayBSvg from '../../assets/gears/Bay-Blinkers.svg'
+import bayBFSvg from '../../assets/gears/Bay-BlinkersFirstTime.svg'
 import greySvg from '../../assets/gears/Grey.svg'
 import greyBSvg from '../../assets/gears/Grey-Blinkers.svg'
 import greyBFSvg from '../../assets/gears/Grey-BlinkersFirstTime.svg'
@@ -34,27 +34,51 @@ import { formattedNum,getDateString } from "../../utils";
 import { CLASS_POINT } from "../../constants";
 
 const IMAG_PATH = {
-    'b': blackSvg,
+    'b': baySvg,
+    'b-B': bayBSvg,
+    'b-BF': bayBFSvg,
+    'bl': blackSvg,
+    'bl-B': blackBSvg,
+    'bl-BF': blackBFSvg,
     'br': brownSvg,
-    'b/br': darkBrownSvg,
-    'br/bl': darkBrownSvg,
-    'gr': greySvg,
-    'gr/br': greySvg,
-    'ch': chestnutSvg,
-    'b-B': blackBSvg,
     'br-B': brownBSvg,
-    'b/br-B': darkBrownBSvg,
-    'br/bl-B': darkBrownBSvg,
-    'gr-B': greyBSvg,
-    'gr/br-B': greyBSvg,
-    'ch-B': chestnutBSvg,
-    'b-BF': blackBFSvg,
     'br-BF': brownBFSvg,
-    'b/br-BF': darkBrownBFSvg,
-    'br/bl-BF': darkBrownBFSvg,
+    'b/br': baySvg,
+    'b/br-B': bayBSvg,
+    'b/br-BF': bayBFSvg,
+    'br/bl': brownSvg,
+    'br/bl-B': brownBSvg,
+    'br/bl-BF': brownBFSvg,
+    'gr': greySvg,
+    'gr-B': greyBSvg,
     'gr-BF': greyBFSvg,
+    'gr/br': greySvg,
+    'gr/br-B': greyBSvg,
     'gr/br-BF': greyBFSvg,
+    'gr/bl': blackSvg,
+    'gr/bl-B': blackBSvg,
+    'gr/bl-BF': blackBFSvg,
+    'gr/ro': greySvg,
+    'gr/ro-B': greyBSvg,
+    'gr/ro-BF': greyBFSvg,
+    'gr/b': greySvg,
+    'gr/b-B': greyBSvg,
+    'gr/b-BF': greyBFSvg,
+    'gr/ch': greySvg,
+    'gr/ch-B': greyBSvg,
+    'gr/ch-BF': greyBFSvg,
+    'ch': chestnutSvg,
+    'ch-B': chestnutBSvg,
     'ch-BF': chestnutBFSvg,
+    'wh': greySvg,
+    'wh-B': greyBSvg,
+    'wh-BF': greyBFSvg,
+    'du/ch': chestnutSvg,
+    'du/ch-B': chestnutBSvg,
+    'du/ch-BF': chestnutBFSvg,
+    'wh/b': baySvg,
+    'wh/b-B': bayBSvg,
+    'wh/b-BF': bayBFSvg,
 }
 
 const Predictor = () => {
