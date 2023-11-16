@@ -17,6 +17,7 @@ import gearSvg from '../../assets/gears/gear.svg'
 import blackSvg from '../../assets/gears/Black.svg'
 import blackBSvg from '../../assets/gears/Black-Blinkers.svg'
 import blackBFSvg from '../../assets/gears/Black-BlinkersFirstTime.svg'
+import brownSvg from '../../assets/gears/Brown.svg'
 import brownBSvg from '../../assets/gears/Brown-Blinkers.svg'
 import brownBFSvg from '../../assets/gears/Brown-BlinkersFirstTime.svg'
 import chestnutSvg from '../../assets/gears/Chestnut.svg'
@@ -31,6 +32,30 @@ import greyBFSvg from '../../assets/gears/Grey-BlinkersFirstTime.svg'
 
 import { formattedNum,getDateString } from "../../utils";
 import { CLASS_POINT } from "../../constants";
+
+const IMAG_PATH = {
+    'b': blackSvg,
+    'br': brownSvg,
+    'b/br': darkBrownSvg,
+    'br/bl': darkBrownSvg,
+    'gr': greySvg,
+    'gr/br': greySvg,
+    'ch': chestnutSvg,
+    'b-B': blackBSvg,
+    'br-B': brownBSvg,
+    'b/br-B': darkBrownBSvg,
+    'br/bl-B': darkBrownBSvg,
+    'gr-B': greyBSvg,
+    'gr/br-B': greyBSvg,
+    'ch-B': chestnutBSvg,
+    'b-BF': blackBFSvg,
+    'br-BF': brownBFSvg,
+    'b/br-BF': darkBrownBFSvg,
+    'br/bl-BF': darkBrownBFSvg,
+    'gr-BF': greyBFSvg,
+    'gr/br-BF': greyBFSvg,
+    'ch-BF': chestnutBFSvg,
+}
 
 const Predictor = () => {
 
@@ -287,7 +312,14 @@ const Predictor = () => {
                     race['horses'].map ((horse, idx) =>
                         <div key={idx} className="grid grid-cols-24 text-black-2 font-normal text-sm leading-6 w-full">
                         <div className="col-span-1 predictor-race-body">
-                            <img src={gearSvg} className="w-8 h-8"/>
+                            {
+                                IMAG_PATH[horse['gear']] &&
+                                <img src={IMAG_PATH[horse['gear']]} className="w-8 h-8"/>
+                            }
+                            {
+                                !IMAG_PATH[horse['gear']] &&
+                                <img src={gearSvg} className="w-8 h-8"/>
+                            }
                         </div>
                         <div className="col-span-1 predictor-race-body">
                             <img src={horse['horse_silk']} className="w-8 h-8"/>
