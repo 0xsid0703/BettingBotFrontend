@@ -51,7 +51,7 @@ function App() {
             <Route path="/trainer/au/:id" element={<TrainerProfile />} />
             <Route path="/jockey/au/:id" element={<JockeyProfile />} />
             <Route element={<LeaderboardLayout />}>
-              <Route path="/board/predictor" element={<Predictor />} />
+              <Route path="/predictor" element={<Predictor />} />
               <Route path="/board/trainer" element={<TrainerBoard />} />
               <Route path="/board/horse" element={<HorseBoard />} />
               <Route path="/board/jockey" element={<JockeyBoard />} />
