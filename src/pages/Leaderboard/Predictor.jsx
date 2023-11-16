@@ -101,7 +101,7 @@ const Predictor = () => {
     useEffect (() => {
         initialize ()
     }, [initialize])
-    console.log (race, "PPP")
+
     return (
         <div className="flex flex-col gap-5 p-[16px] 2xl:p-[58px] 4xl:p-[112px] bg-white min-w-[1440px]">
             <TracksForPlace setDate={(val) => setStartDate(val)}/>
