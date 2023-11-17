@@ -377,7 +377,7 @@ const Predictor = () => {
                     )
                 }
             </div>
-            <PredictScoreChart startDate={startDate} venue={venue} number={raceNum} condition={curCondition}/>
+            <PredictScoreChart startDate={startDate} venue={venue} number={raceNum} condition={curCondition} height={race ? race['horses'].length * 72 : 0}/>
         </div>
     )
 }

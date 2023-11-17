@@ -132,7 +132,7 @@ const Dropdown = () => {
     )
 }
 
-const PredictScoreChart = ({ startDate, venue, number, condition }) => {
+const PredictScoreChart = ({ startDate, venue, number, condition, height }) => {
   const [scores, setScores] = useState ()
   const [labels, setLabels] = useState ()
   const [data, setData] = useState ()
@@ -207,7 +207,7 @@ const PredictScoreChart = ({ startDate, venue, number, condition }) => {
     ];
 
     return (
-        <div className="flex flex-col bg-grey-4 w-full border rounded-[10px] border-grey-2">
+        <div className="flex flex-col bg-grey-4 w-full border rounded-[10px] border-grey-2" >
             <div className="grid grid-cols-12 border-b border-grey-2">
                 <div className="flex flex-row items-center p-5 text-black-2 text-xl font-bold leading-6 col-span-2">Form Score</div>
                 <div className="col-span-10 grid grid-cols-17 border-l border-grey-2">
@@ -315,19 +315,19 @@ const PredictScoreChart = ({ startDate, venue, number, condition }) => {
                     </div>
                 </div>
             </div>
-            <div className="">
+            <div className="w-full">
             {
-                data &&
-                <div className="py-6 px-6">
-                <Bar options={options} data={data} width={"100%"} height={"50"} plugins={plugins}/>
+                data && height > 0 &&
+                <div className="py-6 px-6 w-full"  style={{height: height === 0? 300: height}}>
+                <Bar options={options} data={data} plugins={plugins}/>
                 </div>
             }
             {
-                !data &&
-                <div className="h-[450px]">
+                (!data || height === 0) &&
+                <div className="h-[490px] p-5">
                 <Skeleton
                     baseColor="#EAECF0"
-                    style={{ height: "100%" }}
+                    style={{ height: 450 }}
                     highlightColor="#D9D9D9"
                 />
                 </div>
