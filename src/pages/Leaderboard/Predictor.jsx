@@ -360,9 +360,9 @@ const Predictor = () => {
                         <div className="col-span-1 predictor-race-body">{horse['weight']}</div>
                         <div className="col-span-1 predictor-race-body">{parseInt(horse['class'])}%</div>
                         <div className="col-span-1 predictor-race-body">{`$${formattedNum(horse['average'])}`}</div>
-                        <div className="col-span-1 predictor-race-body">{horse['finishPercent']}%</div>
-                        <div className="col-span-1 predictor-race-body">{horse['winPercent']}%</div>
-                        <div className="col-span-1 predictor-race-body">{horse['placePercent']}%</div>
+                        <div className="col-span-1 predictor-race-body">{parseInt(horse['finishPercent'])}%</div>
+                        <div className="col-span-1 predictor-race-body">{parseInt(horse['winPercent'])}%</div>
+                        <div className="col-span-1 predictor-race-body">{parseInt(horse['placePercent'])}%</div>
                         <div className="col-span-1 predictor-race-body">{parseInt(horse['condition'])}%</div>
                         <div className="col-span-1 predictor-race-body">{parseInt(horse['distance'])}%</div>
                         <div className="col-span-1 predictor-race-body">{parseInt(horse['track'])}%</div>
