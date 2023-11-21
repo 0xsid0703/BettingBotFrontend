@@ -7,6 +7,8 @@ import clsx from 'clsx';
 
 import Datepicker from '../Datepicker';
 import auFlag from '../../assets/flags/AU.svg'
+import nzFlag from '../../assets/flags/NZ.svg'
+import sgFlag from '../../assets/flags/SG.svg'
 // import gbFlag from '../../assets/flags/GB.svg'
 
 import { getEvents } from '../../apis';
@@ -14,6 +16,12 @@ import { eventsContext } from '../../contexts/eventsContext';
 import { marketContext } from '../../contexts/marketContext';
 
 import ClockElement from './ClockElement';
+
+const COUNTRY_FLAG = {
+    'AU': auFlag,
+    'NZ': nzFlag,
+    'SG': sgFlag
+}
 
 const TracksForPlace = ({ setDate }) => {
     const [pWidth, setPWidth] = useState (0)
@@ -45,9 +53,7 @@ const TracksForPlace = ({ setDate }) => {
                 const tmpMarkets = d.markets.map((market) => {
                     let winners = []
                     let tmpMarket = {...market}
-                    console.log ("PPPPPPPPPPP")
                     market.runners.map((runner) => {
-                        console.log (runner['status'], ">>>>")
                         if (runner['status'] === 'WINNER') winners.push(market['runnersId'][runner['selectionId']])
                     })
                     tmpMarket['winners'] = winners
@@ -116,7 +122,7 @@ const TracksForPlace = ({ setDate }) => {
                             return (
                                 <div className='flex flex-row border-d border-t border-grey-2' key={idx}>
                                     <div className='track-body-header' style={{width: `${pWidth/6}px`}}>
-                                        <img src={auFlag} className='w-4 h-4 mr-[9px]'/>
+                                        <img src={COUNTRY_FLAG[event.countryCode.toUpperCase()]} className='w-4 h-4 mr-[9px]'/>
                                         {event.venue}
                                     </div>
                                     {

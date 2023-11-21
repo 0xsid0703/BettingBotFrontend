@@ -15,18 +15,43 @@ import PredictScoreChart from "../../components/ScoreChart/PredictScoreChart";
 
 import gearSvg from '../../assets/gears/gear.svg'
 import blackSvg from '../../assets/gears/Black.svg'
+import blackCONBSvg from '../../assets/gears/Black-CrossOverNoseBand.svg'
+import blackEMSvg from '../../assets/gears/Black-EarMuffs.svg'
+import blackNRSvg from '../../assets/gears/Black-NoseRoll.svg'
+import blackPSvg from '../../assets/gears/Black-Pacifiers.svg'
+import blackWSvg from '../../assets/gears/Black-Winkers.svg'
 import blackBSvg from '../../assets/gears/Black-Blinkers.svg'
 import blackBFSvg from '../../assets/gears/Black-BlinkersFirstTime.svg'
 import brownSvg from '../../assets/gears/Brown.svg'
+import brownCONBSvg from '../../assets/gears/Brown-CrossOverNoseBand.svg'
+import brownEMSvg from '../../assets/gears/Brown-EarMuffs.svg'
+import brownNRSvg from '../../assets/gears/Brown-NoseRoll.svg'
+import brownPSvg from '../../assets/gears/Brown-Pacifiers.svg'
+import brownWSvg from '../../assets/gears/Brown-Winkers.svg'
 import brownBSvg from '../../assets/gears/Brown-Blinkers.svg'
 import brownBFSvg from '../../assets/gears/Brown-BlinkersFirstTime.svg'
 import chestnutSvg from '../../assets/gears/Chestnut.svg'
+import chestnutCONBSvg from '../../assets/gears/Chestnut-CrossOverNoseBand.svg'
+import chestnutEMSvg from '../../assets/gears/Chestnut-EarMuffs.svg'
+import chestnutNRSvg from '../../assets/gears/Chestnut-NoseRoll.svg'
+import chestnutPSvg from '../../assets/gears/Chestnut-Pacifiers.svg'
+import chestnutWSvg from '../../assets/gears/Chestnut-Winkers.svg'
 import chestnutBSvg from '../../assets/gears/Chestnut-Blinkers.svg'
 import chestnutBFSvg from '../../assets/gears/Chestnut-BlinkersFirstTime.svg'
 import baySvg from '../../assets/gears/Bay.svg'
 import bayBSvg from '../../assets/gears/Bay-Blinkers.svg'
+import bayCONBSvg from '../../assets/gears/Bay-CrossOverNoseBand.svg'
+import bayEMSvg from '../../assets/gears/Bay-EarMuffs.svg'
+import bayNRSvg from '../../assets/gears/Bay-NoseRoll.svg'
+import bayPSvg from '../../assets/gears/Bay-Pacifiers.svg'
+import bayWSvg from '../../assets/gears/Bay-Winkers.svg'
 import bayBFSvg from '../../assets/gears/Bay-BlinkersFirstTime.svg'
 import greySvg from '../../assets/gears/Grey.svg'
+import greyCONBSvg from '../../assets/gears/Grey-CrossOverNoseBand.svg'
+import greyEMSvg from '../../assets/gears/Grey-EarMuffs.svg'
+import greyNRSvg from '../../assets/gears/Grey-NoseRoll.svg'
+import greyPSvg from '../../assets/gears/Grey-Pacifiers.svg'
+import greyWSvg from '../../assets/gears/Grey-Winkers.svg'
 import greyBSvg from '../../assets/gears/Grey-Blinkers.svg'
 import greyBFSvg from '../../assets/gears/Grey-BlinkersFirstTime.svg'
 
@@ -35,12 +60,27 @@ import { CLASS_POINT } from "../../constants";
 
 const IMAG_PATH = {
     'b': baySvg,
+    'b-CONB': bayCONBSvg,
+    'b-EM': bayEMSvg,
+    'b-NR': bayNRSvg,
+    'b-P': bayPSvg,
+    'b-W': bayWSvg,
     'b-B': bayBSvg,
     'b-BF': bayBFSvg,
     'bl': blackSvg,
+    'bl-CONB': blackCONBSvg,
+    'bl-EM': blackEMSvg,
+    'bl-NR': blackNRSvg,
+    'bl-P': blackPSvg,
+    'bl-W': blackWSvg,
     'bl-B': blackBSvg,
     'bl-BF': blackBFSvg,
     'br': brownSvg,
+    'br-CONB': brownCONBSvg,
+    'br-EM': brownEMSvg,
+    'br-NR': brownNRSvg,
+    'br-P': brownPSvg,
+    'br-W': brownWSvg,
     'br-B': brownBSvg,
     'br-BF': brownBFSvg,
     'b/br': baySvg,
@@ -50,6 +90,11 @@ const IMAG_PATH = {
     'br/bl-B': brownBSvg,
     'br/bl-BF': brownBFSvg,
     'gr': greySvg,
+    'gr-CONB': greyCONBSvg,
+    'gr-EM': greyEMSvg,
+    'gr-NR': greyNRSvg,
+    'gr-P': greyPSvg,
+    'gr-W': greyWSvg,
     'gr-B': greyBSvg,
     'gr-BF': greyBFSvg,
     'gr/br': greySvg,
@@ -68,6 +113,11 @@ const IMAG_PATH = {
     'gr/ch-B': greyBSvg,
     'gr/ch-BF': greyBFSvg,
     'ch': chestnutSvg,
+    'ch-CONB': chestnutCONBSvg,
+    'ch-EM': chestnutEMSvg,
+    'ch-NR': chestnutNRSvg,
+    'ch-P': chestnutPSvg,
+    'ch-W': chestnutWSvg,
     'ch-B': chestnutBSvg,
     'ch-BF': chestnutBFSvg,
     'wh': greySvg,
@@ -135,10 +185,10 @@ const Predictor = () => {
             <div className="grid grid-cols-2 items-center justify-between bg-grey-4 border border-grey-2 rounded-[10px]">
                 <div className="p-5 text-xl text-black-2 font-bold leading-6">
                     {
-                        venue && raceNum > 0 && race && race['class'] && race['class'].length > 0 ? (
+                        venue && raceNum > 0 && race && race['classStr'] && race['classStr'].length > 0 ? (
                         <>
                             {`${venue} · R${raceNum}`} &nbsp;
-                            <span className="text-grey-1 font-normal">{`(${race['class']})`}</span>
+                            <span className="text-grey-1 font-normal">{`(${race['classStr']})`}</span>
                         </>) : (
                             <div className="w-[200px]">
                                 <Skeleton
@@ -189,8 +239,8 @@ const Predictor = () => {
                             <div className="text-center p-5 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Class</div>
                             <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
                                 {
-                                    race && race['class'] ? (
-                                        CLASS_POINT[race['class']]
+                                    race && race['class'] !== undefined ? (
+                                        race['class']
                                     ) : (
                                         <Skeleton
                                             baseColor="#EAECF0"
