@@ -495,9 +495,9 @@ const Predictor = () => {
                                 <div className="bg-blue-1 h-6 rounded-md" style={{width: `${parseFloat(horse['score'])/10 * 100}%`}}></div>
                             </div>
                         </div>
-                        <div className="col-span-1 predictor-race-body">{(horse['framed_odds']).toFixed(2)}</div>
+                        <div className="col-span-1 predictor-race-body">${(horse['framed_odds']).toFixed(2)}</div>
                         <div className="col-span-1 predictor-race-body">${(horse['betfair']).toFixed(2)}</div>
-                        <div className="col-span-1 predictor-race-body">{"diff "}%</div>
+                        <div className="col-span-1 predictor-race-body">{parseInt(horse['diff'])}%</div>
                         <div className="col-span-1 predictor-race-body">{"betfair"}%</div>
                         <div className="col-span-1 predictor-race-body">{"betfair"}%</div>
                         </div>
