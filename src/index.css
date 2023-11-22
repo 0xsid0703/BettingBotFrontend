@@ -11,19 +11,19 @@ body {
 }
 
 .track-header {
-  @apply col-span-2 p-5 bg-grey-4 text-base font-bold text-black-1
+  @apply col-span-2 px-5 py-2 bg-grey-4 text-base font-bold text-black-1
 }
 
 .track-header-item {
-  @apply p-5 bg-grey-4 text-center text-base font-bold text-black-1
+  @apply px-5 py-2 bg-grey-4 text-center text-base font-bold text-black-1
 }
 
 .track-body-header {
-  @apply col-span-2 flex flex-row items-center px-5 py-6 bg-grey-4 text-base font-normal text-black-1
+  @apply col-span-2 flex flex-row items-center px-5 py-3 bg-grey-4 text-base font-normal text-black-1
 }
 
 .track-body-item {
-  @apply flex flex-row items-center justify-center py-5 px-2 text-center text-base font-normal bg-grey-4
+  @apply flex flex-row items-center justify-center py-2 px-2 text-center text-base font-normal bg-grey-4
 }
 
 .race-table-header {
