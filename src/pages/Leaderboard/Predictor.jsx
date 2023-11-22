@@ -498,8 +498,8 @@ const Predictor = () => {
                         <div className="col-span-1 predictor-race-body">${(horse['framed_odds']).toFixed(2)}</div>
                         <div className="col-span-1 predictor-race-body">${(horse['betfair']).toFixed(2)}</div>
                         <div className="col-span-1 predictor-race-body">{parseInt(horse['diff'])}%</div>
-                        <div className="col-span-1 predictor-race-body">{"betfair"}%</div>
-                        <div className="col-span-1 predictor-race-body">{"betfair"}%</div>
+                        <div className="col-span-1 predictor-race-body">{parseInt(horse['10m'])}%</div>
+                        <div className="col-span-1 predictor-race-body">{parseInt(horse['5m'])}%</div>
                         </div>
                     )
                 }
