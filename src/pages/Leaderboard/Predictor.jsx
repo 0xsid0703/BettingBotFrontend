@@ -183,7 +183,7 @@ const Predictor = () => {
                 <Event />
             </div>
             <div className="grid grid-cols-2 items-center justify-between bg-grey-4 border border-grey-2 rounded-[10px]">
-                <div className="p-5 text-xl text-black-2 font-bold leading-6">
+                <div className="px-5 py-2 text-xl text-black-2 font-bold leading-6">
                     {
                         venue && raceNum > 0 && race && race['classStr'] && race['classStr'].length > 0 ? (
                         <>
@@ -204,49 +204,52 @@ const Predictor = () => {
                 <div className="grid grid-cols-2">
                     <div className="grid grid-cols-3 border-l border-grey-2">
                         <div className="grid grid-rows-2">
-                            <div className="text-center p-5 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Total Prize</div>
-                            <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <div className="flex flex-row items-center justify-center p-2 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Total Prize</div>
+                            <div className="flex flex-row items-center justify-center p-2 text-black-1 text-sm font-normal leading-6">
                             {
                                 race && race['totalPrize'] ? (
                                     `$${formattedNum(parseInt(race['totalPrize']))}`
                                 ) : (
+                                    <div className="w-full">
                                     <Skeleton
                                         baseColor="#EAECF0"
                                         style={{ width: "100%" }}
                                         highlightColor="#D9D9D9"
-                                    />
+                                    /></div>
                                 )
                             }
                             </div>
                         </div>
                         <div className="grid grid-rows-2">
-                            <div className="text-center p-5 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Betfair Pool</div>
-                            <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <div className="flex flex-row items-center justify-center p-2 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Betfair Pool</div>
+                            <div className="flex flex-row items-center justify-center p-2 text-black-1 text-sm font-normal leading-6">
                                 {
                                     race && race['totalMatched'] ? (
                                         `$${formattedNum(race['totalMatched'])}`
                                     ) : (
+                                        <div className="w-full">
                                         <Skeleton
                                             baseColor="#EAECF0"
                                             style={{ width: "100%" }}
                                             highlightColor="#D9D9D9"
-                                        />
+                                        /></div>
                                     )
                                 }
                             </div>
                         </div>
                         <div className="grid grid-rows-2">
-                            <div className="text-center p-5 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Class</div>
-                            <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <div className="flex flex-row items-center justify-center p-2 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Class</div>
+                            <div className="flex flex-row items-center justify-center p-2 text-black-1 text-sm font-normal leading-6">
                                 {
                                     race && race['class'] !== undefined ? (
                                         race['class']
                                     ) : (
+                                        <div className="w-full">
                                         <Skeleton
                                             baseColor="#EAECF0"
                                             style={{ width: "100%" }}
                                             highlightColor="#D9D9D9"
-                                        />
+                                        /></div>
                                     )
                                 }
                             </div>
@@ -254,24 +257,25 @@ const Predictor = () => {
                     </div>
                     <div className="grid grid-cols-3">
                         <div className="grid grid-rows-2">
-                            <div className="text-center p-5 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Distance</div>
-                            <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <div className="flex flex-row items-center justify-center p-2 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Distance</div>
+                            <div className="flex flex-row items-center justify-center p-2 text-black-1 text-sm font-normal leading-6">
                                 {
                                     race && race['distance'] ? (
                                         `${race['distance']}m`
                                     ) : (
+                                        <div className="w-full">
                                         <Skeleton
                                             baseColor="#EAECF0"
                                             style={{ width: "100%" }}
                                             highlightColor="#D9D9D9"
-                                        />
+                                        /></div>
                                     )
                                 }
                             </div>
                         </div>
                         <div className="grid grid-rows-2">
-                            <div className="text-center p-5 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Condition</div>
-                            <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <div className="flex flex-row items-center justify-center p-2 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Condition</div>
+                            <div className="text-center p-2 text-black-1 text-sm font-normal leading-6">
                                 <div className="w-full relative flex flex-col items-center">
                                 <button
                                     id="dropdownButton"
@@ -324,8 +328,8 @@ const Predictor = () => {
                             </div>
                         </div>
                         <div className="grid grid-rows-2">
-                            <div className="text-center p-5 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Start Time</div>
-                            <div className="text-center p-5 text-black-1 text-sm font-normal leading-6">
+                            <div className="flex flex-row items-center justify-center p-2 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Start Time</div>
+                            <div className="flex flex-row items-center justify-center p-2 text-black-1 text-sm font-normal leading-6">
                                 {   race && race['startTime'] && (
                                     new Date(race['startTime']).getTime() < new Date().getTime() ? 
                                     (<span className='text-shadow-sm text-grey-1'>$0</span>)
@@ -333,11 +337,12 @@ const Predictor = () => {
                                     : ( <ClockElement market={curMarket}/> ))
                                 }
                                 {   (!race || (race && !race['startTime'])) &&
+                                    <div className="w-full">
                                     <Skeleton
                                         baseColor="#EAECF0"
                                         style={{ width: "100%" }}
                                         highlightColor="#D9D9D9"
-                                    />
+                                    /></div>
                                 }
                             </div>
                         </div>
@@ -349,11 +354,12 @@ const Predictor = () => {
                     <div className="col-span-1 predictor-race-header">Gear</div>
                     <div className="col-span-1 predictor-race-header">Silks</div>
                     <div className="col-span-1 predictor-race-header">Num</div>
-                    <div className="col-span-2 p-5 flex flex-row items-center justify-start">Horse</div>
-                    <div className="col-span-1 predictor-race-header">Starts</div>
-                    <div className="col-span-1 predictor-race-header">Framed</div>
-                    <div className="col-span-1 predictor-race-header">Barrier</div>
-                    <div className="col-span-1 predictor-race-header">Weight</div>
+                    <div className="col-span-3 p-5 flex flex-row items-center justify-start">Horse</div>
+                    <div className="col-span-3 p-5 flex flex-row items-center justify-start">Jockey</div>
+                    {/* <div className="col-span-1 predictor-race-header">Starts</div> */}
+                    {/* <div className="col-span-1 predictor-race-header">Framed</div> */}
+                    {/* <div className="col-span-1 predictor-race-header">Barrier</div> */}
+                    {/* <div className="col-span-1 predictor-race-header">Weight</div> */}
                     <div className="col-span-1 predictor-race-header">Class</div>
                     <div className="col-span-1 predictor-race-header">AVG$</div>
                     <div className="col-span-1 predictor-race-header">Career/F</div>
@@ -373,7 +379,7 @@ const Predictor = () => {
 
                 { (!race || (race && race['horses'].length == 0)) &&
                     Array.from({length: 8}).map((_, idx) => 
-                        <div key={idx} className="py-3 px-2 w-full h-full border-t border-grey-2 self-center">
+                        <div key={idx} className="py-5 px-5 w-full h-full border-t border-grey-2 self-center">
                             <Skeleton
                                 baseColor="#EAECF0"
                                 style={{ width: "100%" }}
@@ -399,15 +405,16 @@ const Predictor = () => {
                             <img src={horse['horse_silk']} className="w-8 h-8"/>
                         </div>
                         <div className="col-span-1 predictor-race-body">{horse['tab_no']}</div>
-                        <div className="col-span-2 p-5 flex flex-row items-center justify-start">
+                        <div className="col-span-3 p-5 flex flex-row items-center justify-start">
                             <a href={`/horse/au/${horse['horse_id']}`} className="text-blue-1">
                                 {horse['horse_name']}
                             </a>
                         </div>
-                        <div className="col-span-1 predictor-race-body">{horse['starts']}</div>
+                        {/* <div className="col-span-1 predictor-race-body">{horse['starts']}</div>
                         <div className="col-span-1 predictor-race-body">{(horse['framed_odds']).toFixed(2)}</div>
                         <div className="col-span-1 predictor-race-body">{horse['horse_barrier']}</div>
-                        <div className="col-span-1 predictor-race-body">{horse['weight']}</div>
+                        <div className="col-span-1 predictor-race-body">{horse['weight']}</div> */}
+                        <div className="col-span-3 p-5 flex flex-row items-center justify-start">{horse['jockey_name']}</div>
                         <div className="col-span-1 predictor-race-body">{parseInt(horse['class'])}%</div>
                         <div className="col-span-1 predictor-race-body">{`$${formattedNum(horse['average'])}`}</div>
                         <div className="col-span-1 predictor-race-body">{parseInt(horse['finishPercent'])}%</div>
@@ -421,13 +428,82 @@ const Predictor = () => {
                         <div className="col-span-1 predictor-race-body">{parseInt(horse['settling'])}%</div>
                         <div className="col-span-1 predictor-race-body">{Number(horse['last_600']).toFixed(2)}</div>
                         <div className="col-span-1 predictor-race-body">{horse['speed']}</div>
-                        <div className="col-span-1 predictor-race-body">{parseInt(horse['lastFn'])}</div>
-                        <div className="col-span-1 predictor-race-body">{horse['lastMgn']}</div>
+                        <div className="col-span-1 predictor-race-body">{horse['lastFn'] ? parseInt(horse['lastFn']) : 0}</div>
+                        <div className="col-span-1 predictor-race-body">{horse['lastMgn'] && horse['lastMgn'].length > 0 ? horse['lastMgn'] : 10}</div>
                         </div>
                     )
                 }
             </div>
-            <PredictScoreChart startDate={startDate} venue={venue} number={raceNum} condition={curCondition} height={race ? race['horses'].length * 72 : 0}/>
+            {/* <PredictScoreChart startDate={startDate} venue={venue} number={raceNum} condition={curCondition} height={race ? race['horses'].length * 72 : 0}/> */}
+            <div className="flex flex-col items-center justify-between bg-grey-4 border border-grey-2 rounded-[10px]">
+                <div className="grid grid-cols-24 text-black-2 font-semibold text-sm leading-6">
+                    <div className="col-span-1 predictor-race-header">Gear</div>
+                    <div className="col-span-1 predictor-race-header">Silks</div>
+                    <div className="col-span-1 predictor-race-header">Num</div>
+                    <div className="col-span-3 p-5 flex flex-row items-center justify-start">Horse</div>
+                    <div className="col-span-3 p-5 flex flex-row items-center justify-start">Jockey</div>
+                    <div className="col-span-1 predictor-race-header">Starts</div>
+                    <div className="col-span-1 predictor-race-header">Barrier</div>
+                    <div className="col-span-1 predictor-race-header">Weight</div>
+                    <div className="col-span-7 p-5 flex flex-row items-center justify-start">Form Score</div>
+                    <div className="col-span-1 predictor-race-header">Framed</div>
+                    <div className="col-span-1 predictor-race-header">Betfair</div>
+                    <div className="col-span-1 predictor-race-header">Diff%</div>
+                    <div className="col-span-1 predictor-race-header">10m</div>
+                    <div className="col-span-1 predictor-race-header">5m</div>
+                </div>
+
+                { (!race || (race && race['horses'].length == 0)) &&
+                    Array.from({length: 8}).map((_, idx) => 
+                        <div key={idx} className="py-5 px-5 w-full h-full border-t border-grey-2 self-center">
+                            <Skeleton
+                                baseColor="#EAECF0"
+                                style={{ width: "100%" }}
+                                highlightColor="#D9D9D9"
+                            />
+                        </div>
+                    )
+                }
+                {race && race['horses'].length > 0 &&
+                    race['horses'].map ((horse, idx) =>
+                        <div key={idx} className="grid grid-cols-24 text-black-2 font-normal text-sm leading-6 w-full">
+                        <div className="col-span-1 predictor-race-body">
+                            {
+                                IMAG_PATH[horse['gear']] &&
+                                <img src={IMAG_PATH[horse['gear']]} className="w-8 h-8"/>
+                            }
+                            {
+                                !IMAG_PATH[horse['gear']] &&
+                                <img src={gearSvg} className="w-8 h-8"/>
+                            }
+                        </div>
+                        <div className="col-span-1 predictor-race-body">
+                            <img src={horse['horse_silk']} className="w-8 h-8"/>
+                        </div>
+                        <div className="col-span-1 predictor-race-body">{horse['tab_no']}</div>
+                        <div className="col-span-3 p-5 flex flex-row items-center justify-start">
+                            <a href={`/horse/au/${horse['horse_id']}`} className="text-blue-1">
+                                {horse['horse_name']}
+                            </a>
+                        </div>
+                        <div className="col-span-3 p-5 flex flex-row items-center justify-start">{horse['jockey_name']}</div>
+                        <div className="col-span-1 predictor-race-body">{horse['starts']}</div>
+                        <div className="col-span-1 predictor-race-body">{horse['horse_barrier']}</div>
+                        <div className="col-span-1 predictor-race-body">{horse['weight']}</div>
+                        <div className="col-span-7 px-5 py-2 flex flex-row items-center justify-start">
+                            <div className="w-full bg-transparent rounded-full h-6">
+                                <div className="bg-blue-1 h-6 rounded-md" style={{width: `${parseFloat(horse['score'])/10 * 100}%`}}></div>
+                            </div>
+                        </div>
+                        <div className="col-span-1 predictor-race-body">{(horse['framed_odds']).toFixed(2)}</div>
+                        <div className="col-span-1 predictor-race-body">${(horse['betfair']).toFixed(2)}</div>
+                        <div className="col-span-1 predictor-race-body">{"diff "}%</div>
+                        <div className="col-span-1 predictor-race-body">{"betfair"}%</div>
+                        <div className="col-span-1 predictor-race-body">{"betfair"}%</div>
+                        </div>
+                    )
+                }
+            </div>
         </div>
     )
 }
