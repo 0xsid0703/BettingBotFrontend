@@ -429,7 +429,7 @@ const Predictor = () => {
                         <div className="col-span-1 predictor-race-body">{Number(horse['last_600']).toFixed(2)}</div>
                         <div className="col-span-1 predictor-race-body">{horse['speed']}</div>
                         <div className="col-span-1 predictor-race-body">{horse['lastFn'] ? parseInt(horse['lastFn']) : 0}</div>
-                        <div className="col-span-1 predictor-race-body">{horse['lastMgn'] && horse['lastMgn'].length > 0 ? horse['lastMgn'] : 10}</div>
+                        <div className="col-span-1 predictor-race-body">{horse['lastMgn']}</div>
                         </div>
                     )
                 }
