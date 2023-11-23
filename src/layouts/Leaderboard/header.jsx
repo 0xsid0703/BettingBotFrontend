@@ -4,7 +4,7 @@ const PATHS = {
     TRAINER: "/board/trainer",
     JOCKEY: "/board/jockey",
     HORSE: "/board/horse",
-    PREDICTOR: "/board/predictor"
+    PREDICTOR: "/predictor"
 }
 
 const Header = () => {

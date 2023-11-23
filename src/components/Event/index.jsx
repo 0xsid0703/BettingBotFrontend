@@ -11,10 +11,11 @@ import Item from './Item'
 import { getMarketBooks } from "../../apis"
 
 /* eslint-disable react/prop-types */
-const Event = () => {
+const Event = ({show}) => {
     const [upcomingMarkets, setUpcomingMarkets] = useState ([])
     const {market, setMarket} = useContext (marketContext)
     const {events} = useContext (eventsContext)
+    const SHOW = show ? show : 4
     
     let marketRef = useRef()
 
@@ -39,7 +40,7 @@ const Event = () => {
             else return 1
         })
         .filter((a)=> new Date(a.startTime).getTime() > new Date().getTime())
-        .slice(0, 4)
+        .slice(0, SHOW)
         let tmpUpcomingData = []
         for (let m of tmp) {
             const resp = await getMarketBooks({
@@ -103,7 +104,7 @@ const Event = () => {
                 )}
                 {
                     upcomingMarkets.length === 0 &&
-                    Array.from({length: 4}).map((item, idx) =>
+                    Array.from({length: SHOW}).map((item, idx) =>
                         <div key={idx} className="p-5 w-full bg-pink-1 rounded-[10px] border border-grey-2 cursor-pointer h-[162px]">
                             <Skeleton
                                     baseColor="#EAECF0"
