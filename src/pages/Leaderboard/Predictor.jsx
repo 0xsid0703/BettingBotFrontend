@@ -496,7 +496,7 @@ const Predictor = () => {
                         <div className="col-span-1 predictor-race-body">{horse['weight']}</div>
                         <div className="col-span-7 px-5 py-2 flex flex-row items-center justify-start">
                             <div className="w-full bg-transparent rounded-full h-6">
-                                <div className="bg-blue-1 h-6 rounded-md text-white text-xs text-right pr-2" style={{width: `${parseFloat(horse['score'])/10 * 100}%`}}>{parseFloat(horse['score']).toFixed(2)}</div>
+                                <div className="flex flex-row items-center justify-end bg-blue-1 h-6 rounded-md text-white text-xs pr-2" style={{width: `${parseFloat(horse['score'])/10 * 100}%`}}>{parseFloat(horse['score']).toFixed(2)}</div>
                             </div>
                         </div>
                         <div className="col-span-1 predictor-race-body">${(horse['framed_odds']).toFixed(2)}</div>
