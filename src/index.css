@@ -19,7 +19,7 @@ body {
 }
 
 .track-body-header {
-  @apply col-span-2 flex flex-row items-center px-5 py-3 bg-grey-4 text-base font-normal text-black-1
+  @apply col-span-2 flex flex-row items-center px-5 py-3 bg-grey-4 text-sm font-normal text-black-1
 }
 
 .track-body-item {
