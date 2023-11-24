@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -145,15 +145,54 @@ const Predictor = () => {
     const [curCondition, setCurCondition]=  useState ("Good")
     const [curTab, setCurTab] = useState (0)
 
+    const startDateRef = useRef(startDate)
+    const eventsRef = useRef(events)
+    const marketRef = useRef(market)
+    const curConditionRef = useRef(curCondition)
+    const curTabRef = useRef(curTab)
+    const intervalRef = useRef()
+
+    useEffect(() => {
+        startDateRef.current = startDate
+        setRace ()
+        if (intervalRef.current) clearInterval(intervalRef.current)
+    }, [startDate])
+
+    useEffect(() => {
+        eventsRef.current = events
+        setRace ()
+        if (intervalRef.current) clearInterval(intervalRef.current)
+    }, [events])
+
+    useEffect(() => {
+        marketRef.current = market
+        setRace ()
+        if (intervalRef.current) clearInterval(intervalRef.current)
+    }, [market])
+
+    useEffect(() => {
+        curConditionRef.current = curCondition
+        setRace ()
+        if (intervalRef.current) clearInterval(intervalRef.current)
+    }, [curCondition])
+
+    useEffect(() => {
+        curTabRef.current = curTab
+        setRace ()
+        if (intervalRef.current) clearInterval(intervalRef.current)
+    }, [curTab])
+
     const initialize = useCallback(async() => {
-        if (startDate === undefined) return
+        console.log ("KKKKKKKKKK", startDateRef.current)
+        if (startDateRef.current === undefined) return
+        // setRace ()
+        // if (intervalRef.current) clearInterval(intervalRef.current)
         let num = -1
         let venue =""
-        setRace ()
 
-        events.map((event)=> {
+        eventsRef.current.map((event)=> {
             event.markets.map((m, idx) => {
-                if (market.marketId === m.marketId) {
+                if (marketRef.current.marketId === m.marketId) {
                     num = idx + 1
                     venue = m.venue
                     setVenue (m.venue)
@@ -164,11 +203,16 @@ const Predictor = () => {
         })
         if (num > 0 && venue !== "") {
             try {
-                const resp = curTab === 0 ? 
-                    await getRaceCardByNum(getDateString(startDate), venue, num, curCondition) :
-                    await getRaceFormByNum(getDateString(startDate), venue, num, curCondition)
-                console.log (resp, ">>>>>")
-                setRace (resp)
+            let resp
+            if (curTabRef.current === 0 ) {
+                resp = await getRaceCardByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current)
+            } else {
+                resp = await getRaceFormByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current)
+            }
+                // const resp = curTabRef.current === 0 ? 
+                //     await getRaceCardByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current) :
+                //     await getRaceFormByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current)
+            setRace (resp)
 
             } catch (e) {
                 console.log (e)
@@ -178,6 +222,14 @@ const Predictor = () => {
 
     useEffect (() => {
         initialize ()
+    }, [initialize])
+
+    useEffect (() => {
+        if (intervalRef.current) clearInterval(intervalRef.current)
+        intervalRef.current = setInterval(async() => {
+            await initialize()
+        }, [15000])
+        return () => clearInterval(intervalRef.current)
     }, [initialize])
 
     return (
@@ -449,8 +501,8 @@ const Predictor = () => {
                             <div className="col-span-1 predictor-race-body">{parseInt(horse['settling'])}%</div>
                             <div className="col-span-1 predictor-race-body">{Number(horse['last_600']).toFixed(2)}</div>
                             <div className="col-span-1 predictor-race-body">{horse['speed']}</div>
-                            <div className="col-span-1 predictor-race-body">{horse['lastFn'] ? parseInt(horse['lastFn']) : 0}%</div>
-                            <div className="col-span-1 predictor-race-body">{horse['lastMgn'] ? horse['lastMgn'] : 10}</div>
+                            <div className="col-span-1 predictor-race-body">{horse['lastFn'] !== undefined ? parseInt(horse['lastFn']) : 0}%</div>
+                            <div className="col-span-1 predictor-race-body">{horse['lastMgn'] !== undefined ? horse['lastMgn'] : 10}</div>
                             </div>
                         )
                     }
