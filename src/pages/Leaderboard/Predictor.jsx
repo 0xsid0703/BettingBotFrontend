@@ -365,7 +365,7 @@ const Predictor = () => {
                 {
                     curTab === 1 &&(
                     <>
-                    <div className="grid grid-cols-24 text-black-2 font-semibold text-sm leading-6 h-12">
+                    <div className="grid grid-cols-24 text-black-2 font-semibold text-sm leading-6 h-12 w-full">
                         <div className="col-span-1 predictor-race-header">Gear</div>
                         <div className="col-span-1 predictor-race-header">Silks</div>
                         <div className="col-span-1 predictor-race-header">Num</div>
@@ -394,7 +394,7 @@ const Predictor = () => {
 
                     { (!race || (race && race['horses'].length == 0)) &&
                         Array.from({length: 8}).map((_, idx) => 
-                            <div key={idx} className="py-5 px-5 w-full h-full border-t border-grey-2 self-center">
+                            <div key={idx} className="py-5 px-5 w-full h-full border-t border-grey-2 self-center w-full">
                                 <Skeleton
                                     baseColor="#EAECF0"
                                     style={{ width: "100%" }}
@@ -457,7 +457,7 @@ const Predictor = () => {
                 {
                     curTab === 0 && (
                         <>
-                        <div className="grid grid-cols-24 text-black-2 font-semibold text-sm leading-6 h-12">
+                        <div className="grid grid-cols-24 text-black-2 font-semibold text-sm leading-6 h-12 w-full">
                             <div className="col-span-1 predictor-race-header">Gear</div>
                             <div className="col-span-1 predictor-race-header">Silks</div>
                             <div className="col-span-1 predictor-race-header">Num</div>
@@ -476,7 +476,7 @@ const Predictor = () => {
 
                         { (!race || (race && race['horses'].length == 0)) &&
                             Array.from({length: 8}).map((_, idx) => 
-                                <div key={idx} className="py-5 px-5 w-full h-full border-t border-grey-2 self-center">
+                                <div key={idx} className="py-5 px-5 w-full h-full border-t border-grey-2 self-center w-full">
                                     <Skeleton
                                         baseColor="#EAECF0"
                                         style={{ width: "100%" }}
