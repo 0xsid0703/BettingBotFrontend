@@ -180,7 +180,7 @@ const Predictor = () => {
     const initialize = useCallback(async() => {
         if (startDateRef.current === undefined) return
         // setRace ()
-        if (intervalRef.current) clearInterval(intervalRef.current)
+        // if (intervalRef.current) clearInterval(intervalRef.current)
         let num = -1
         let venue =""
 
@@ -217,7 +217,7 @@ const Predictor = () => {
         intervalRef.current = setInterval(async() => {
             console.log ("FFFFFFFF")
             await initialize()
-        }, [5000])
+        }, [15000])
         return () => clearInterval(intervalRef.current)
     }, [initialize])
 
