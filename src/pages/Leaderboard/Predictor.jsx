@@ -433,7 +433,7 @@ const Predictor = () => {
                         <div className="col-span-1 predictor-race-body">{Number(horse['last_600']).toFixed(2)}</div>
                         <div className="col-span-1 predictor-race-body">{horse['speed']}</div>
                         <div className="col-span-1 predictor-race-body">{horse['lastFn'] ? parseInt(horse['lastFn']) : 0}%</div>
-                        <div className="col-span-1 predictor-race-body">{horse['lastMgn']}</div>
+                        <div className="col-span-1 predictor-race-body">{horse['lastMgn'] ? horse['lastMgn'] : 10}</div>
                         </div>
                     )
                 }
@@ -449,7 +449,7 @@ const Predictor = () => {
                     <div className="col-span-1 predictor-race-header">Starts</div>
                     <div className="col-span-1 predictor-race-header">Barrier</div>
                     <div className="col-span-1 predictor-race-header">Weight</div>
-                    <div className="col-span-7 p-5 flex flex-row items-center justify-start">Form Score</div>
+                    <div className="col-span-7 p-5 flex flex-row items-center justify-start h-12">Form Score</div>
                     <div className="col-span-1 predictor-race-header">Framed</div>
                     <div className="col-span-1 predictor-race-header">Betfair</div>
                     <div className="col-span-1 predictor-race-header">Diff%</div>
