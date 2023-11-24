@@ -139,6 +139,7 @@ const Predictor = () => {
     const [startDate, setStartDate] = useState ()
     const [curMarket, setCurMarket] = useState ()
     const [race, setRace] = useState ()
+    const [form, setForm] = useState ()
     const [venue, setVenue] = useState ()
     const [raceNum, setRaceNum] = useState ()
     const [selected, setSelected] = useState (false)
@@ -149,44 +150,38 @@ const Predictor = () => {
     const eventsRef = useRef(events)
     const marketRef = useRef(market)
     const curConditionRef = useRef(curCondition)
-    const curTabRef = useRef(curTab)
     const intervalRef = useRef()
 
     useEffect(() => {
         startDateRef.current = startDate
         setRace ()
+        setForm ()
         if (intervalRef.current) clearInterval(intervalRef.current)
     }, [startDate])
 
     useEffect(() => {
         eventsRef.current = events
         setRace ()
+        setForm ()
         if (intervalRef.current) clearInterval(intervalRef.current)
     }, [events])
 
     useEffect(() => {
         marketRef.current = market
         setRace ()
+        setForm ()
         if (intervalRef.current) clearInterval(intervalRef.current)
     }, [market])
 
     useEffect(() => {
         curConditionRef.current = curCondition
         setRace ()
+        setForm ()
         if (intervalRef.current) clearInterval(intervalRef.current)
     }, [curCondition])
 
-    useEffect(() => {
-        curTabRef.current = curTab
-        setRace ()
-        if (intervalRef.current) clearInterval(intervalRef.current)
-    }, [curTab])
-
     const initialize = useCallback(async() => {
-        console.log ("KKKKKKKKKK", startDateRef.current)
         if (startDateRef.current === undefined) return
-        // setRace ()
-        // if (intervalRef.current) clearInterval(intervalRef.current)
         let num = -1
         let venue =""
 
@@ -203,23 +198,20 @@ const Predictor = () => {
         })
         if (num > 0 && venue !== "") {
             try {
-            let resp
-            if (curTabRef.current === 0 ) {
-                resp = await getRaceCardByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current)
-            } else {
-                resp = await getRaceFormByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current)
-            }
-                // const resp = curTabRef.current === 0 ? 
-                //     await getRaceCardByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current) :
-                //     await getRaceFormByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current)
-            setRace (resp)
+                getRaceCardByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current)
+                    .then((data) => setRace(data))
+                    .catch((err) => console.log (err))
+                getRaceFormByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current)
+                    .then((data) => setForm(data))
+                    .catch((err) => console.log (err))
 
             } catch (e) {
                 console.log (e)
             }
         }
-    }, [startDate, events, market, curCondition, curTab])
-
+    }, [startDate, events, market, curCondition])
+    console.log (race, "race")
+    console.log (form, "form")
     useEffect (() => {
         initialize ()
     }, [initialize])
@@ -446,7 +438,7 @@ const Predictor = () => {
                         <div className="col-span-1 predictor-race-header">Lst/Mgn</div>
                     </div>
 
-                    { (!race || (race && race['horses'].length == 0)) &&
+                    { (!form || (form && form['horses'].length == 0)) &&
                         Array.from({length: 8}).map((_, idx) => 
                             <div key={idx} className="py-5 px-5 w-full h-full border-t border-grey-2 self-center w-full">
                                 <Skeleton
@@ -457,8 +449,8 @@ const Predictor = () => {
                             </div>
                         )
                     }
-                    {race && race['horses'].length > 0 &&
-                        race['horses'].map ((horse, idx) =>
+                    {form && form['horses'].length > 0 &&
+                        form['horses'].map ((horse, idx) =>
                             <div key={idx} className="grid grid-cols-24 text-black-2 border-t border-grey-2 font-normal text-sm leading-6 w-full">
                             <div className="col-span-1 predictor-race-body">
                                 {
