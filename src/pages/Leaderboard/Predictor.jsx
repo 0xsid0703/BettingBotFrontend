@@ -154,30 +154,35 @@ const Predictor = () => {
 
     useEffect(() => {
         startDateRef.current = startDate
+        setRace ()
     }, [startDate])
 
     useEffect(() => {
         eventsRef.current = events
+        setRace ()
     }, [events])
 
     useEffect(() => {
         marketRef.current = market
+        setRace ()
     }, [market])
 
     useEffect(() => {
         curConditionRef.current = curCondition
+        setRace ()
     }, [curCondition])
 
     useEffect(() => {
         curTabRef.current = curTab
+        setRace ()
     }, [curTab])
 
     const initialize = useCallback(async() => {
         if (startDateRef.current === undefined) return
+        // setRace ()
         if (intervalRef.current) clearInterval(intervalRef.current)
         let num = -1
         let venue =""
-        setRace ()
 
         eventsRef.current.map((event)=> {
             event.markets.map((m, idx) => {
@@ -203,9 +208,9 @@ const Predictor = () => {
         }
     }, [startDateRef.current, eventsRef.current, marketRef.current, curConditionRef.current, curTabRef.current])
 
-    useEffect (() => {
-        initialize ()
-    }, [initialize])
+    // useEffect (() => {
+    //     initialize ()
+    // }, [initialize])
 
     useEffect (() => {
         if (intervalRef.current) clearInterval(intervalRef.current)
