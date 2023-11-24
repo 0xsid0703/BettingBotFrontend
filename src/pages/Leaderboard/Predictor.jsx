@@ -9,9 +9,9 @@ import Event from "../../components/Event"
 
 import { marketContext } from '../../contexts/marketContext';
 import { eventsContext } from "../../contexts/eventsContext"
-import { getRaceByNum } from '../../apis'
+import { getRaceByNum, getRaceCardByNum, getRaceFormByNum } from '../../apis'
 import ClockElement from "../../components/Tracks/ClockElement";
-import PredictScoreChart from "../../components/ScoreChart/PredictScoreChart";
+// import PredictScoreChart from "../../components/ScoreChart/PredictScoreChart";
 
 import gearSvg from '../../assets/gears/gear.svg'
 import blackSvg from '../../assets/gears/Black.svg'
@@ -164,7 +164,9 @@ const Predictor = () => {
         })
         if (num > 0 && venue !== "") {
             try {
-                const resp = await getRaceByNum(getDateString(startDate), venue, num, curCondition)
+                const resp = curTab === 0 ? 
+                    await getRaceCardByNum(getDateString(startDate), venue, num, curCondition) :
+                    await getRaceFormByNum(getDateString(startDate), venue, num, curCondition)
                 console.log (resp, ">>>>>")
                 setRace (resp)
 
@@ -172,7 +174,7 @@ const Predictor = () => {
                 console.log (e)
             }
         }
-    }, [startDate, events, market, curCondition])
+    }, [startDate, events, market, curCondition, curTab])
 
     useEffect (() => {
         initialize ()
@@ -185,7 +187,7 @@ const Predictor = () => {
                 <Event show={6}/>
             </div>
             <div className="grid grid-cols-2 items-center justify-between bg-grey-4 border border-grey-2 rounded-[10px]">
-                <div className="px-5 py-2 text-xl text-black-2 font-bold leading-6">
+                <div className="px-8 py-2 text-xl text-black-2 font-bold leading-6">
                     {
                         venue && raceNum > 0 && race && race['classStr'] && race['classStr'].length > 0 ? (
                         <>
@@ -226,7 +228,7 @@ const Predictor = () => {
                             <div className="flex flex-row items-center justify-center p-2 text-black-2 text-sm font-semibold leading-6 border-b border-grey-2">Betfair Pool</div>
                             <div className="flex flex-row items-center justify-center p-2 text-black-1 text-sm font-normal leading-6">
                                 {
-                                    race && race['totalMatched'] ? (
+                                    race && race['totalMatched'] !== undefined ? (
                                         `$${formattedNum(race['totalMatched'])}`
                                     ) : (
                                         <div className="w-full">
@@ -520,8 +522,8 @@ const Predictor = () => {
                                         <div className="flex flex-row items-center justify-end bg-blue-1 h-6 rounded-md text-white text-sm pr-2" style={{width: `${parseFloat(horse['score'])/10 * 100}%`}}>{parseFloat(horse['score']).toFixed(2)}</div>
                                     </div>
                                 </div>
-                                <div className="col-span-1 predictor-race-body">${(horse['framed_odds']).toFixed(2)}</div>
-                                <div className="col-span-1 predictor-race-body">${(horse['betfair']).toFixed(2)}</div>
+                                <div className="col-span-1 predictor-race-body">${horse['framed_odds'] ? (horse['framed_odds']).toFixed(2) : 0}</div>
+                                <div className="col-span-1 predictor-race-body">${horse['betfair'] ? (horse['betfair']).toFixed(2) : 0}</div>
                                 <div className="col-span-1 predictor-race-body">{parseInt(horse['diff'])}%</div>
                                 <div className="col-span-1 predictor-race-body">{parseInt(horse['10m'])}%</div>
                                 <div className="col-span-1 predictor-race-body">{parseInt(horse['5m'])}%</div>
