@@ -157,6 +157,36 @@ export const getRaceByNum = async(startDate, trackName, raceNum, condition) => {
     }
 }
 
+export const getRaceCardByNum = async(startDate, trackName, raceNum, condition) => {
+    try {
+        const resp = await axios({
+            url: `/board/getracecardbynum?date=${startDate}&track=${trackName}&race=${raceNum}&condition=${condition}`,
+            method: 'GET',
+        })
+        if (resp.status === 200) return resp.data
+        console.log ("Axios getRaceByNum function status ===> ", resp.status)
+        return null
+    } catch (e) {
+        console.log ("Axios getJockeysInBoard failed ==>", e.message)
+        return null
+    }
+}
+
+export const getRaceFormByNum = async(startDate, trackName, raceNum, condition) => {
+    try {
+        const resp = await axios({
+            url: `/board/getraceformbynum?date=${startDate}&track=${trackName}&race=${raceNum}&condition=${condition}`,
+            method: 'GET',
+        })
+        if (resp.status === 200) return resp.data
+        console.log ("Axios getRaceByNum function status ===> ", resp.status)
+        return null
+    } catch (e) {
+        console.log ("Axios getJockeysInBoard failed ==>", e.message)
+        return null
+    }
+}
+
 export const getRaceHorseScores = async(startDate, trackName, raceNum, condition="Good") => {
     try {
         const resp = await axios({
