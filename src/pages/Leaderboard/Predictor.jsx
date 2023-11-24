@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -145,15 +145,43 @@ const Predictor = () => {
     const [curCondition, setCurCondition]=  useState ("Good")
     const [curTab, setCurTab] = useState (0)
 
+    const startDateRef = useRef(startDate)
+    const eventsRef = useRef(events)
+    const marketRef = useRef(market)
+    const curConditionRef = useRef(curCondition)
+    const curTabRef = useRef(curTab)
+    const intervalRef = useRef()
+
+    useEffect(() => {
+        startDateRef.current = startDate
+    }, [startDate])
+
+    useEffect(() => {
+        eventsRef.current = events
+    }, [events])
+
+    useEffect(() => {
+        marketRef.current = market
+    }, [market])
+
+    useEffect(() => {
+        curConditionRef.current = curCondition
+    }, [curCondition])
+
+    useEffect(() => {
+        curTabRef.current = curTab
+    }, [curTab])
+
     const initialize = useCallback(async() => {
-        if (startDate === undefined) return
+        if (startDateRef.current === undefined) return
+        if (intervalRef.current) clearInterval(intervalRef.current)
         let num = -1
         let venue =""
         setRace ()
 
-        events.map((event)=> {
+        eventsRef.current.map((event)=> {
             event.markets.map((m, idx) => {
-                if (market.marketId === m.marketId) {
+                if (marketRef.current.marketId === m.marketId) {
                     num = idx + 1
                     venue = m.venue
                     setVenue (m.venue)
@@ -164,20 +192,28 @@ const Predictor = () => {
         })
         if (num > 0 && venue !== "") {
             try {
-                const resp = curTab === 0 ? 
-                    await getRaceCardByNum(getDateString(startDate), venue, num, curCondition) :
-                    await getRaceFormByNum(getDateString(startDate), venue, num, curCondition)
-                console.log (resp, ">>>>>")
+                const resp = curTabRef.current === 0 ? 
+                    await getRaceCardByNum(getDateString(startDate), venue, num, curConditionRef.current) :
+                    await getRaceFormByNum(getDateString(startDate), venue, num, curConditionRef.current)
                 setRace (resp)
 
             } catch (e) {
                 console.log (e)
             }
         }
-    }, [startDate, events, market, curCondition, curTab])
+    }, [startDateRef.current, eventsRef.current, marketRef.current, curConditionRef.current, curTabRef.current])
 
     useEffect (() => {
         initialize ()
+    }, [initialize])
+
+    useEffect (() => {
+        if (intervalRef.current) clearInterval(intervalRef.current)
+        intervalRef.current = setInterval(async() => {
+            console.log ("FFFFFFFF")
+            await initialize()
+        }, [5000])
+        return () => clearInterval(intervalRef.current)
     }, [initialize])
 
     return (
@@ -449,8 +485,8 @@ const Predictor = () => {
                             <div className="col-span-1 predictor-race-body">{parseInt(horse['settling'])}%</div>
                             <div className="col-span-1 predictor-race-body">{Number(horse['last_600']).toFixed(2)}</div>
                             <div className="col-span-1 predictor-race-body">{horse['speed']}</div>
-                            <div className="col-span-1 predictor-race-body">{horse['lastFn'] ? parseInt(horse['lastFn']) : 0}%</div>
-                            <div className="col-span-1 predictor-race-body">{horse['lastMgn'] ? horse['lastMgn'] : 10}</div>
+                            <div className="col-span-1 predictor-race-body">{horse['lastFn'] !== undefined ? parseInt(horse['lastFn']) : 0}%</div>
+                            <div className="col-span-1 predictor-race-body">{horse['lastMgn'] !== undefined ? horse['lastMgn'] : 10}</div>
                             </div>
                         )
                     }
