@@ -11,11 +11,11 @@ body {
 }
 
 .track-header {
-  @apply col-span-2 px-5 py-2 bg-grey-4 text-base font-bold text-black-1
+  @apply flex flex-row items-center col-span-2 px-5 py-2 bg-grey-4 text-base font-bold text-black-1
 }
 
 .track-header-item {
-  @apply px-5 py-2 bg-grey-4 text-center text-base font-bold text-black-1
+  @apply flex flex-row items-center justify-center px-5 py-2 bg-grey-4 text-center text-base font-bold text-black-1
 }
 
 .track-body-header {
@@ -127,9 +127,9 @@ body {
 }
 
 .predictor-race-header {
-  @apply p-5 flex flex-row items-center justify-center
+  @apply p-5 flex flex-row items-center justify-center h-12
 }
 
 .predictor-race-body {
-  @apply p-5 flex flex-row items-center justify-center
+  @apply p-5 flex flex-row items-center justify-center h-12
 }
