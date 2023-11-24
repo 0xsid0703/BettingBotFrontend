@@ -350,12 +350,12 @@ const Predictor = () => {
                 </div>
             </div>
             <div className="flex flex-col items-center justify-between bg-grey-4 border border-grey-2 rounded-[10px]">
-                <div className="grid grid-cols-24 text-black-2 font-semibold text-sm leading-6">
+                <div className="grid grid-cols-24 text-black-2 font-semibold text-sm leading-6 h-12">
                     <div className="col-span-1 predictor-race-header">Gear</div>
                     <div className="col-span-1 predictor-race-header">Silks</div>
                     <div className="col-span-1 predictor-race-header">Num</div>
-                    <div className="col-span-3 p-5 flex flex-row items-center justify-start">Horse</div>
-                    <div className="col-span-3 p-5 flex flex-row items-center justify-start">Jockey</div>
+                    <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Horse</div>
+                    <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Jockey</div>
                     {/* <div className="col-span-1 predictor-race-header">Starts</div> */}
                     {/* <div className="col-span-1 predictor-race-header">Framed</div> */}
                     {/* <div className="col-span-1 predictor-race-header">Barrier</div> */}
@@ -405,7 +405,7 @@ const Predictor = () => {
                             <img src={horse['horse_silk']} className="w-8 h-8"/>
                         </div>
                         <div className="col-span-1 predictor-race-body">{horse['tab_no']}</div>
-                        <div className="col-span-3 p-5 flex flex-row items-center justify-start">
+                        <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">
                             <a href={`/horse/au/${horse['horse_id']}`} className="text-blue-1">
                                 {horse['horse_name']}
                             </a>
@@ -414,7 +414,7 @@ const Predictor = () => {
                         <div className="col-span-1 predictor-race-body">{(horse['framed_odds']).toFixed(2)}</div>
                         <div className="col-span-1 predictor-race-body">{horse['horse_barrier']}</div>
                         <div className="col-span-1 predictor-race-body">{horse['weight']}</div> */}
-                        <div className="col-span-3 p-5 flex flex-row items-center justify-start">
+                        <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">
                             <a href={`/jockey/au/${horse['jockey_id']}`} className="text-blue-1">
                                 {horse['jockey_name']}
                             </a>
@@ -440,12 +440,12 @@ const Predictor = () => {
             </div>
             {/* <PredictScoreChart startDate={startDate} venue={venue} number={raceNum} condition={curCondition} height={race ? race['horses'].length * 72 : 0}/> */}
             <div className="flex flex-col items-center justify-between bg-grey-4 border border-grey-2 rounded-[10px]">
-                <div className="grid grid-cols-24 text-black-2 font-semibold text-sm leading-6">
+                <div className="grid grid-cols-24 text-black-2 font-semibold text-sm leading-6 h-12">
                     <div className="col-span-1 predictor-race-header">Gear</div>
                     <div className="col-span-1 predictor-race-header">Silks</div>
                     <div className="col-span-1 predictor-race-header">Num</div>
-                    <div className="col-span-3 p-5 flex flex-row items-center justify-start">Horse</div>
-                    <div className="col-span-3 p-5 flex flex-row items-center justify-start">Jockey</div>
+                    <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Horse</div>
+                    <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Jockey</div>
                     <div className="col-span-1 predictor-race-header">Starts</div>
                     <div className="col-span-1 predictor-race-header">Barrier</div>
                     <div className="col-span-1 predictor-race-header">Weight</div>
@@ -485,12 +485,12 @@ const Predictor = () => {
                             <img src={horse['horse_silk']} className="w-8 h-8"/>
                         </div>
                         <div className="col-span-1 predictor-race-body">{horse['tab_no']}</div>
-                        <div className="col-span-3 p-5 flex flex-row items-center justify-start">
+                        <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">
                             <a href={`/horse/au/${horse['horse_id']}`} className="text-blue-1">
                                 {horse['horse_name']}
                             </a>
                         </div>
-                        <div className="col-span-3 p-5 flex flex-row items-center justify-start">
+                        <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">
                             <a href={`/jockey/au/${horse['jockey_id']}`} className="text-blue-1">
                                 {horse['jockey_name']}
                             </a>
