@@ -57,6 +57,7 @@ import greyBFSvg from '../../assets/gears/Grey-BlinkersFirstTime.svg'
 
 import { formattedNum,getDateString } from "../../utils";
 import { CLASS_POINT } from "../../constants";
+import clsx from "clsx";
 
 const IMAG_PATH = {
     'b': baySvg,
@@ -142,6 +143,7 @@ const Predictor = () => {
     const [raceNum, setRaceNum] = useState ()
     const [selected, setSelected] = useState (false)
     const [curCondition, setCurCondition]=  useState ("Good")
+    const [curTab, setCurTab] = useState (0)
 
     const initialize = useCallback(async() => {
         if (startDate === undefined) return
@@ -350,168 +352,190 @@ const Predictor = () => {
                 </div>
             </div>
             <div className="flex flex-col items-center justify-between bg-grey-4 border border-grey-2 rounded-[10px]">
-                <div className="grid grid-cols-24 text-black-2 font-semibold text-sm leading-6 h-12">
-                    <div className="col-span-1 predictor-race-header">Gear</div>
-                    <div className="col-span-1 predictor-race-header">Silks</div>
-                    <div className="col-span-1 predictor-race-header">Num</div>
-                    <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Horse</div>
-                    <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Jockey</div>
-                    {/* <div className="col-span-1 predictor-race-header">Starts</div> */}
-                    {/* <div className="col-span-1 predictor-race-header">Framed</div> */}
-                    {/* <div className="col-span-1 predictor-race-header">Barrier</div> */}
-                    {/* <div className="col-span-1 predictor-race-header">Weight</div> */}
-                    <div className="col-span-1 predictor-race-header">Class</div>
-                    <div className="col-span-1 predictor-race-header">AVG$</div>
-                    <div className="col-span-1 predictor-race-header">Career/F</div>
-                    <div className="col-span-1 predictor-race-header">Career/W</div>
-                    <div className="col-span-1 predictor-race-header">Career/P</div>
-                    <div className="col-span-1 predictor-race-header">Condition</div>
-                    <div className="col-span-1 predictor-race-header">Distance</div>
-                    <div className="col-span-1 predictor-race-header">Track</div>
-                    <div className="col-span-1 predictor-race-header">Jockey</div>
-                    <div className="col-span-1 predictor-race-header">Trainer</div>
-                    <div className="col-span-1 predictor-race-header">Settling</div>
-                    <div className="col-span-1 predictor-race-header">600m</div>
-                    <div className="col-span-1 predictor-race-header">Speed</div>
-                    <div className="col-span-1 predictor-race-header">Lst/Fn</div>
-                    <div className="col-span-1 predictor-race-header">Lst/Mgn</div>
+                <div className="flex flex-row items-center justify-start gap-8 px-8 py-5 text-base text-grey-1 border-b border-grey-2 w-full">
+                    <div 
+                        className={clsx(`${curTab === 0? "text-black-2": ""} cursor-pointer font-semibold leading-6`)}
+                        onClick={() => setCurTab(0)}
+                    >Race Card</div>
+                    <div 
+                        className={clsx(`${curTab === 1? "text-black-2": ""} cursor-pointer font-semibold leading-6`)}
+                        onClick={() => setCurTab(1)}
+                    >Form Stats</div>
                 </div>
+                {
+                    curTab === 1 &&(
+                    <>
+                    <div className="grid grid-cols-24 text-black-2 font-semibold text-sm leading-6 h-12">
+                        <div className="col-span-1 predictor-race-header">Gear</div>
+                        <div className="col-span-1 predictor-race-header">Silks</div>
+                        <div className="col-span-1 predictor-race-header">Num</div>
+                        <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Horse</div>
+                        <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Jockey</div>
+                        {/* <div className="col-span-1 predictor-race-header">Starts</div> */}
+                        {/* <div className="col-span-1 predictor-race-header">Framed</div> */}
+                        {/* <div className="col-span-1 predictor-race-header">Barrier</div> */}
+                        {/* <div className="col-span-1 predictor-race-header">Weight</div> */}
+                        <div className="col-span-1 predictor-race-header">Class</div>
+                        <div className="col-span-1 predictor-race-header">AVG$</div>
+                        <div className="col-span-1 predictor-race-header">Career/F</div>
+                        <div className="col-span-1 predictor-race-header">Career/W</div>
+                        <div className="col-span-1 predictor-race-header">Career/P</div>
+                        <div className="col-span-1 predictor-race-header">Condition</div>
+                        <div className="col-span-1 predictor-race-header">Distance</div>
+                        <div className="col-span-1 predictor-race-header">Track</div>
+                        <div className="col-span-1 predictor-race-header">Jockey</div>
+                        <div className="col-span-1 predictor-race-header">Trainer</div>
+                        <div className="col-span-1 predictor-race-header">Settling</div>
+                        <div className="col-span-1 predictor-race-header">600m</div>
+                        <div className="col-span-1 predictor-race-header">Speed</div>
+                        <div className="col-span-1 predictor-race-header">Lst/Fn</div>
+                        <div className="col-span-1 predictor-race-header">Lst/Mgn</div>
+                    </div>
 
-                { (!race || (race && race['horses'].length == 0)) &&
-                    Array.from({length: 8}).map((_, idx) => 
-                        <div key={idx} className="py-5 px-5 w-full h-full border-t border-grey-2 self-center">
-                            <Skeleton
-                                baseColor="#EAECF0"
-                                style={{ width: "100%" }}
-                                highlightColor="#D9D9D9"
-                            />
-                        </div>
-                    )
+                    { (!race || (race && race['horses'].length == 0)) &&
+                        Array.from({length: 8}).map((_, idx) => 
+                            <div key={idx} className="py-5 px-5 w-full h-full border-t border-grey-2 self-center">
+                                <Skeleton
+                                    baseColor="#EAECF0"
+                                    style={{ width: "100%" }}
+                                    highlightColor="#D9D9D9"
+                                />
+                            </div>
+                        )
+                    }
+                    {race && race['horses'].length > 0 &&
+                        race['horses'].map ((horse, idx) =>
+                            <div key={idx} className="grid grid-cols-24 text-black-2 border-t border-grey-2 font-normal text-sm leading-6 w-full">
+                            <div className="col-span-1 predictor-race-body">
+                                {
+                                    IMAG_PATH[horse['gear']] &&
+                                    <img src={IMAG_PATH[horse['gear']]} className="w-8 h-8"/>
+                                }
+                                {
+                                    !IMAG_PATH[horse['gear']] &&
+                                    <img src={gearSvg} className="w-8 h-8"/>
+                                }
+                            </div>
+                            <div className="col-span-1 predictor-race-body">
+                                <img src={horse['horse_silk']} className="w-8 h-8"/>
+                            </div>
+                            <div className="col-span-1 predictor-race-body">{horse['tab_no']}</div>
+                            <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">
+                                <a href={`/horse/au/${horse['horse_id']}`} className="text-blue-1">
+                                    {horse['horse_name']}
+                                </a>
+                            </div>
+                            {/* <div className="col-span-1 predictor-race-body">{horse['starts']}</div>
+                            <div className="col-span-1 predictor-race-body">{(horse['framed_odds']).toFixed(2)}</div>
+                            <div className="col-span-1 predictor-race-body">{horse['horse_barrier']}</div>
+                            <div className="col-span-1 predictor-race-body">{horse['weight']}</div> */}
+                            <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">
+                                <a href={`/jockey/au/${horse['jockey_id']}`} className="text-blue-1">
+                                    {horse['jockey_name']}
+                                </a>
+                            </div>
+                            <div className="col-span-1 predictor-race-body">{parseInt(horse['class'])}%</div>
+                            <div className="col-span-1 predictor-race-body">{`$${formattedNum(horse['average'])}`}</div>
+                            <div className="col-span-1 predictor-race-body">{parseInt(horse['finishPercent'])}%</div>
+                            <div className="col-span-1 predictor-race-body">{parseInt(horse['winPercent'])}%</div>
+                            <div className="col-span-1 predictor-race-body">{parseInt(horse['placePercent'])}%</div>
+                            <div className="col-span-1 predictor-race-body">{parseInt(horse['condition'])}%</div>
+                            <div className="col-span-1 predictor-race-body">{parseInt(horse['distance'])}%</div>
+                            <div className="col-span-1 predictor-race-body">{parseInt(horse['track'])}%</div>
+                            <div className="col-span-1 predictor-race-body">{parseInt(horse['jockey'])}%</div>
+                            <div className="col-span-1 predictor-race-body">{parseInt(horse['trainer'])}%</div>
+                            <div className="col-span-1 predictor-race-body">{parseInt(horse['settling'])}%</div>
+                            <div className="col-span-1 predictor-race-body">{Number(horse['last_600']).toFixed(2)}</div>
+                            <div className="col-span-1 predictor-race-body">{horse['speed']}</div>
+                            <div className="col-span-1 predictor-race-body">{horse['lastFn'] ? parseInt(horse['lastFn']) : 0}%</div>
+                            <div className="col-span-1 predictor-race-body">{horse['lastMgn'] ? horse['lastMgn'] : 10}</div>
+                            </div>
+                        )
+                    }
+                    </>)
                 }
-                {race && race['horses'].length > 0 &&
-                    race['horses'].map ((horse, idx) =>
-                        <div key={idx} className="grid grid-cols-24 text-black-2 border-t border-grey-2 font-normal text-sm leading-6 w-full">
-                        <div className="col-span-1 predictor-race-body">
-                            {
-                                IMAG_PATH[horse['gear']] &&
-                                <img src={IMAG_PATH[horse['gear']]} className="w-8 h-8"/>
-                            }
-                            {
-                                !IMAG_PATH[horse['gear']] &&
-                                <img src={gearSvg} className="w-8 h-8"/>
-                            }
+                {
+                    curTab === 0 && (
+                        <>
+                        <div className="grid grid-cols-24 text-black-2 font-semibold text-sm leading-6 h-12">
+                            <div className="col-span-1 predictor-race-header">Gear</div>
+                            <div className="col-span-1 predictor-race-header">Silks</div>
+                            <div className="col-span-1 predictor-race-header">Num</div>
+                            <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Horse</div>
+                            <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Jockey</div>
+                            <div className="col-span-1 predictor-race-header">Starts</div>
+                            <div className="col-span-1 predictor-race-header">Barrier</div>
+                            <div className="col-span-1 predictor-race-header">Weight</div>
+                            <div className="col-span-7 p-5 flex flex-row items-center justify-start h-12">Form Score</div>
+                            <div className="col-span-1 predictor-race-header">Framed</div>
+                            <div className="col-span-1 predictor-race-header">Betfair</div>
+                            <div className="col-span-1 predictor-race-header">Diff%</div>
+                            <div className="col-span-1 predictor-race-header">10m</div>
+                            <div className="col-span-1 predictor-race-header">5m</div>
                         </div>
-                        <div className="col-span-1 predictor-race-body">
-                            <img src={horse['horse_silk']} className="w-8 h-8"/>
-                        </div>
-                        <div className="col-span-1 predictor-race-body">{horse['tab_no']}</div>
-                        <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">
-                            <a href={`/horse/au/${horse['horse_id']}`} className="text-blue-1">
-                                {horse['horse_name']}
-                            </a>
-                        </div>
-                        {/* <div className="col-span-1 predictor-race-body">{horse['starts']}</div>
-                        <div className="col-span-1 predictor-race-body">{(horse['framed_odds']).toFixed(2)}</div>
-                        <div className="col-span-1 predictor-race-body">{horse['horse_barrier']}</div>
-                        <div className="col-span-1 predictor-race-body">{horse['weight']}</div> */}
-                        <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">
-                            <a href={`/jockey/au/${horse['jockey_id']}`} className="text-blue-1">
-                                {horse['jockey_name']}
-                            </a>
-                        </div>
-                        <div className="col-span-1 predictor-race-body">{parseInt(horse['class'])}%</div>
-                        <div className="col-span-1 predictor-race-body">{`$${formattedNum(horse['average'])}`}</div>
-                        <div className="col-span-1 predictor-race-body">{parseInt(horse['finishPercent'])}%</div>
-                        <div className="col-span-1 predictor-race-body">{parseInt(horse['winPercent'])}%</div>
-                        <div className="col-span-1 predictor-race-body">{parseInt(horse['placePercent'])}%</div>
-                        <div className="col-span-1 predictor-race-body">{parseInt(horse['condition'])}%</div>
-                        <div className="col-span-1 predictor-race-body">{parseInt(horse['distance'])}%</div>
-                        <div className="col-span-1 predictor-race-body">{parseInt(horse['track'])}%</div>
-                        <div className="col-span-1 predictor-race-body">{parseInt(horse['jockey'])}%</div>
-                        <div className="col-span-1 predictor-race-body">{parseInt(horse['trainer'])}%</div>
-                        <div className="col-span-1 predictor-race-body">{parseInt(horse['settling'])}%</div>
-                        <div className="col-span-1 predictor-race-body">{Number(horse['last_600']).toFixed(2)}</div>
-                        <div className="col-span-1 predictor-race-body">{horse['speed']}</div>
-                        <div className="col-span-1 predictor-race-body">{horse['lastFn'] ? parseInt(horse['lastFn']) : 0}%</div>
-                        <div className="col-span-1 predictor-race-body">{horse['lastMgn'] ? horse['lastMgn'] : 10}</div>
-                        </div>
+
+                        { (!race || (race && race['horses'].length == 0)) &&
+                            Array.from({length: 8}).map((_, idx) => 
+                                <div key={idx} className="py-5 px-5 w-full h-full border-t border-grey-2 self-center">
+                                    <Skeleton
+                                        baseColor="#EAECF0"
+                                        style={{ width: "100%" }}
+                                        highlightColor="#D9D9D9"
+                                    />
+                                </div>
+                            )
+                        }
+                        {race && race['horses'].length > 0 &&
+                            race['horses'].map ((horse, idx) =>
+                                <div key={idx} className="grid grid-cols-24 text-black-2 border-t border-grey-2 font-normal text-sm leading-6 w-full">
+                                <div className="col-span-1 predictor-race-body">
+                                    {
+                                        IMAG_PATH[horse['gear']] &&
+                                        <img src={IMAG_PATH[horse['gear']]} className="w-8 h-8"/>
+                                    }
+                                    {
+                                        !IMAG_PATH[horse['gear']] &&
+                                        <img src={gearSvg} className="w-8 h-8"/>
+                                    }
+                                </div>
+                                <div className="col-span-1 predictor-race-body">
+                                    <img src={horse['horse_silk']} className="w-8 h-8"/>
+                                </div>
+                                <div className="col-span-1 predictor-race-body">{horse['tab_no']}</div>
+                                <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">
+                                    <a href={`/horse/au/${horse['horse_id']}`} className="text-blue-1">
+                                        {horse['horse_name']}
+                                    </a>
+                                </div>
+                                <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">
+                                    <a href={`/jockey/au/${horse['jockey_id']}`} className="text-blue-1">
+                                        {horse['jockey_name']}
+                                    </a>
+                                </div>
+                                <div className="col-span-1 predictor-race-body">{horse['starts']}</div>
+                                <div className="col-span-1 predictor-race-body">{horse['horse_barrier']}</div>
+                                <div className="col-span-1 predictor-race-body">{horse['weight']}</div>
+                                <div className="col-span-7 px-5 py-2 flex flex-row items-center justify-start">
+                                    <div className="w-full bg-transparent rounded-full h-6">
+                                        <div className="flex flex-row items-center justify-end bg-blue-1 h-6 rounded-md text-white text-sm pr-2" style={{width: `${parseFloat(horse['score'])/10 * 100}%`}}>{parseFloat(horse['score']).toFixed(2)}</div>
+                                    </div>
+                                </div>
+                                <div className="col-span-1 predictor-race-body">${(horse['framed_odds']).toFixed(2)}</div>
+                                <div className="col-span-1 predictor-race-body">${(horse['betfair']).toFixed(2)}</div>
+                                <div className="col-span-1 predictor-race-body">{parseInt(horse['diff'])}%</div>
+                                <div className="col-span-1 predictor-race-body">{parseInt(horse['10m'])}%</div>
+                                <div className="col-span-1 predictor-race-body">{parseInt(horse['5m'])}%</div>
+                                </div>
+                            )
+                        }
+                        </>
                     )
                 }
             </div>
             {/* <PredictScoreChart startDate={startDate} venue={venue} number={raceNum} condition={curCondition} height={race ? race['horses'].length * 72 : 0}/> */}
-            <div className="flex flex-col items-center justify-between bg-grey-4 border border-grey-2 rounded-[10px]">
-                <div className="grid grid-cols-24 text-black-2 font-semibold text-sm leading-6 h-12">
-                    <div className="col-span-1 predictor-race-header">Gear</div>
-                    <div className="col-span-1 predictor-race-header">Silks</div>
-                    <div className="col-span-1 predictor-race-header">Num</div>
-                    <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Horse</div>
-                    <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Jockey</div>
-                    <div className="col-span-1 predictor-race-header">Starts</div>
-                    <div className="col-span-1 predictor-race-header">Barrier</div>
-                    <div className="col-span-1 predictor-race-header">Weight</div>
-                    <div className="col-span-7 p-5 flex flex-row items-center justify-start h-12">Form Score</div>
-                    <div className="col-span-1 predictor-race-header">Framed</div>
-                    <div className="col-span-1 predictor-race-header">Betfair</div>
-                    <div className="col-span-1 predictor-race-header">Diff%</div>
-                    <div className="col-span-1 predictor-race-header">10m</div>
-                    <div className="col-span-1 predictor-race-header">5m</div>
-                </div>
-
-                { (!race || (race && race['horses'].length == 0)) &&
-                    Array.from({length: 8}).map((_, idx) => 
-                        <div key={idx} className="py-5 px-5 w-full h-full border-t border-grey-2 self-center">
-                            <Skeleton
-                                baseColor="#EAECF0"
-                                style={{ width: "100%" }}
-                                highlightColor="#D9D9D9"
-                            />
-                        </div>
-                    )
-                }
-                {race && race['horses'].length > 0 &&
-                    race['horses'].map ((horse, idx) =>
-                        <div key={idx} className="grid grid-cols-24 text-black-2 border-t border-grey-2 font-normal text-sm leading-6 w-full">
-                        <div className="col-span-1 predictor-race-body">
-                            {
-                                IMAG_PATH[horse['gear']] &&
-                                <img src={IMAG_PATH[horse['gear']]} className="w-8 h-8"/>
-                            }
-                            {
-                                !IMAG_PATH[horse['gear']] &&
-                                <img src={gearSvg} className="w-8 h-8"/>
-                            }
-                        </div>
-                        <div className="col-span-1 predictor-race-body">
-                            <img src={horse['horse_silk']} className="w-8 h-8"/>
-                        </div>
-                        <div className="col-span-1 predictor-race-body">{horse['tab_no']}</div>
-                        <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">
-                            <a href={`/horse/au/${horse['horse_id']}`} className="text-blue-1">
-                                {horse['horse_name']}
-                            </a>
-                        </div>
-                        <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">
-                            <a href={`/jockey/au/${horse['jockey_id']}`} className="text-blue-1">
-                                {horse['jockey_name']}
-                            </a>
-                        </div>
-                        <div className="col-span-1 predictor-race-body">{horse['starts']}</div>
-                        <div className="col-span-1 predictor-race-body">{horse['horse_barrier']}</div>
-                        <div className="col-span-1 predictor-race-body">{horse['weight']}</div>
-                        <div className="col-span-7 px-5 py-2 flex flex-row items-center justify-start">
-                            <div className="w-full bg-transparent rounded-full h-6">
-                                <div className="flex flex-row items-center justify-end bg-blue-1 h-6 rounded-md text-white text-sm pr-2" style={{width: `${parseFloat(horse['score'])/10 * 100}%`}}>{parseFloat(horse['score']).toFixed(2)}</div>
-                            </div>
-                        </div>
-                        <div className="col-span-1 predictor-race-body">${(horse['framed_odds']).toFixed(2)}</div>
-                        <div className="col-span-1 predictor-race-body">${(horse['betfair']).toFixed(2)}</div>
-                        <div className="col-span-1 predictor-race-body">{parseInt(horse['diff'])}%</div>
-                        <div className="col-span-1 predictor-race-body">{parseInt(horse['10m'])}%</div>
-                        <div className="col-span-1 predictor-race-body">{parseInt(horse['5m'])}%</div>
-                        </div>
-                    )
-                }
-            </div>
+            {/* <div className="flex flex-col items-center justify-between bg-grey-4 border border-grey-2 rounded-[10px]">
+                
+            </div> */}
         </div>
     )
 }
