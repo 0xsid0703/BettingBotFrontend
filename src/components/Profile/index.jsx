@@ -581,7 +581,7 @@ const Profile = ({ kind, id }) => {
                 )}
                 {homeRace ? (
                   <div className="horse-item-normal-black">
-                    {homeRace["trainer_name"]}
+                    <a className="text-link" href={`/trainer/au/${homeRace["trainer_id"]}`}>{homeRace["trainer_name"]}</a>
                   </div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
