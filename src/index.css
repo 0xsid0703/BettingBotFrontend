@@ -31,11 +31,11 @@ body {
 }
 
 .race-table-header-item-1 {
-  @apply p-5 text-black-2 text-base font-bold bg-pink-1
+  @apply p-5 text-black-2 text-base font-bold bg-grey-4
 }
 
 .race-table-header-item-2 {
-  @apply col-span-2 p-5 text-black-2 text-base font-bold bg-pink-1
+  @apply col-span-2 p-5 text-black-2 text-base font-bold bg-grey-4
 }
 
 .race-table-body {
@@ -47,11 +47,11 @@ body {
 }
 
 .race-table-col-1 {
-  @apply p-5 text-black-2 text-base font-normal leading-6 bg-pink-1
+  @apply p-5 text-black-2 text-base font-normal leading-6 bg-grey-4
 }
 
 .race-table-col-2 {
-  @apply col-span-2 p-5 text-black-2 text-base font-normal leading-6 bg-pink-1
+  @apply col-span-2 p-5 text-black-2 text-base font-normal leading-6 bg-grey-4
 }
 
 .selection-table-header {
@@ -103,7 +103,7 @@ body {
 }
 
 .racehistory-header-core {
-  @apply flex flex-row text-xs leading-6 items-center py-5
+  @apply flex flex-row text-xs leading-6 items-center py-3
 }
 
 .racehistory-header-center {

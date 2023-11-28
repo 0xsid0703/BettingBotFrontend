@@ -277,7 +277,7 @@ const Profile = ({ kind, id }) => {
   return (
     <div className="p-[16px] 2xl:p-[58px] 4xl:p-[112px] bg-white min-w-[1440px]">
       <div className="flex flex-col gap-8">
-        <div className="grid grid-cols-12 bg-pink-1 border border-grey-2 rounded-[10px]">
+        <div className="grid grid-cols-12 bg-grey-4 border border-grey-2 rounded-[10px]">
           <div className="grid grid-cols-12 col-span-12 border-b border-grey-2">
             {homeRace ? (
               <div className="flex flex-row items-center col-span-2 text-2xl font-bold leading-6 py-6 px-5 w-full">
@@ -581,7 +581,7 @@ const Profile = ({ kind, id }) => {
                 )}
                 {homeRace ? (
                   <div className="horse-item-normal-black">
-                    {homeRace["trainer_name"]}
+                    <a className="text-link" href={`/trainer/au/${homeRace["trainer_id"]}`}>{homeRace["trainer_name"]}</a>
                   </div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -873,7 +873,7 @@ const Profile = ({ kind, id }) => {
             </div>
           )}
         </div>
-        <div className="flex flex-col bg-pink-1 border border-grey-2 rounded-[10px]">
+        <div className="flex flex-col bg-grey-4 border border-grey-2 rounded-[10px]">
           <div className="grid grid-cols-24">
             <div className="racehistory-header">Date</div>
             <div className="racehistory-header-start col-span-3 px-5">
