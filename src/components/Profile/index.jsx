@@ -935,7 +935,7 @@ const Profile = ({ kind, id }) => {
                   <div className="racehistory-item text-black-2">
                     {item["weight"]}
                   </div>
-                  <div className="racehistory-item text-black-2">{`${item["settling"]}`}</div>
+                  <div className="racehistory-item text-black-2">{`${parseInt(item["settling"])}`}</div>
                   <div
                     className={clsx(
                       `racehistory-item ${
@@ -960,10 +960,10 @@ const Profile = ({ kind, id }) => {
                   <div className="racehistory-item text-black-2">
                     {item["finish_number"]}
                   </div>
-                  <div className="racehistory-item text-black-2">{`${item["finish_percentage"]}`}</div>
-                  <div className="racehistory-item text-black-2">{`${parseInt(
-                    item["time"] / 60
-                  )}:${parseInt(item["time"]) % 60}`}</div>
+                  <div className="racehistory-item text-black-2">{`${parseInt(item["finish_percentage"])}`}</div>
+                  <div className="racehistory-item text-black-2">{`${(parseInt(
+                    item["time"] / 60).toString().padStart(2, '0')
+                  )}:${(parseInt(item["time"]) % 60).toString().padStart(2, '0')}`}</div>
                   <div className="racehistory-item text-black-2">{`${(
                     (item["speed"] * 3600) /
                     1000
