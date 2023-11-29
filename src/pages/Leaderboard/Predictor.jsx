@@ -144,7 +144,22 @@ const SORT_FIELD = {
     BETFAIR: 'betfair',
     DIFF: 'diff',
     TEN_DIFF: '10m',
-    FIVE_DIFF: '5m'
+    FIVE_DIFF: '5m',
+    CLASS: 'class',
+    AVG: 'average',
+    FINISH: 'finishPercent',
+    WIN: 'winPercent',
+    PLACE: 'placePercent',
+    CONDITION: 'condition',
+    DISTANCE: 'distance',
+    TRACK_PERCENT: 'track',
+    JOCKEY_PERCENT: 'jockey',
+    TRAINER_PERCENT: 'trainer',
+    SETTLING: 'settling',
+    LAST600: 'last_600',
+    SPEED: 'speed',
+    LASTFN: 'lastFn',
+    LASTMGN: 'lastMgn',
 }
 
 const Predictor = () => {
@@ -161,7 +176,7 @@ const Predictor = () => {
     const [curCondition, setCurCondition]=  useState ("Good")
     const [curTab, setCurTab] = useState (0)
     const [sortedCol, setSortedCol] = useState (SORT_FIELD.SCORE)
-    const [sortDirection, setSortDirection] = useState(1)
+    const [sortDirection, setSortDirection] = useState(true)
 
     const startDateRef = useRef(startDate)
     const eventsRef = useRef(events)
@@ -446,28 +461,172 @@ const Predictor = () => {
                     <div className="grid grid-cols-24 text-black-2 font-semibold text-sm leading-6 h-12 w-full">
                         <div className="col-span-1 predictor-race-header">Gear</div>
                         <div className="col-span-1 predictor-race-header">Silks</div>
-                        <div className="col-span-1 predictor-race-header">Num</div>
-                        <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Horse</div>
-                        <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Jockey</div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.NO)
+                                setSortDirection(sortedCol !== SORT_FIELD.NO ? true : !sortDirection)
+                            }}
+                        >
+                            Num {sortedCol === SORT_FIELD.NO ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-3 p-5 flex flex-row items-center justify-start h-12 cursor-pointer"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.HORSE)
+                                setSortDirection(sortedCol !== SORT_FIELD.HORSE ? true : !sortDirection)
+                            }}
+                        >
+                            Horse {sortedCol === SORT_FIELD.HORSE ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-3 p-5 flex flex-row items-center justify-start h-12 cursor-pointer"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.JOCKEY)
+                                setSortDirection(sortedCol !== SORT_FIELD.JOCKEY ? true : !sortDirection)
+                            }}
+                        >
+                            Jockey {sortedCol === SORT_FIELD.JOCKEY ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
                         {/* <div className="col-span-1 predictor-race-header">Starts</div> */}
                         {/* <div className="col-span-1 predictor-race-header">Framed</div> */}
                         {/* <div className="col-span-1 predictor-race-header">Barrier</div> */}
                         {/* <div className="col-span-1 predictor-race-header">Weight</div> */}
-                        <div className="col-span-1 predictor-race-header">Class</div>
-                        <div className="col-span-1 predictor-race-header">AVG$</div>
-                        <div className="col-span-1 predictor-race-header">Career/F</div>
-                        <div className="col-span-1 predictor-race-header">Career/W</div>
-                        <div className="col-span-1 predictor-race-header">Career/P</div>
-                        <div className="col-span-1 predictor-race-header">Condition</div>
-                        <div className="col-span-1 predictor-race-header">Distance</div>
-                        <div className="col-span-1 predictor-race-header">Track</div>
-                        <div className="col-span-1 predictor-race-header">Jockey</div>
-                        <div className="col-span-1 predictor-race-header">Trainer</div>
-                        <div className="col-span-1 predictor-race-header">Settling</div>
-                        <div className="col-span-1 predictor-race-header">600m</div>
-                        <div className="col-span-1 predictor-race-header">Speed</div>
-                        <div className="col-span-1 predictor-race-header">Lst/Fn</div>
-                        <div className="col-span-1 predictor-race-header">Lst/Mgn</div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.CLASS)
+                                setSortDirection(sortedCol !== SORT_FIELD.CLASS ? true : !sortDirection)
+                            }}
+                        >
+                            Class {sortedCol === SORT_FIELD.CLASS ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.AVG)
+                                setSortDirection(sortedCol !== SORT_FIELD.AVG ? true : !sortDirection)
+                            }}
+                        >
+                            AVG$ {sortedCol === SORT_FIELD.AVG ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.FINISH)
+                                setSortDirection(sortedCol !== SORT_FIELD.FINISH ? true : !sortDirection)
+                            }}
+                        >
+                            Career/F {sortedCol === SORT_FIELD.FINISH ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.WIN)
+                                setSortDirection(sortedCol !== SORT_FIELD.WIN ? true : !sortDirection)
+                            }}
+                        >
+                            Career/W {sortedCol === SORT_FIELD.WIN ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.PLACE)
+                                setSortDirection(sortedCol !== SORT_FIELD.PLACE ? true : !sortDirection)
+                            }}
+                        >
+                            Career/P {sortedCol === SORT_FIELD.PLACE ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.CONDITION)
+                                setSortDirection(sortedCol !== SORT_FIELD.CONDITION ? true : !sortDirection)
+                            }}
+                        >
+                            Condition {sortedCol === SORT_FIELD.CONDITION ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.DISTANCE)
+                                setSortDirection(sortedCol !== SORT_FIELD.DISTANCE ? true : !sortDirection)
+                            }}
+                        >
+                            Distance {sortedCol === SORT_FIELD.DISTANCE ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.TRACK_PERCENT)
+                                setSortDirection(sortedCol !== SORT_FIELD.TRACK_PERCENT ? true : !sortDirection)
+                            }}
+                        >
+                            Track {sortedCol === SORT_FIELD.TRACK_PERCENT ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.JOCKEY_PERCENT)
+                                setSortDirection(sortedCol !== SORT_FIELD.JOCKEY_PERCENT ? true : !sortDirection)
+                            }}
+                        >
+                            Jockey {sortedCol === SORT_FIELD.JOCKEY_PERCENT ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.TRAINER_PERCENT)
+                                setSortDirection(sortedCol !== SORT_FIELD.TRAINER_PERCENT ? true : !sortDirection)
+                            }}
+                        >
+                            Trainer {sortedCol === SORT_FIELD.TRAINER_PERCENT ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.SETTLING)
+                                setSortDirection(sortedCol !== SORT_FIELD.SETTLING ? true : !sortDirection)
+                            }}
+                        >
+                            Settling {sortedCol === SORT_FIELD.SETTLING ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.LAST600)
+                                setSortDirection(sortedCol !== SORT_FIELD.LAST600 ? true : !sortDirection)
+                            }}
+                        >
+                            600m {sortedCol === SORT_FIELD.LAST600 ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.SPEED)
+                                setSortDirection(sortedCol !== SORT_FIELD.SPEED ? true : !sortDirection)
+                            }}
+                        >
+                            Speed {sortedCol === SORT_FIELD.SPEED ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.LASTFN)
+                                setSortDirection(sortedCol !== SORT_FIELD.LASTFN ? true : !sortDirection)
+                            }}
+                        >
+                            Lst/Fn {sortedCol === SORT_FIELD.LASTFN ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
+                        <div
+                            className="col-span-1 predictor-race-header"
+                            onClick={() => {
+                                setSortedCol(SORT_FIELD.LASTMGN)
+                                setSortDirection(sortedCol !== SORT_FIELD.LASTMGN ? true : !sortDirection)
+                            }}
+                        >
+                            Lst/Mgn {sortedCol === SORT_FIELD.LASTMGN ? (!sortDirection ? '↑' : '↓') : ''}
+                        </div>
                     </div>
 
                     { (!form || (form && form['horses'].length == 0)) &&
