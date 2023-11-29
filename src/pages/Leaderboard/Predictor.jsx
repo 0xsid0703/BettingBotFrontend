@@ -132,6 +132,21 @@ const IMAG_PATH = {
     'wh/b-BF': bayBFSvg,
 }
 
+const SORT_FIELD = {
+    NO: 'tab_no',
+    HORSE: 'horse_name',
+    JOCKEY: 'jockey_name',
+    STARTS: 'starts',
+    BARRIER: 'horse_barrier',
+    WEIGHT: 'weight',
+    SCORE: 'score',
+    FRAMED: 'framed_odds',
+    BETFAIR: 'betfair',
+    DIFF: 'diff',
+    TEN_DIFF: '10m',
+    FIVE_DIFF: '5m'
+}
+
 const Predictor = () => {
 
     const { market } = useContext (marketContext)
@@ -145,11 +160,15 @@ const Predictor = () => {
     const [selected, setSelected] = useState (false)
     const [curCondition, setCurCondition]=  useState ("Good")
     const [curTab, setCurTab] = useState (0)
+    const [sortedCol, setSortedCol] = useState (SORT_FIELD.SCORE)
+    const [sortDirection, setSortDirection] = useState(1)
 
     const startDateRef = useRef(startDate)
     const eventsRef = useRef(events)
     const marketRef = useRef(market)
     const curConditionRef = useRef(curCondition)
+    const sortedColRef = useRef (sortedCol)
+    const sortDirectionRef = useRef (sortDirection)
     const intervalRef = useRef()
 
     useEffect(() => {
@@ -180,6 +199,20 @@ const Predictor = () => {
         if (intervalRef.current) clearInterval(intervalRef.current)
     }, [curCondition])
 
+    useEffect(() => {
+        sortedColRef.current = sortedCol
+        setRace ()
+        setForm ()
+        if (intervalRef.current) clearInterval(intervalRef.current)
+    }, [sortedCol])
+
+    useEffect(() => {
+        sortDirectionRef.current = sortDirection
+        setRace ()
+        setForm ()
+        if (intervalRef.current) clearInterval(intervalRef.current)
+    }, [sortDirection])
+
     const initialize = useCallback(async() => {
         if (startDateRef.current === undefined) return
         let num = -1
@@ -198,10 +231,10 @@ const Predictor = () => {
         })
         if (num > 0 && venue !== "") {
             try {
-                getRaceCardByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current)
+                getRaceCardByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current, sortedColRef.current, sortDirectionRef.current)
                     .then((data) => setRace(data))
                     .catch((err) => console.log (err))
-                getRaceFormByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current)
+                getRaceFormByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current, sortedColRef.current, sortDirectionRef.current)
                     .then((data) => setForm(data))
                     .catch((err) => console.log (err))
 
@@ -209,9 +242,8 @@ const Predictor = () => {
                 console.log (e)
             }
         }
-    }, [startDate, events, market, curCondition])
-    console.log (race, "race")
-    console.log (form, "form")
+    }, [startDate, events, market, curCondition, sortedCol, sortDirection])
+
     useEffect (() => {
         initialize ()
     }, [initialize])
@@ -504,20 +536,118 @@ const Predictor = () => {
                     curTab === 0 && (
                         <>
                         <div className="grid grid-cols-24 text-black-2 font-semibold text-sm leading-6 h-12 w-full">
-                            <div className="col-span-1 predictor-race-header">Gear</div>
+                            <div className="col-span-1 predictor-race-header">
+                                Gear
+                            </div>
                             <div className="col-span-1 predictor-race-header">Silks</div>
-                            <div className="col-span-1 predictor-race-header">Num</div>
-                            <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Horse</div>
-                            <div className="col-span-3 p-5 flex flex-row items-center justify-start h-12">Jockey</div>
-                            <div className="col-span-1 predictor-race-header">Starts</div>
-                            <div className="col-span-1 predictor-race-header">Barrier</div>
-                            <div className="col-span-1 predictor-race-header">Weight</div>
-                            <div className="col-span-7 p-5 flex flex-row items-center justify-start h-12">Form Score</div>
-                            <div className="col-span-1 predictor-race-header">Framed</div>
-                            <div className="col-span-1 predictor-race-header">Betfair</div>
-                            <div className="col-span-1 predictor-race-header">Diff%</div>
-                            <div className="col-span-1 predictor-race-header">10m</div>
-                            <div className="col-span-1 predictor-race-header">5m</div>
+                            <div 
+                                className="col-span-1 predictor-race-header"
+                                onClick={() => {
+                                    setSortedCol(SORT_FIELD.NO)
+                                    setSortDirection(sortedCol !== SORT_FIELD.NO ? true : !sortDirection)
+                                }}
+                            >
+                                Num {sortedCol === SORT_FIELD.NO ? (!sortDirection ? '↑' : '↓') : ''}
+                            </div>
+                            <div
+                                className="col-span-3 p-5 flex flex-row items-center justify-start h-12 cursor-pointer"
+                                onClick={() => {
+                                    setSortedCol(SORT_FIELD.HORSE)
+                                    setSortDirection(sortedCol !== SORT_FIELD.HORSE ? true : !sortDirection)
+                                }}
+                            >
+                                Horse {sortedCol === SORT_FIELD.HORSE ? (!sortDirection ? '↑' : '↓') : ''}
+                            </div>
+                            <div
+                                className="col-span-3 p-5 flex flex-row items-center justify-start h-12 cursor-pointer"
+                                onClick={() => {
+                                    setSortedCol(SORT_FIELD.JOCKEY)
+                                    setSortDirection(sortedCol !== SORT_FIELD.JOCKEY ? true : !sortDirection)
+                                }}
+                            >
+                                Jockey {sortedCol === SORT_FIELD.JOCKEY ? (!sortDirection ? '↑' : '↓') : ''}
+                            </div>
+                            <div
+                                className="col-span-1 predictor-race-header"
+                                onClick={() => {
+                                    setSortedCol(SORT_FIELD.STARTS)
+                                    setSortDirection(sortedCol !== SORT_FIELD.STARTS ? true : !sortDirection)
+                                }}
+                            >
+                                Starts {sortedCol === SORT_FIELD.STARTS ? (!sortDirection ? '↑' : '↓') : ''}
+                            </div>
+                            <div
+                                className="col-span-1 predictor-race-header"
+                                onClick={() => {
+                                    setSortedCol(SORT_FIELD.BARRIER)
+                                    setSortDirection(sortedCol !== SORT_FIELD.BARRIER ? true : !sortDirection)
+                                }}
+                            >
+                                Barrier {sortedCol === SORT_FIELD.BARRIER ? (!sortDirection ? '↑' : '↓') : ''}
+                            </div>
+                            <div
+                                className="col-span-1 predictor-race-header"
+                                onClick={() => {
+                                    setSortedCol(SORT_FIELD.WEIGHT)
+                                    setSortDirection(sortedCol !== SORT_FIELD.WEIGHT ? true : !sortDirection)
+                                }}
+                            >
+                                Weight {sortedCol === SORT_FIELD.WEIGHT ? (!sortDirection ? '↑' : '↓') : ''}
+                            </div>
+                            <div
+                                className="col-span-7 p-5 flex flex-row items-center justify-start h-12 cursor-pointer"
+                                onClick={() => {
+                                    setSortedCol(SORT_FIELD.SCORE)
+                                    setSortDirection(sortedCol !== SORT_FIELD.SCORE ? true : !sortDirection)
+                                }}
+                            >
+                                Form Score {sortedCol === SORT_FIELD.SCORE ? (!sortDirection ? '↑' : '↓') : ''}
+                            </div>
+                            <div
+                                className="col-span-1 predictor-race-header"
+                                onClick={() => {
+                                    setSortedCol(SORT_FIELD.FRAMED)
+                                    setSortDirection(sortedCol !== SORT_FIELD.FRAMED ? true : !sortDirection)
+                                }}
+                            >
+                                Framed {sortedCol === SORT_FIELD.FRAMED ? (!sortDirection ? '↑' : '↓') : ''}
+                            </div>
+                            <div
+                                className="col-span-1 predictor-race-header"
+                                onClick={() => {
+                                    setSortedCol(SORT_FIELD.BETFAIR)
+                                    setSortDirection(sortedCol !== SORT_FIELD.BETFAIR ? true : !sortDirection)
+                                }}
+                            >
+                                Betfair {sortedCol === SORT_FIELD.BETFAIR ? (!sortDirection ? '↑' : '↓') : ''}
+                            </div>
+                            <div
+                                className="col-span-1 predictor-race-header"
+                                onClick={() => {
+                                    setSortedCol(SORT_FIELD.DIFF)
+                                    setSortDirection(sortedCol !== SORT_FIELD.DIFF ? true : !sortDirection)
+                                }}
+                            >
+                                Diff% {sortedCol === SORT_FIELD.DIFF ? (!sortDirection ? '↑' : '↓') : ''}
+                            </div>
+                            <div
+                                className="col-span-1 predictor-race-header"
+                                onClick={() => {
+                                    setSortedCol(SORT_FIELD.TEN_DIFF)
+                                    setSortDirection(sortedCol !== SORT_FIELD.TEN_DIFF ? true : !sortDirection)
+                                }}
+                            >
+                                10m {sortedCol === SORT_FIELD.TEN_DIFF ? (!sortDirection ? '↑' : '↓') : ''}
+                            </div>
+                            <div
+                                className="col-span-1 predictor-race-header"
+                                onClick={() => {
+                                    setSortedCol(SORT_FIELD.FIVE_DIFF)
+                                    setSortDirection(sortedCol !== SORT_FIELD.FIVE_DIFF ? true : !sortDirection)
+                                }}
+                            >
+                                5m {sortedCol === SORT_FIELD.FIVE_DIFF ? (!sortDirection ? '↑' : '↓') : ''}
+                            </div>
                         </div>
 
                         { (!race || (race && race['horses'].length == 0)) &&
