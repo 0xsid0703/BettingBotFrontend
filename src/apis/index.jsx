@@ -157,10 +157,10 @@ export const getRaceByNum = async(startDate, trackName, raceNum, condition) => {
     }
 }
 
-export const getRaceCardByNum = async(startDate, trackName, raceNum, condition) => {
+export const getRaceCardByNum = async(startDate, trackName, raceNum, condition, sortedCol, sortDirection) => {
     try {
         const resp = await axios({
-            url: `/board/getracecardbynum?date=${startDate}&track=${trackName}&race=${raceNum}&condition=${condition}`,
+            url: `/board/getracecardbynum?date=${startDate}&track=${trackName}&race=${raceNum}&condition=${condition}&sortedCol=${sortedCol}&sortDirection=${sortDirection}`,
             method: 'GET',
         })
         if (resp.status === 200) return resp.data
@@ -172,10 +172,10 @@ export const getRaceCardByNum = async(startDate, trackName, raceNum, condition) 
     }
 }
 
-export const getRaceFormByNum = async(startDate, trackName, raceNum, condition) => {
+export const getRaceFormByNum = async(startDate, trackName, raceNum, condition, sortedCol, sortDirection) => {
     try {
         const resp = await axios({
-            url: `/board/getraceformbynum?date=${startDate}&track=${trackName}&race=${raceNum}&condition=${condition}`,
+            url: `/board/getraceformbynum?date=${startDate}&track=${trackName}&race=${raceNum}&condition=${condition}&sortedCol=${sortedCol}&sortDirection=${sortDirection}`,
             method: 'GET',
         })
         if (resp.status === 200) return resp.data

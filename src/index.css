@@ -127,7 +127,7 @@ body {
 }
 
 .predictor-race-header {
-  @apply p-5 flex flex-row items-center justify-center h-12
+  @apply p-5 flex flex-row items-center justify-center h-12 cursor-pointer
 }
 
 .predictor-race-body {
