@@ -269,8 +269,8 @@ const Predictor = () => {
         })
     , [sortedCol, sortDirection, race])
 
-    const formForDisplay = useMemo(() => {
-        let tmp = form && form['horses'].length > 0 && form['horses'].sort((a, b) => {
+    const formForDisplay = useMemo(() => 
+        form && form['horses'].length > 0 && form['horses'].sort((a, b) => {
             if (formSortDirection) {
                 if (a[formSortedCol] > b[formSortedCol]) return 1
                 else return -1
@@ -279,8 +279,7 @@ const Predictor = () => {
                 else return 1
             }
         })
-        return tmp
-    }, [formSortedCol, formSortDirection, form])
+    , [formSortedCol, formSortDirection, form])
 
     return (
         <div className="flex flex-col gap-5 p-[16px] 2xl:p-[58px] 4xl:p-[112px] bg-white min-w-[1440px]">
@@ -476,7 +475,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.NO)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.NO ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.NO ? true : !formSortDirection)
                             }}
                         >
                             Num
@@ -485,7 +484,7 @@ const Predictor = () => {
                             className="col-span-3 p-5 flex flex-row items-center justify-start h-12 cursor-pointer"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.HORSE)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.HORSE ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.HORSE ? true : !formSortDirection)
                             }}
                         >
                             Horse
@@ -494,7 +493,7 @@ const Predictor = () => {
                             className="col-span-3 p-5 flex flex-row items-center justify-start h-12 cursor-pointer"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.JOCKEY)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.JOCKEY ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.JOCKEY ? true : !formSortDirection)
                             }}
                         >
                             Jockey
@@ -507,7 +506,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.CLASS)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.CLASS ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.CLASS ? true : !formSortDirection)
                             }}
                         >
                             Class
@@ -516,7 +515,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.AVG)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.AVG ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.AVG ? true : !formSortDirection)
                             }}
                         >
                             AVG$
@@ -525,7 +524,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.FINISH)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.FINISH ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.FINISH ? true : !formSortDirection)
                             }}
                         >
                             Career/F
@@ -534,7 +533,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.WIN)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.WIN ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.WIN ? true : !formSortDirection)
                             }}
                         >
                             Career/W
@@ -543,7 +542,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.PLACE)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.PLACE ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.PLACE ? true : !formSortDirection)
                             }}
                         >
                             Career/P
@@ -552,7 +551,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.CONDITION)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.CONDITION ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.CONDITION ? true : !formSortDirection)
                             }}
                         >
                             Condition
@@ -561,7 +560,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.DISTANCE)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.DISTANCE ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.DISTANCE ? true : !formSortDirection)
                             }}
                         >
                             Distance
@@ -570,7 +569,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.TRACK_PERCENT)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.TRACK_PERCENT ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.TRACK_PERCENT ? true : !formSortDirection)
                             }}
                         >
                             Track
@@ -579,7 +578,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.JOCKEY_PERCENT)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.JOCKEY_PERCENT ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.JOCKEY_PERCENT ? true : !formSortDirection)
                             }}
                         >
                             Jockey
@@ -588,7 +587,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.TRAINER_PERCENT)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.TRAINER_PERCENT ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.TRAINER_PERCENT ? true : !formSortDirection)
                             }}
                         >
                             Trainer
@@ -597,7 +596,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.SETTLING)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.SETTLING ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.SETTLING ? true : !formSortDirection)
                             }}
                         >
                             Settling
@@ -606,7 +605,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.LAST600)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.LAST600 ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.LAST600 ? true : !formSortDirection)
                             }}
                         >
                             600m
@@ -615,7 +614,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.SPEED)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.SPEED ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.SPEED ? true : !formSortDirection)
                             }}
                         >
                             Speed
@@ -624,7 +623,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.LASTFN)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.LASTFN ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.LASTFN ? true : !formSortDirection)
                             }}
                         >
                             Lst/Fn
@@ -633,7 +632,7 @@ const Predictor = () => {
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
                                 setFormSortedCol(SORT_FIELD.LASTMGN)
-                                setFormSortDirection(sortedCol !== SORT_FIELD.LASTMGN ? true : !sortDirection)
+                                setFormSortDirection(formSortedCol !== SORT_FIELD.LASTMGN ? true : !formSortDirection)
                             }}
                         >
                             Lst/Mgn
