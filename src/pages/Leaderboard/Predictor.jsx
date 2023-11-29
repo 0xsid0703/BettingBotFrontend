@@ -257,8 +257,8 @@ const Predictor = () => {
         return () => clearInterval(intervalRef.current)
     }, [initialize])
 
-    const raceForDisplay = useMemo(() => {
-        let tmp = race && race['horses'].length > 0 && race['horses'].sort((a, b) => {
+    const raceForDisplay = useMemo(() => 
+        race && race['horses'].length > 0 && race['horses'].sort((a, b) => {
             if (sortDirection) {
                 if (a[sortedCol] > b[sortedCol]) return 1
                 else return -1
@@ -267,8 +267,7 @@ const Predictor = () => {
                 else return 1
             }
         })
-        return tmp
-    }, [sortedCol, sortDirection])
+    , [sortedCol, sortDirection, race])
 
     const formForDisplay = useMemo(() => {
         let tmp = form && form['horses'].length > 0 && form['horses'].sort((a, b) => {
@@ -281,7 +280,7 @@ const Predictor = () => {
             }
         })
         return tmp
-    }, [formSortedCol, formSortDirection])
+    }, [formSortedCol, formSortDirection, form])
 
     return (
         <div className="flex flex-col gap-5 p-[16px] 2xl:p-[58px] 4xl:p-[112px] bg-white min-w-[1440px]">
