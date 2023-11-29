@@ -29,6 +29,7 @@ export default {
         "pink-2": "#FEE4E2",
         "red-1": "#D92D20",
         "red-2": "#7A271A",
+        "red-3": "#F97066",
         "yellow-1": "#DC6803",
         "link": "#1570EF"
       },

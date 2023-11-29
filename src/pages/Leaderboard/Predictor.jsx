@@ -858,8 +858,8 @@ const Predictor = () => {
                                 <div className="col-span-1 predictor-race-body">${horse['framed_odds'] ? (horse['framed_odds']).toFixed(2) : 0}</div>
                                 <div className="col-span-1 predictor-race-body">${horse['betfair'] ? (horse['betfair']).toFixed(2) : 0}</div>
                                 <div className="col-span-1 predictor-race-body">{parseInt(horse['diff'])}%</div>
-                                <div className="col-span-1 predictor-race-body">{parseInt(horse['10m'])}%</div>
-                                <div className="col-span-1 predictor-race-body">{parseInt(horse['5m'])}%</div>
+                                <div className={clsx(`col-span-1 predictor-race-body ${parseInt(horse['10m']) > 0? "text-green-2": "text-red-3"}`)}>{parseInt(horse['10m'])}%</div>
+                                <div className={clsx(`col-span-1 predictor-race-body ${parseInt(horse['5m']) > 0? "text-green-2": "text-red-3"}`)}>{parseInt(horse['5m'])}%</div>
                                 </div>
                             )
                         }
