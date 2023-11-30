@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState, useRef } from 'react'
+import { useContext, useEffect, useState, useRef, useCallback } from 'react'
 
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -8,13 +8,13 @@ import { marketContext } from "../../contexts/marketContext"
 import { eventsContext } from "../../contexts/eventsContext"
 
 import Item from './Item'
-import { getMarketBooks } from "../../apis"
+import { getMarketBooks, getUpcomingEvents } from "../../apis"
 
 /* eslint-disable react/prop-types */
 const Event = ({show}) => {
     const [upcomingMarkets, setUpcomingMarkets] = useState ([])
     const {market, setMarket} = useContext (marketContext)
-    const {events} = useContext (eventsContext)
+    const [events, setEvents] = useState ()
     const SHOW = show ? show : 4
     
     let marketRef = useRef()
@@ -22,6 +22,23 @@ const Event = ({show}) => {
     useEffect (() => {
         marketRef.current = market
     }, [market])
+
+    const getEvents = useCallback(async() => {
+        const resp = await getUpcomingEvents({
+            type: 'WIN'
+        })
+        if (resp?.success) {
+            const data = resp.data.sort((a, b) => {
+                if (new Date(a?.markets[0].startTime).getTime() > new Date(b?.markets[0].startTime).getTime()) return 1
+                else return -1
+            })
+            setEvents (data)
+        }
+    }, [])
+
+    useEffect (() => {
+        getEvents()
+    }, [getEvents])
 
     const getUpcomingMarkets = async() => {
         if (events.length === 0) {
@@ -105,9 +122,9 @@ const Event = ({show}) => {
                 {
                     upcomingMarkets.length === 0 &&
                     Array.from({length: SHOW}).map((item, idx) =>
-                        <div key={idx} className="p-5 w-full bg-pink-1 rounded-[10px] border border-grey-2 cursor-pointer h-[162px]">
+                        <div key={idx} className="p-5 w-full bg-grey-4 rounded-[10px] border border-grey-2 cursor-pointer h-[162px]">
                             <Skeleton
-                                    baseColor="#EAECF0"
+                                    baseColor="#F9FAFB"
                                     style={{ height: "100%" }}
                                     highlightColor="#D9D9D9"
                                 />
