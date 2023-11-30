@@ -17,6 +17,23 @@ export const getEvents = async({date, type}) => {
     }
 }
 
+export const getUpcomingEvents = async({type}) => {
+    try{
+        const resp = await axios({
+            url: `/basic/upcomingevents/${type}`,
+            method: "GET", 
+        })
+        if (resp.status === 200) {
+            return resp.data
+        }
+        console.log ("Axios getUpcomingEvents function status ===> ", resp.status)
+        return null
+    } catch (e) {
+        console.log ("Axios getUpcomingEvents failed ==>", e.message)
+        return null
+    }
+}
+
 export const getMarketBooks = async({marketId}) => {
     try{
         const resp = await axios({

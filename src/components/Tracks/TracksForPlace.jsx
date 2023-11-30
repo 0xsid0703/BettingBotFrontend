@@ -96,7 +96,7 @@ const TracksForPlace = ({ setDate }) => {
     }, [isClient, pWidth])
 
     return (
-        <div className="w-full grid grid-flow-row gap-[1px] bg-grey-2 rounded-[10px] border border-grey-2" ref={ref}>
+        <div className="w-full grid grid-flow-row gap-[1px] bg-grey-4 rounded-[10px] border border-grey-2" ref={ref}>
             <div className="grid grid-cols-2 w-full p-8 bg-grey-4 rounded-tl-[10px]">
                 {/* <div className=""> */}
                     <Datepicker date={startDate} onChangeDate={(d) => {
@@ -167,7 +167,7 @@ const TracksForPlace = ({ setDate }) => {
                 !loading &&
                 <div className='text-center text-2xl p-5 h-[300px]'>
                     <Skeleton
-                        baseColor="#EAECF0"
+                        baseColor="#F9FAFB"
                         style={{ height: "100%" }}
                         highlightColor="#D9D9D9"
                     />
