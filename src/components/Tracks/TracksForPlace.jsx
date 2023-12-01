@@ -23,6 +23,15 @@ const COUNTRY_FLAG = {
     'SG': sgFlag
 }
 
+const CONDITION_COLOR = {
+    FIRM: 'bg-purple-1',
+    GOOD: 'bg-green-3',
+    SOFT: 'bg-blue-1',
+    HEAVY: 'bg-red-4',
+    SYNTHETIC: 'bg-yellow-2',
+    DEAD: 'bg-gray-300'
+}
+
 const TracksForPlace = ({ setDate }) => {
     const [pWidth, setPWidth] = useState (0)
     const ref = useRef(null)
@@ -121,9 +130,12 @@ const TracksForPlace = ({ setDate }) => {
                         events.map ((event, idx) => {
                             return (
                                 <div className='flex flex-row border-d border-t border-grey-2' key={idx}>
-                                    <div className='track-body-header' style={{width: `${pWidth/6}px`}}>
+                                    <div className='track-body-header justify-between' style={{width: `${pWidth/6}px`}}>
+                                        <div className='flex flex-row'>
                                         <img src={COUNTRY_FLAG[event.countryCode.toUpperCase()]} className='w-4 h-4 mr-[9px]'/>
                                         {event.venue}
+                                        </div>
+                                        <div className={clsx(`flex flex-row items-center justify-center ${CONDITION_COLOR[event['condition']]} text-white rounded-md text-sm px-[13px] py-0.5 w-[55px] h-[24px]`)}>{event['condition']}</div>
                                     </div>
                                     {
                                         event?.markets.map((market, idx) => (

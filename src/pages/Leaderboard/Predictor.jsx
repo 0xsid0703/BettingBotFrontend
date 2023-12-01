@@ -788,7 +788,7 @@ const Predictor = () => {
                                     setSortDirection(sortedCol !== SORT_FIELD.BETFAIR ? true : !sortDirection)
                                 }}
                             >
-                                Betfair
+                                BSP
                             </div>
                             <div
                                 className="col-span-1 predictor-race-header"
@@ -797,7 +797,7 @@ const Predictor = () => {
                                     setSortDirection(sortedCol !== SORT_FIELD.DIFF ? true : !sortDirection)
                                 }}
                             >
-                                Diff%
+                                Gap%
                             </div>
                             <div
                                 className="col-span-1 predictor-race-header"

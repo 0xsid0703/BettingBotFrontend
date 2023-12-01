@@ -14,7 +14,11 @@ export default {
         "pink-1": '#F2F4F7',
         "pink-2": "#FEE4E2",
         "green-2": "#D1FADF",
+        "green-3": "#32D583",
         "grey-4": "#F9FAFB",
+        'purple-1': '#717BBC',
+        'red-4': '#F04438',
+        'yellow-2': '#FDB022'
       },
       textColor: {
         "black-1": "#344054",
