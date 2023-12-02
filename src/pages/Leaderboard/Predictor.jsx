@@ -682,7 +682,7 @@ const Predictor = () => {
                                 </a>
                             </div>
                             <div className="col-span-1 predictor-race-body">{parseInt(horse['class'])}%</div>
-                            <div className="col-span-1 predictor-race-body">{`$${formattedNum(horse['average'])}`}</div>
+                            <div className="col-span-1 predictor-race-body">{`$${formattedNum(parseInt(horse['average']))}`}</div>
                             <div className="col-span-1 predictor-race-body">{parseInt(horse['finishPercent'])}%</div>
                             <div className="col-span-1 predictor-race-body">{parseInt(horse['winPercent'])}%</div>
                             <div className="col-span-1 predictor-race-body">{parseInt(horse['placePercent'])}%</div>

@@ -135,7 +135,7 @@ const TracksForPlace = ({ setDate }) => {
                                         <img src={COUNTRY_FLAG[event.countryCode.toUpperCase()]} className='w-4 h-4 mr-[9px]'/>
                                         {event.venue}
                                         </div>
-                                        <div className={clsx(`flex flex-row items-center justify-center ${CONDITION_COLOR[event['condition']]} text-white rounded-md text-sm px-[13px] py-0.5 w-[55px] h-[24px]`)}>{event['condition']}</div>
+                                        <div className={clsx(`flex flex-row items-center justify-center ${CONDITION_COLOR[event['condition']]} text-white rounded-md text-xs px-[13px] py-0.5 w-[55px] h-[24px]`)}>{event['condition']}</div>
                                     </div>
                                     {
                                         event?.markets.map((market, idx) => (
