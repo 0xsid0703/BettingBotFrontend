@@ -232,10 +232,10 @@ const Predictor = () => {
         })
         if (num > 0 && venue !== "") {
             try {
-                getRaceCardByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current)
+                getRaceCardByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current, marketRef.current.marketId)
                     .then((data) => setRace(data))
                     .catch((err) => console.log (err))
-                getRaceFormByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current)
+                getRaceFormByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current, marketRef.current.marketId)
                     .then((data) => setForm(data))
                     .catch((err) => console.log (err))
 
@@ -527,7 +527,7 @@ const Predictor = () => {
                                 setFormSortDirection(formSortedCol !== SORT_FIELD.FINISH ? true : !formSortDirection)
                             }}
                         >
-                            Career/F
+                            Finish
                         </div>
                         <div
                             className="col-span-1 predictor-race-header"
@@ -536,7 +536,7 @@ const Predictor = () => {
                                 setFormSortDirection(formSortedCol !== SORT_FIELD.WIN ? true : !formSortDirection)
                             }}
                         >
-                            Career/W
+                            Win
                         </div>
                         <div
                             className="col-span-1 predictor-race-header"
@@ -545,7 +545,7 @@ const Predictor = () => {
                                 setFormSortDirection(formSortedCol !== SORT_FIELD.PLACE ? true : !formSortDirection)
                             }}
                         >
-                            Career/P
+                            Place
                         </div>
                         <div
                             className="col-span-1 predictor-race-header"
@@ -695,7 +695,7 @@ const Predictor = () => {
                             <div className="col-span-1 predictor-race-body">{Number(horse['last_600']).toFixed(2)}</div>
                             <div className="col-span-1 predictor-race-body">{horse['speed']}</div>
                             <div className="col-span-1 predictor-race-body">{horse['lastFn'] !== undefined ? parseInt(horse['lastFn']) : 0}%</div>
-                            <div className="col-span-1 predictor-race-body">{horse['lastMgn'] !== undefined ? horse['lastMgn'] : 10}</div>
+                            <div className="col-span-1 predictor-race-body">{horse['lastMgn'] !== undefined ? parseFloat(horse['lastMgn']).toFixed(2) : 10}</div>
                             </div>
                         )
                     }
@@ -797,7 +797,7 @@ const Predictor = () => {
                                     setSortDirection(sortedCol !== SORT_FIELD.DIFF ? true : !sortDirection)
                                 }}
                             >
-                                Gap%
+                                Gap
                             </div>
                             <div
                                 className="col-span-1 predictor-race-header"
