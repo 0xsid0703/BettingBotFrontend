@@ -4,15 +4,23 @@ import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "r
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
+import {
+    Dialog,
+    Card,
+    Slider,
+    CardBody,
+} from "@material-tailwind/react";
+
 import TracksForPlace from "../../components/Tracks/TracksForPlace"
 import Event from "../../components/Event"
 
 import { marketContext } from '../../contexts/marketContext';
 import { eventsContext } from "../../contexts/eventsContext"
-import { getRaceCardByNum, getRaceFormByNum, setRaceCondition } from '../../apis'
+import { getRaceCardByNum, getRaceFormByNum, setRaceCondition, getFormScores } from '../../apis'
 import ClockElement from "../../components/Tracks/ClockElement";
 // import PredictScoreChart from "../../components/ScoreChart/PredictScoreChart";
 
+import settingSvg from "../../assets/settings.svg"
 import gearSvg from '../../assets/gears/gear.svg'
 import blackSvg from '../../assets/gears/Black.svg'
 import blackCONBSvg from '../../assets/gears/Black-CrossOverNoseBand.svg'
@@ -187,6 +195,8 @@ const Predictor = () => {
     const [sortDirection, setSortDirection] = useState(true)
     const [formSortedCol, setFormSortedCol] = useState (SORT_FIELD.NO)
     const [formSortDirection, setFormSortDirection] = useState(true)
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen((cur) => !cur);
 
     const startDateRef = useRef(startDate)
     const eventsRef = useRef(events)
@@ -307,6 +317,103 @@ const Predictor = () => {
             }
         })
     , [formSortedCol, formSortDirection, form])
+
+    const [formInfos, setFormInfos] = useState ({})
+    const [sliderValue, setSliderValue] = useState ({
+        '0': 0.5,
+        '1': 0.5,
+        '2': 0.5,
+        '3': 0.5,
+        '4': 0.5,
+        '5': 0.5,
+        '6': 0.5,
+        '7': 0.5,
+        '8': 0.5,
+        '9': 0.5,
+        '10': 0.5,
+        '11': 0.5,
+        '12': 0.5,
+        '13': 0.5,
+        '14': 0.5,
+        '15': 0.5,
+        '16': 0.5
+    })
+
+    const calculateScores = useCallback(() => {
+        if (Object.keys(formInfos).length === 0) return
+        const higher_is_better = [0,1,2,3,4,5,6,7,8,9,10,11,12]
+        const lower_is_better = [13,14,15,16]
+        let data = {...formInfos}
+        for (let col of [...higher_is_better, ...lower_is_better]) {
+            for (let name of Object.keys(formInfos)) {
+                const value = Number(data[name][col])
+                if (isNaN(value) || value === "NaN") {data[name][col] = 0; console.log (data[name][col], name, col)}
+            }
+        }
+        console.log (data, "formInfos")
+        for (let col of higher_is_better) {
+            let min = 999999999, max = 0;
+            for (let name of Object.keys(formInfos)) {
+                if (data[name][col] > max) {max = data[name][col]}
+                if (data[name][col] < min) {min = data[name][col]}
+            }
+            for (let name of Object.keys(formInfos)) {
+                data[name][col] = (data[name][col] - min) / (max - min)
+            }
+        }
+        for (let col of lower_is_better) {
+            let min = 999999999, max = 0;
+            for (let name of Object.keys(formInfos)) {
+                if (data[name][col] > max) {max = data[name][col]}
+                if (data[name][col] < min) {min = data[name][col]}
+            }
+            for (let name of Object.keys(formInfos)) {
+                data[name][col] = 1 - (data[name][col] - min) / (max - min)
+            }
+        }
+        let mean = {}, min = 999999999, max = 0
+        for (let name of Object.keys(formInfos)) {
+            mean[name] = 0
+            let sum = 0
+            for (let col of [...higher_is_better, ...lower_is_better]) {
+                sum += sliderValue[col] * data[name][col]
+            }
+            mean[name] = sum / 17
+            if (min > mean[name]) min = mean[name]
+            if (max < mean[name]) max = mean[name]
+        }
+        for (let name of Object.keys(mean)) {
+            mean[name] = 1 + 9 * (mean[name] - min) / (max - min)
+        }
+        console.log (mean)
+    }, [formInfos])
+
+    useEffect(() => {
+        calculateScores ()
+    }, [calculateScores])
+
+    const getScores = useCallback(async() => {
+        try {
+            getFormScores(getDateString(startDateRef.current), venue, raceNum, marketRef.current.marketId)
+                .then((data) => {
+                    console.log (data, "OOOOOOOOOOOOO")
+                    let tmp = {}
+                    for (let item of data) {
+                        console.log ([...item.slice(1, item.length)], "FFFF")
+                        tmp[item[0]] = [...item.slice(1, item.length)]
+                    }
+                    console.log (tmp, "KKKKKKKK")
+                    setFormInfos(tmp)
+                })
+                .catch((err) => console.log (err))
+        } catch(e) {
+            console.log (e)
+        }
+    }, [startDate, events, market, curCondition])
+
+    useEffect(() => {
+        getScores ()
+    }, [getScores])
 
     return (
         <div className="flex flex-col gap-5 p-[16px] 2xl:p-[58px] 4xl:p-[112px] bg-white min-w-[1440px]">
@@ -791,13 +898,20 @@ const Predictor = () => {
                                 Weight
                             </div>
                             <div
-                                className="col-span-7 p-5 flex flex-row items-center justify-start h-12 cursor-pointer"
-                                onClick={() => {
-                                    setSortedCol(SORT_FIELD.SCORE)
-                                    setSortDirection(sortedCol !== SORT_FIELD.SCORE ? true : !sortDirection)
-                                }}
+                                className="flex flex-row items-center justify-between col-span-7 p-5 h-12"
                             >
-                                Form Score
+                                <span 
+                                    className="cursor-pointer transition-all"
+                                    onClick={() => {
+                                        setSortedCol(SORT_FIELD.SCORE)
+                                        setSortDirection(sortedCol !== SORT_FIELD.SCORE ? true : !sortDirection)
+                                    }}
+                                >
+                                    Form Score
+                                </span>
+                                <div className="cursor-pointer" onClick={handleOpen}>
+                                    <img src={settingSvg} className="w-4 h-4"/>
+                                </div>
                             </div>
                             <div
                                 className="col-span-1 predictor-race-header"
@@ -904,10 +1018,86 @@ const Predictor = () => {
                     )
                 }
             </div>
-            {/* <PredictScoreChart startDate={startDate} venue={venue} number={raceNum} condition={curCondition} height={race ? race['horses'].length * 72 : 0}/> */}
-            {/* <div className="flex flex-col items-center justify-between bg-grey-4 border border-grey-2 rounded-[10px]">
-                
-            </div> */}
+            <Dialog
+                size="md"
+                open={open}
+                handler={handleOpen}
+                className="bg-transparent shadow-none mx-auto w-full"
+                dismiss
+            >
+                <Card className="mx-auto w-full p-5 bg-grey-2">
+                    <CardBody className="flex flex-col gap-4 bg-white">
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Barrier</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['14'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '14': e.target.value/100})}/>
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Weight</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['13'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '13': e.target.value/100})}/>
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Class</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={50}/>
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">AVG$</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['2'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '2': e.target.value/100})}/>
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Finish</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['11'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '11': e.target.value/100})} />
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Win</span>
+                            <Slider className="col-span-10" color="blue"  defaultValue={sliderValue['0'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '0': e.target.value/100})}/>
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Place</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['1'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '1': e.target.value/100})}/>
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Condition</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['7'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '7': e.target.value/100})}/>
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Distance</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['5'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '5': e.target.value/100})}/>
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Track</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['4'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '4': e.target.value/100})}/>
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Jockey</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['10'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '10': e.target.value/100})}/>
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Trainer</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['12'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '12': e.target.value/100})}/>
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Settling</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={50}/>
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">600m</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={50}/>
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Speed</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={50}/>
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Lst/Fn</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['15'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '15': e.target.value/100})}/>
+                        </div>
+                        <div className="grid grid-cols-12 items-center justify-between">
+                            <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Lst/Mgn</span>
+                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['16'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '16': e.target.value/100})}/>
+                        </div>
+                    </CardBody>
+                </Card>
+            </Dialog>
         </div>
     )
 }

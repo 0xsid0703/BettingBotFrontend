@@ -233,3 +233,18 @@ export const setRaceCondition = async(dateStr, trackName, raceNum, condition) =>
         return null
     }
 }
+
+export const getFormScores = async(dateStr, trackName, raceNum, condition) => {
+    try {
+        const resp = await axios({
+            url: `/board/getformscores?date=${dateStr}&track=${trackName}&race=${raceNum}&condition=${condition}`,
+            method: 'GET',
+        })
+        if (resp.status === 200) return resp.data
+        console.log ("Axios setRaceCondition function status ===> ", resp.status)
+        return null
+    } catch (e) {
+        console.log ("Axios setRaceCondition failed ==>", e.message)
+        return null
+    }
+}
