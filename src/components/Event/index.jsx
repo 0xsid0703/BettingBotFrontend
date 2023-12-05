@@ -5,7 +5,6 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 import { marketContext } from "../../contexts/marketContext"
-import { eventsContext } from "../../contexts/eventsContext"
 
 import Item from './Item'
 import { getMarketBooks, getUpcomingEvents } from "../../apis"
@@ -41,7 +40,7 @@ const Event = ({show}) => {
     }, [getEvents])
 
     const getUpcomingMarkets = async() => {
-        if (events.length === 0) {
+        if (!events || (events && events.length === 0)) {
             // setUpcomingMarkets (undefined)
             return
         }
