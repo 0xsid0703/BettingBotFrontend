@@ -169,37 +169,37 @@ export const getRaceByNum = async(startDate, trackName, raceNum, condition) => {
         console.log ("Axios getRaceByNum function status ===> ", resp.status)
         return null
     } catch (e) {
-        console.log ("Axios getJockeysInBoard failed ==>", e.message)
+        console.log ("Axios getRaceByNum failed ==>", e.message)
         return null
     }
 }
 
-export const getRaceCardByNum = async(startDate, trackName, raceNum, condition, marketId) => {
+export const getRaceCardByNum = async(startDate, trackName, raceNum, marketId) => {
     try {
         const resp = await axios({
-            url: `/board/getracecardbynum?date=${startDate}&track=${trackName}&race=${raceNum}&condition=${condition}&marketId=${marketId}`,
+            url: `/board/getracecardbynum?date=${startDate}&track=${trackName}&race=${raceNum}&marketId=${marketId}`,
             method: 'GET',
         })
         if (resp.status === 200) return resp.data
-        console.log ("Axios getRaceByNum function status ===> ", resp.status)
+        console.log ("Axios getRaceCardByNum function status ===> ", resp.status)
         return null
     } catch (e) {
-        console.log ("Axios getJockeysInBoard failed ==>", e.message)
+        console.log ("Axios getRaceCardByNum failed ==>", e.message)
         return null
     }
 }
 
-export const getRaceFormByNum = async(startDate, trackName, raceNum, condition, marketId) => {
+export const getRaceFormByNum = async(startDate, trackName, raceNum, marketId) => {
     try {
         const resp = await axios({
-            url: `/board/getraceformbynum?date=${startDate}&track=${trackName}&race=${raceNum}&condition=${condition}&marketId=${marketId}`,
+            url: `/board/getraceformbynum?date=${startDate}&track=${trackName}&race=${raceNum}&marketId=${marketId}`,
             method: 'GET',
         })
         if (resp.status === 200) return resp.data
-        console.log ("Axios getRaceByNum function status ===> ", resp.status)
+        console.log ("Axios getRaceFormByNum function status ===> ", resp.status)
         return null
     } catch (e) {
-        console.log ("Axios getJockeysInBoard failed ==>", e.message)
+        console.log ("Axios getRaceFormByNum failed ==>", e.message)
         return null
     }
 }
@@ -211,10 +211,25 @@ export const getRaceHorseScores = async(startDate, trackName, raceNum, condition
             method: 'GET',
         })
         if (resp.status === 200) return resp.data
-        console.log ("Axios getRaceByNum function status ===> ", resp.status)
+        console.log ("Axios getRaceHorseScores function status ===> ", resp.status)
         return null
     } catch (e) {
-        console.log ("Axios getJockeysInBoard failed ==>", e.message)
+        console.log ("Axios getRaceHorseScores failed ==>", e.message)
+        return null
+    }
+}
+
+export const setRaceCondition = async(dateStr, trackName, raceNum, condition) => {
+    try {
+        const resp = await axios({
+            url: `/board/setcondition?date=${dateStr}&track=${trackName}&race=${raceNum}&condition=${condition}`,
+            method: 'GET',
+        })
+        if (resp.status === 200) return resp.data
+        console.log ("Axios setRaceCondition function status ===> ", resp.status)
+        return null
+    } catch (e) {
+        console.log ("Axios setRaceCondition failed ==>", e.message)
         return null
     }
 }

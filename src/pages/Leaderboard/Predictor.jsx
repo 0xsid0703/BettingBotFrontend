@@ -9,7 +9,7 @@ import Event from "../../components/Event"
 
 import { marketContext } from '../../contexts/marketContext';
 import { eventsContext } from "../../contexts/eventsContext"
-import { getRaceByNum, getRaceCardByNum, getRaceFormByNum } from '../../apis'
+import { getRaceCardByNum, getRaceFormByNum, setRaceCondition } from '../../apis'
 import ClockElement from "../../components/Tracks/ClockElement";
 // import PredictScoreChart from "../../components/ScoreChart/PredictScoreChart";
 
@@ -56,7 +56,6 @@ import greyBSvg from '../../assets/gears/Grey-Blinkers.svg'
 import greyBFSvg from '../../assets/gears/Grey-BlinkersFirstTime.svg'
 
 import { formattedNum,getDateString } from "../../utils";
-import { CLASS_POINT } from "../../constants";
 import clsx from "clsx";
 
 const IMAG_PATH = {
@@ -162,6 +161,15 @@ const SORT_FIELD = {
     LASTMGN: 'lastMgn',
 }
 
+const CONDITION = {
+    GOOD: "Good",
+    HEAVY: "Heavy",
+    SOFT: "Soft",
+    DEAD: "Dead",
+    SYNTHETIC: "Synthetic",
+    FIRM: "Firm",
+}
+
 const Predictor = () => {
 
     const { market } = useContext (marketContext)
@@ -173,7 +181,7 @@ const Predictor = () => {
     const [venue, setVenue] = useState ()
     const [raceNum, setRaceNum] = useState ()
     const [selected, setSelected] = useState (false)
-    const [curCondition, setCurCondition]=  useState ("Good")
+    const [curCondition, setCurCondition]=  useState ()
     const [curTab, setCurTab] = useState (0)
     const [sortedCol, setSortedCol] = useState (SORT_FIELD.NO)
     const [sortDirection, setSortDirection] = useState(true)
@@ -232,13 +240,19 @@ const Predictor = () => {
         })
         if (num > 0 && venue !== "") {
             try {
-                getRaceCardByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current, marketRef.current.marketId)
-                    .then((data) => setRace(data))
+                getRaceCardByNum(getDateString(startDateRef.current), venue, num, marketRef.current.marketId)
+                    .then((data) => {
+                        setRace(data)
+                        if (data && data['condition']) {
+                            setCurCondition (CONDITION[data['condition']])
+                        }
+                    })
                     .catch((err) => console.log (err))
-                getRaceFormByNum(getDateString(startDateRef.current), venue, num, curConditionRef.current, marketRef.current.marketId)
-                    .then((data) => setForm(data))
+                getRaceFormByNum(getDateString(startDateRef.current), venue, num, marketRef.current.marketId)
+                    .then((data) => {
+                        setForm(data)
+                    })
                     .catch((err) => console.log (err))
-
             } catch (e) {
                 console.log (e)
             }
@@ -248,6 +262,19 @@ const Predictor = () => {
     useEffect (() => {
         initialize ()
     }, [initialize])
+
+    useEffect(() => {
+        if (curCondition) {
+            if (startDateRef.current === undefined) return
+            if (raceNum > 0 && venue !== "") {
+                setRaceCondition(getDateString(startDateRef.current), venue, raceNum, curConditionRef.current)
+                    .then((data) => {
+                        console.log (data, ">>>>>>>>>>>")
+                    })
+                    .catch((err) => console.log (err))
+            }
+        }
+    }, [curCondition])
 
     useEffect (() => {
         if (intervalRef.current) clearInterval(intervalRef.current)
@@ -389,7 +416,7 @@ const Predictor = () => {
                                     type="button"
                                     onClick={()=>setSelected(!selected)}
                                 >
-                                    {curCondition}
+                                    {curCondition ? curCondition : "Good"}
                                     <svg
                                         className="w-2.5 h-2.5 ml-1.5"
                                         aria-hidden="true"
@@ -415,7 +442,7 @@ const Predictor = () => {
                                     }
                                     style={{ width: `${100}px` }}
                                 >
-                                    { ["Good", "Heavy","Soft", "Synthetic", "Firm"].map ((item, idx) => 
+                                    { ["Good", "Heavy","Soft", "Synthetic", "Firm", "Dead"].map ((item, idx) => 
                                     <ul
                                         className={`py-2 text-sm text-v3-primary font-medium dark:text-gray-200`}
                                         aria-labelledby="dropdownButton"
