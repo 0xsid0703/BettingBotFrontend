@@ -22,11 +22,13 @@ const Datepicker = ({date, onChangeDate}) => {
   };
 
   return (
+    <div className='z-[30]'>
     <DatePicker
       selected={date}
       onChange={(date) => onChangeDate(date)}
       customInput={<ExampleCustomInput />}
     />
+    </div>
   );
 };
 

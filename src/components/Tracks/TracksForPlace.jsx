@@ -52,7 +52,6 @@ const TracksForPlace = ({ setDate }) => {
         })
         setLoading (true)
         if (resp?.success) {
-            console.log (resp.data)
             let data = resp.data.sort((a, b) => {
                 if (new Date(a?.markets[0].startTime).getTime() > new Date(b?.markets[0].startTime).getTime()) return 1
                 else return -1

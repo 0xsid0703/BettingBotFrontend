@@ -338,55 +338,54 @@ const Predictor = () => {
         '15': 0.5,
         '16': 0.5
     })
+    const [scores, setScores] = useState ()
 
     const calculateScores = useCallback(() => {
         if (Object.keys(formInfos).length === 0) return
         const higher_is_better = [0,1,2,3,4,5,6,7,8,9,10,11,12]
         const lower_is_better = [13,14,15,16]
         let data = {...formInfos}
+        let min = new Array(17).fill(999999999), max = new Array(17).fill(0)
         for (let col of [...higher_is_better, ...lower_is_better]) {
             for (let name of Object.keys(formInfos)) {
-                const value = Number(data[name][col])
-                if (isNaN(value) || value === "NaN") {data[name][col] = 0; console.log (data[name][col], name, col)}
+                if (data[name][col] > max[col]) {max[col] = data[name][col]}
+                if (data[name][col] < min[col]) {min[col] = data[name][col]}
             }
         }
-        console.log (data, "formInfos")
         for (let col of higher_is_better) {
-            let min = 999999999, max = 0;
             for (let name of Object.keys(formInfos)) {
-                if (data[name][col] > max) {max = data[name][col]}
-                if (data[name][col] < min) {min = data[name][col]}
+                data[name][col] = (data[name][col] - min[col]) / (max[col] - min[col])
             }
+        }
+        let mint = new Array(17).fill(999999999), maxt = new Array(17).fill(0)
+        for (let col of [...higher_is_better, ...lower_is_better]) {
             for (let name of Object.keys(formInfos)) {
-                data[name][col] = (data[name][col] - min) / (max - min)
+                if (data[name][col] > maxt[col]) {maxt[col] = data[name][col]}
+                if (data[name][col] < mint[col]) {mint[col] = data[name][col]}
             }
         }
         for (let col of lower_is_better) {
-            let min = 999999999, max = 0;
             for (let name of Object.keys(formInfos)) {
-                if (data[name][col] > max) {max = data[name][col]}
-                if (data[name][col] < min) {min = data[name][col]}
-            }
-            for (let name of Object.keys(formInfos)) {
-                data[name][col] = 1 - (data[name][col] - min) / (max - min)
+                data[name][col] = 1 - (data[name][col] - mint[col]) / (maxt[col]  - mint[col])
             }
         }
-        let mean = {}, min = 999999999, max = 0
+        let mean = {};
+        min = 999999999, max = 0
         for (let name of Object.keys(formInfos)) {
             mean[name] = 0
-            let sum = 0
+            let sum = 0, cnt = 0
             for (let col of [...higher_is_better, ...lower_is_better]) {
-                sum += sliderValue[col] * data[name][col]
+                if (!isNaN(data[name][col])) {sum += sliderValue[col.toString()] * data[name][col]; cnt++}
             }
-            mean[name] = sum / 17
+            mean[name] = sum / cnt
             if (min > mean[name]) min = mean[name]
             if (max < mean[name]) max = mean[name]
         }
         for (let name of Object.keys(mean)) {
             mean[name] = 1 + 9 * (mean[name] - min) / (max - min)
         }
-        console.log (mean)
-    }, [formInfos])
+        setScores (mean)
+    }, [formInfos, sliderValue])
 
     useEffect(() => {
         calculateScores ()
@@ -394,16 +393,16 @@ const Predictor = () => {
 
     const getScores = useCallback(async() => {
         try {
+            if (startDateRef.current === undefined || venue === undefined || raceNum === undefined || marketRef.current === undefined) return
             getFormScores(getDateString(startDateRef.current), venue, raceNum, marketRef.current.marketId)
                 .then((data) => {
-                    console.log (data, "OOOOOOOOOOOOO")
-                    let tmp = {}
-                    for (let item of data) {
-                        console.log ([...item.slice(1, item.length)], "FFFF")
-                        tmp[item[0]] = [...item.slice(1, item.length)]
-                    }
-                    console.log (tmp, "KKKKKKKK")
-                    setFormInfos(tmp)
+                    let tmp1 = {};
+                    data && data.map((item) => {
+                        const values = [...item];
+                        values.shift();
+                        tmp1[item[0]] = [...values];
+                    })
+                    setFormInfos({...tmp1})
                 })
                 .catch((err) => console.log (err))
         } catch(e) {
@@ -971,7 +970,7 @@ const Predictor = () => {
                                 </div>
                             )
                         }
-                        {raceForDisplay && raceForDisplay.length > 0 &&
+                        {raceForDisplay && raceForDisplay.length > 0 && scores &&
                             raceForDisplay.map ((horse, idx) =>
                                 <div key={idx} className="grid grid-cols-24 text-black-2 border-t border-grey-2 font-normal text-sm leading-6 w-full">
                                 <div className="col-span-1 predictor-race-body">
@@ -1003,7 +1002,7 @@ const Predictor = () => {
                                 <div className="col-span-1 predictor-race-body">{horse['weight']}</div>
                                 <div className="col-span-7 px-5 py-2 flex flex-row items-center justify-start">
                                     <div className="w-full bg-transparent rounded-full h-6">
-                                        <div className="flex flex-row items-center justify-end bg-blue-1 h-6 rounded-md text-white text-sm pr-2" style={{width: `${parseFloat(horse['score'])/10 * 100}%`}}>{parseFloat(horse['score']).toFixed(2)}</div>
+                                        <div className="flex flex-row items-center justify-end bg-blue-1 h-6 rounded-md text-white text-sm pr-2" style={{width: `${parseFloat(scores[horse['horse_name']])/10 * 100}%`}}>{parseFloat(scores[horse['horse_name']]).toFixed(2)}</div>
                                     </div>
                                 </div>
                                 <div className="col-span-1 predictor-race-body">${horse['framed_odds'] ? (horse['framed_odds']).toFixed(2) : 0}</div>
@@ -1023,7 +1022,6 @@ const Predictor = () => {
                 open={open}
                 handler={handleOpen}
                 className="bg-transparent shadow-none mx-auto w-full"
-                dismiss
             >
                 <Card className="mx-auto w-full p-5 bg-grey-2">
                     <CardBody className="flex flex-col gap-4 bg-white">
