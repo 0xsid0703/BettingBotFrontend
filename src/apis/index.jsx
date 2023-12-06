@@ -234,10 +234,10 @@ export const setRaceCondition = async(dateStr, trackName, raceNum, condition) =>
     }
 }
 
-export const getFormScores = async(dateStr, trackName, raceNum, condition) => {
+export const getFormScores = async(dateStr, trackName, raceNum, marketId) => {
     try {
         const resp = await axios({
-            url: `/board/getformscores?date=${dateStr}&track=${trackName}&race=${raceNum}&condition=${condition}`,
+            url: `/board/getformscores?date=${dateStr}&track=${trackName}&race=${raceNum}&marketId=${marketId}`,
             method: 'GET',
         })
         if (resp.status === 200) return resp.data
