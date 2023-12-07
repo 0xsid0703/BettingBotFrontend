@@ -190,6 +190,7 @@ const Predictor = () => {
     const [raceNum, setRaceNum] = useState ()
     const [selected, setSelected] = useState (false)
     const [curCondition, setCurCondition]=  useState ()
+    const [showCondition, setShowCondition]=  useState ()
     const [curTab, setCurTab] = useState (0)
     const [sortedCol, setSortedCol] = useState (SORT_FIELD.NO)
     const [sortDirection, setSortDirection] = useState(true)
@@ -227,8 +228,8 @@ const Predictor = () => {
 
     useEffect(() => {
         curConditionRef.current = curCondition
-        setRace ()
-        setForm ()
+        // setRace ()
+        // setForm ()
         if (intervalRef.current) clearInterval(intervalRef.current)
     }, [curCondition])
 
@@ -254,7 +255,7 @@ const Predictor = () => {
                     .then((data) => {
                         setRace(data)
                         if (data && data['condition']) {
-                            setCurCondition (CONDITION[data['condition']])
+                            setShowCondition (CONDITION[data['condition']])
                         }
                     })
                     .catch((err) => console.log (err))
@@ -277,9 +278,9 @@ const Predictor = () => {
         if (curCondition) {
             if (startDateRef.current === undefined) return
             if (raceNum > 0 && venue !== "") {
-                setRaceCondition(getDateString(startDateRef.current), venue, raceNum, curConditionRef.current)
+                setRaceCondition(getDateString(startDateRef.current), venue, raceNum, curCondition)
                     .then((data) => {
-                        console.log (data, ">>>>>>>>>>>")
+                        console.log (data)
                     })
                     .catch((err) => console.log (err))
             }
@@ -387,6 +388,16 @@ const Predictor = () => {
         setScores (mean)
     }, [formInfos, sliderValue])
 
+    const checkScoresNaN = () => {
+        if (!scores) {return false}
+        for (let key of Object.keys(scores)) {
+            if (isNaN (scores[key]) || scores[key] === "NaN") {
+                return false
+            }
+        }
+        return true
+    }
+
     useEffect(() => {
         calculateScores ()
     }, [calculateScores])
@@ -396,19 +407,18 @@ const Predictor = () => {
             if (startDateRef.current === undefined || venue === undefined || raceNum === undefined || marketRef.current === undefined) return
             getFormScores(getDateString(startDateRef.current), venue, raceNum, marketRef.current.marketId)
                 .then((data) => {
-                    let tmp1 = {};
+                    console.log (data, ">>>>>>>>>>>")
+                    let tmp = {};
                     data && data.map((item) => {
-                        const values = [...item];
-                        values.shift();
-                        tmp1[item[0]] = [...values];
+                        tmp[item[0]] = [...item.slice(1, item.length)];
                     })
-                    setFormInfos({...tmp1})
+                    setFormInfos({...tmp})
                 })
                 .catch((err) => console.log (err))
         } catch(e) {
             console.log (e)
         }
-    }, [startDate, events, market, curCondition])
+    }, [startDateRef.current, venue, raceNum, marketRef.current, curCondition])
 
     useEffect(() => {
         getScores ()
@@ -522,7 +532,7 @@ const Predictor = () => {
                                     type="button"
                                     onClick={()=>setSelected(!selected)}
                                 >
-                                    {curCondition ? curCondition : "Good"}
+                                    {showCondition ? showCondition : "Good"}
                                     <svg
                                         className="w-2.5 h-2.5 ml-1.5"
                                         aria-hidden="true"
@@ -959,9 +969,9 @@ const Predictor = () => {
                             </div>
                         </div>
 
-                        { (!raceForDisplay || (raceForDisplay && raceForDisplay.length == 0)) &&
+                        { (!raceForDisplay || (raceForDisplay && raceForDisplay.length == 0) || !checkScoresNaN()) &&
                             Array.from({length: 8}).map((_, idx) => 
-                                <div key={idx} className="py-5 px-5 w-full h-full border-t border-grey-2 self-center w-full">
+                                <div key={idx} className="py-5 px-5 w-full h-full border-t border-grey-2 self-center">
                                     <Skeleton
                                         baseColor="#EAECF0"
                                         style={{ width: "100%" }}
@@ -970,7 +980,7 @@ const Predictor = () => {
                                 </div>
                             )
                         }
-                        {raceForDisplay && raceForDisplay.length > 0 && scores &&
+                        {raceForDisplay && raceForDisplay.length > 0 && checkScoresNaN() &&
                             raceForDisplay.map ((horse, idx) =>
                                 <div key={idx} className="grid grid-cols-24 text-black-2 border-t border-grey-2 font-normal text-sm leading-6 w-full">
                                 <div className="col-span-1 predictor-race-body">
