@@ -198,6 +198,8 @@ const Predictor = () => {
     const [formSortDirection, setFormSortDirection] = useState(true)
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen((cur) => !cur);
+    
+    const connection = useRef (null)
 
     const startDateRef = useRef(startDate)
     const eventsRef = useRef(events)
@@ -287,13 +289,13 @@ const Predictor = () => {
         }
     }, [curCondition])
 
-    useEffect (() => {
-        if (intervalRef.current) clearInterval(intervalRef.current)
-        intervalRef.current = setInterval(async() => {
-            await initialize()
-        }, [15000])
-        return () => clearInterval(intervalRef.current)
-    }, [initialize])
+    // useEffect (() => {
+    //     if (intervalRef.current) clearInterval(intervalRef.current)
+    //     intervalRef.current = setInterval(async() => {
+    //         await initialize()
+    //     }, [15000])
+    //     return () => clearInterval(intervalRef.current)
+    // }, [initialize])
 
     const raceForDisplay = useMemo(() => 
         race && race['horses'].length > 0 && race['horses'].sort((a, b) => {
@@ -382,10 +384,16 @@ const Predictor = () => {
             if (min > mean[name]) min = mean[name]
             if (max < mean[name]) max = mean[name]
         }
+
+        const tmpMean = {...mean}
         for (let name of Object.keys(mean)) {
-            mean[name] = 1 + 9 * (mean[name] - min) / (max - min)
+            if (max > min) {
+                tmpMean[name] = 1 + 9 * (mean[name] - min) / (max - min)
+            } else {
+                tmpMean[name] = 0
+            }
         }
-        setScores (mean)
+        setScores (tmpMean)
     }, [formInfos, sliderValue])
 
     const checkScoresNaN = () => {
@@ -407,7 +415,6 @@ const Predictor = () => {
             if (startDateRef.current === undefined || venue === undefined || raceNum === undefined || marketRef.current === undefined) return
             getFormScores(getDateString(startDateRef.current), venue, raceNum, marketRef.current.marketId)
                 .then((data) => {
-                    console.log (data, ">>>>>>>>>>>")
                     let tmp = {};
                     data && data.map((item) => {
                         tmp[item[0]] = [...item.slice(1, item.length)];
@@ -419,6 +426,40 @@ const Predictor = () => {
             console.log (e)
         }
     }, [startDateRef.current, venue, raceNum, marketRef.current, curCondition])
+
+    
+
+    useEffect(() => {
+        // eslint-disable-next-line no-undef
+        const ws = new WebSocket(`${__WSURL__}`)
+        ws.onopen = () => {
+            let num = -1; 
+            let mvenue = ''
+            eventsRef.current.map((event)=> {
+                event.markets.map((m, idx) => {
+                    if (marketRef.current.marketId === m.marketId) {
+                        num = idx + 1
+                        mvenue = m.venue
+                    }
+                })
+            })
+            if (startDateRef.current && num > 0 && market) {
+                const data = {
+                    startDate: getDateString(startDateRef.current), venue: mvenue, raceNum: num, marketId: marketRef.current.marketId
+                }
+                ws.send (JSON.stringify(data))
+            }
+        }
+        ws.onmessage = (event) => {
+            if (event.data?.raceCard) { setRace (event.data?.raceCard)}
+            if (event.data?.raceForm) { setRace (event.data?.raceForm)}
+        }
+        ws.onclose = () => {
+            console.log ("Close Connection!")
+        }
+        connection.current = ws
+        return () => connection.current.close()
+    }, [startDate, events, market])
 
     useEffect(() => {
         getScores ()
@@ -558,7 +599,7 @@ const Predictor = () => {
                                     }
                                     style={{ width: `${100}px` }}
                                 >
-                                    { ["Good", "Heavy","Soft", "Synthetic", "Firm", "Dead"].map ((item, idx) => 
+                                    { ["Firm", "Good", "Soft", "Heavy", "Synthetic"].map ((item, idx) => 
                                     <ul
                                         className={`py-2 text-sm text-v3-primary font-medium dark:text-gray-200`}
                                         aria-labelledby="dropdownButton"
@@ -784,7 +825,7 @@ const Predictor = () => {
 
                     { (!formForDisplay || (formForDisplay && formForDisplay.length == 0)) &&
                         Array.from({length: 8}).map((_, idx) => 
-                            <div key={idx} className="py-5 px-5 w-full h-full border-t border-grey-2 self-center w-full">
+                            <div key={idx} className="py-5 px-5 h-full border-t border-grey-2 self-center w-full">
                                 <Skeleton
                                     baseColor="#EAECF0"
                                     style={{ width: "100%" }}
@@ -1037,71 +1078,71 @@ const Predictor = () => {
                     <CardBody className="flex flex-col gap-4 bg-white">
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Barrier</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['14'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '14': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['14'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '14': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Weight</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['13'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '13': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['13'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '13': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Class</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={50}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['3'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '3': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">AVG$</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['2'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '2': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['2'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '2': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Finish</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['11'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '11': e.target.value/100})} />
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['11'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '11': e.target.value/100})} />
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Win</span>
-                            <Slider className="col-span-10" color="blue"  defaultValue={sliderValue['0'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '0': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue"  defaultValue={sliderValue['0'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '0': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Place</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['1'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '1': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['1'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '1': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Condition</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['7'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '7': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['7'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '7': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Distance</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['5'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '5': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['5'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '5': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Track</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['4'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '4': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['4'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '4': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Jockey</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['10'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '10': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['10'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '10': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Trainer</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['12'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '12': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['12'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '12': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Settling</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={50}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['8'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '8': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">600m</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={50}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['6'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '6': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Speed</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={50}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['9'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '9': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Lst/Fn</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['15'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '15': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['15'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '15': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Lst/Mgn</span>
-                            <Slider className="col-span-10" color="blue" defaultValue={sliderValue['16'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '16': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['16'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '16': e.target.value/100})}/>
                         </div>
                     </CardBody>
                 </Card>

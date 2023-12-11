@@ -8,6 +8,8 @@ export default defineConfig({
   plugins: [react()],
   define: {
     // eslint-disable-next-line no-undef
-    __BASEURL__: `"${process.env.BASEURL}"` // wrapping in "" since it's a string
+    __BASEURL__: `"${process.env.BASEURL}"`, // wrapping in "" since it's a string
+    // eslint-disable-next-line no-undef
+    __WSURL__: `"${process.env.WSURL}"` // wrapping in "" since it's a string
   },
 })
