@@ -19,7 +19,8 @@ export default withMT({
         "grey-4": "#F9FAFB",
         'purple-1': '#717BBC',
         'red-4': '#F04438',
-        'yellow-2': '#FDB022'
+        'yellow-2': '#FDB022',
+        'mark1': '#FFFAEB'
       },
       textColor: {
         "black-1": "#344054",
