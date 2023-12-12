@@ -9,6 +9,7 @@ import {
     Card,
     Slider,
     CardBody,
+    slider,
 } from "@material-tailwind/react";
 
 import TracksForPlace from "../../components/Tracks/TracksForPlace"
@@ -300,11 +301,21 @@ const Predictor = () => {
     const raceForDisplay = useMemo(() => 
         race && race['horses'].length > 0 && race['horses'].sort((a, b) => {
             if (sortDirection) {
-                if (a[sortedCol] > b[sortedCol]) return 1
-                else return -1
+                try{
+                    if (Number(a[sortedCol]) > Number(b[sortedCol])) return 1
+                    else return -1
+                } catch (e) {
+                    if (a[sortedCol] > b[sortedCol]) return 1
+                    else return -1
+                }
             } else {
-                if (a[sortedCol] > b[sortedCol]) return -1
-                else return 1
+                try{
+                    if (Number(a[sortedCol]) > Number(b[sortedCol])) return -1
+                    else return 1
+                } catch (e) {
+                    if (a[sortedCol] > b[sortedCol]) return -1
+                    else return 1
+                }
             }
         })
     , [sortedCol, sortDirection, race])
@@ -312,11 +323,21 @@ const Predictor = () => {
     const formForDisplay = useMemo(() => 
         form && form['horses'].length > 0 && form['horses'].sort((a, b) => {
             if (formSortDirection) {
-                if (a[formSortedCol] > b[formSortedCol]) return 1
-                else return -1
+                try{
+                    if (Number(a[sortedCol]) > Number(b[sortedCol])) return 1
+                    else return -1
+                } catch (e) {
+                    if (a[sortedCol] > b[sortedCol]) return 1
+                    else return -1
+                }
             } else {
-                if (a[formSortedCol] > b[formSortedCol]) return -1
-                else return 1
+                try{
+                    if (Number(a[sortedCol]) > Number(b[sortedCol])) return -1
+                    else return 1
+                } catch (e) {
+                    if (a[sortedCol] > b[sortedCol]) return -1
+                    else return 1
+                }
             }
         })
     , [formSortedCol, formSortDirection, form])
@@ -348,6 +369,12 @@ const Predictor = () => {
         const higher_is_better = [0,1,2,3,4,5,6,7,8,9,10,11,12]
         const lower_is_better = [13,14,15,16]
         let data = {...formInfos}
+        for (let col of [...higher_is_better, ...lower_is_better]) {
+            for (let name of Object.keys(formInfos)) {
+                if (col in [13, 14]) {data[name][col] = (1 - sliderValue[col]) * data[name][col]}
+                else {data[name][col] = sliderValue[col] * data[name][col]}
+            }
+        }
         let min = new Array(17).fill(999999999), max = new Array(17).fill(0)
         for (let col of [...higher_is_better, ...lower_is_better]) {
             for (let name of Object.keys(formInfos)) {
@@ -378,7 +405,7 @@ const Predictor = () => {
             mean[name] = 0
             let sum = 0, cnt = 0
             for (let col of [...higher_is_better, ...lower_is_better]) {
-                if (!isNaN(data[name][col])) {sum += sliderValue[col.toString()] * data[name][col]; cnt++}
+                if (!isNaN(data[name][col])) {sum += data[name][col]; cnt++}
             }
             mean[name] = sum / cnt
             if (min > mean[name]) min = mean[name]
@@ -1023,7 +1050,10 @@ const Predictor = () => {
                         }
                         {raceForDisplay && raceForDisplay.length > 0 && checkScoresNaN() &&
                             raceForDisplay.map ((horse, idx) =>
-                                <div key={idx} className="grid grid-cols-24 text-black-2 border-t border-grey-2 font-normal text-sm leading-6 w-full">
+                                <div 
+                                    key={idx} 
+                                    className={clsx(`${horse['status'] === 'WINNER' ? 'bg-mark1': ''} grid grid-cols-24 text-black-2 border-t border-grey-2 font-normal text-sm leading-6 w-full`)}
+                                >
                                 <div className="col-span-1 predictor-race-body">
                                     {
                                         IMAG_PATH[horse['gear']] &&
