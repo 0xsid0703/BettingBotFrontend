@@ -9,7 +9,6 @@ import {
     Card,
     Slider,
     CardBody,
-    slider,
 } from "@material-tailwind/react";
 
 import TracksForPlace from "../../components/Tracks/TracksForPlace"
@@ -17,7 +16,7 @@ import Event from "../../components/Event"
 
 import { marketContext } from '../../contexts/marketContext';
 import { eventsContext } from "../../contexts/eventsContext"
-import { getRaceCardByNum, getRaceFormByNum, setRaceCondition, getFormScores } from '../../apis'
+import { getRaceCardByNum, getRaceFormByNum, setRaceCondition } from '../../apis'
 import ClockElement from "../../components/Tracks/ClockElement";
 // import PredictScoreChart from "../../components/ScoreChart/PredictScoreChart";
 
@@ -298,9 +297,9 @@ const Predictor = () => {
     //     return () => clearInterval(intervalRef.current)
     // }, [initialize])
 
-    const [raceForDisplay, setRaceForDisplay] = useState()
-    useEffect(() => {
-        const tmpR = race && race['horses'].length > 0 && race['horses'].sort((a, b) => {
+    // const [raceForDisplay, setRaceForDisplay] = useState()
+    const raceForDisplay = useMemo(() => {
+        return race && race['horses'].length > 0 && race['horses'].sort((a, b) => {
             if (sortDirection) {
                 try{
                     if (Number(a[sortedCol]) > Number(b[sortedCol])) return 1
@@ -319,32 +318,35 @@ const Predictor = () => {
                 }
             }
         })
-        setRaceForDisplay (tmpR)
+        // setRaceForDisplay (tmpR)
     }, [sortedCol, sortDirection, race])
 
-    const formForDisplay = useMemo(() => 
-        form && form['horses'].length > 0 && form['horses'].sort((a, b) => {
+    // const [formForDisplay, setFormForDisplay] = useState()
+    const formForDisplay = useMemo(() => {
+        console.log (form && form['horses'], "<<<<")
+        return form && form['horses'].length > 0 && form['horses'].sort((a, b) => {
             if (formSortDirection) {
                 try{
-                    if (Number(a[sortedCol]) > Number(b[sortedCol])) return 1
+                    if (parseFloat(a[formSortedCol]) > parseFloat(b[formSortedCol])) return 1
                     else return -1
                 } catch (e) {
-                    if (a[sortedCol] > b[sortedCol]) return 1
+                    if (a[formSortedCol] > b[formSortedCol]) return 1
                     else return -1
                 }
             } else {
                 try{
-                    if (Number(a[sortedCol]) > Number(b[sortedCol])) return -1
+                    if (parseFloat(a[formSortedCol]) > parseFloat(b[formSortedCol])) return -1
                     else return 1
                 } catch (e) {
-                    if (a[sortedCol] > b[sortedCol]) return -1
+                    if (a[formSortedCol] > b[formSortedCol]) return -1
                     else return 1
                 }
             }
         })
-    , [formSortedCol, formSortDirection, form])
+        // setFormForDisplay (tmpF)
+    }, [formSortedCol, formSortDirection, form])
 
-    const [formInfos, setFormInfos] = useState ({})
+    // const [formInfos, setFormInfos] = useState ({})
     const [sliderValue, setSliderValue] = useState ({
         'horse_barrier': 0.5,
         'weight': 0.5,
@@ -369,8 +371,8 @@ const Predictor = () => {
     const calculateScores = useCallback(() => {
         // if (Object.keys(formInfos).length === 0) return
         if (!form || !race) return
-        const higher_is_better = ['class', 'average', 'finishPercent', 'winPercent', 'placePercent', 'condition', 'distance', 'track', 'jockey', 'trainer', 'settling', 'last_600', 'speed']
-        const lower_is_better = ['horse_barrier', 'weight', 'lastFn', 'lastMgn']
+        const higher_is_better = ['class', 'average', 'finishPercent', 'winPercent', 'placePercent', 'condition', 'distance', 'track', 'jockey', 'trainer', 'settling', 'lastFn', 'speed']
+        const lower_is_better = ['horse_barrier', 'weight', 'last_600', 'lastMgn']
         let racedata = {}
         for (let col of [...higher_is_better, ...lower_is_better]) {
             for (let horse of race['horses']) {
@@ -450,22 +452,22 @@ const Predictor = () => {
         calculateScores ()
     }, [calculateScores])
 
-    const getScores = useCallback(async() => {
-        try {
-            if (startDateRef.current === undefined || venue === undefined || raceNum === undefined || marketRef.current === undefined) return
-            getFormScores(getDateString(startDateRef.current), venue, raceNum, marketRef.current.marketId)
-                .then((data) => {
-                    let tmp = {};
-                    data && data.map((item) => {
-                        tmp[item[0]] = [...item.slice(1, item.length)];
-                    })
-                    setFormInfos({...tmp})
-                })
-                .catch((err) => console.log (err))
-        } catch(e) {
-            console.log (e)
-        }
-    }, [startDateRef.current, venue, raceNum, marketRef.current, curCondition])
+    // const getScores = useCallback(async() => {
+    //     try {
+    //         if (startDateRef.current === undefined || venue === undefined || raceNum === undefined || marketRef.current === undefined) return
+    //         getFormScores(getDateString(startDateRef.current), venue, raceNum, marketRef.current.marketId)
+    //             .then((data) => {
+    //                 let tmp = {};
+    //                 data && data.map((item) => {
+    //                     tmp[item[0]] = [...item.slice(1, item.length)];
+    //                 })
+    //                 setFormInfos({...tmp})
+    //             })
+    //             .catch((err) => console.log (err))
+    //     } catch(e) {
+    //         console.log (e)
+    //     }
+    // }, [startDateRef.current, venue, raceNum, marketRef.current, curCondition])
 
     useEffect(() => {
         // eslint-disable-next-line no-undef
@@ -502,9 +504,9 @@ const Predictor = () => {
         return () => connection.current.close()
     }, [startDate, events, market])
 
-    useEffect(() => {
-        getScores ()
-    }, [getScores])
+    // useEffect(() => {
+    //     getScores ()
+    // }, [getScores])
 
     return (
         <div className="flex flex-col gap-5 p-[16px] 2xl:p-[58px] 4xl:p-[112px] bg-white min-w-[1440px]">
