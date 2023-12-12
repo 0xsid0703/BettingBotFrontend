@@ -298,8 +298,9 @@ const Predictor = () => {
     //     return () => clearInterval(intervalRef.current)
     // }, [initialize])
 
-    const raceForDisplay = useMemo(() => 
-        race && race['horses'].length > 0 && race['horses'].sort((a, b) => {
+    const [raceForDisplay, setRaceForDisplay] = useState()
+    useEffect(() => {
+        const tmpR = race && race['horses'].length > 0 && race['horses'].sort((a, b) => {
             if (sortDirection) {
                 try{
                     if (Number(a[sortedCol]) > Number(b[sortedCol])) return 1
@@ -318,7 +319,8 @@ const Predictor = () => {
                 }
             }
         })
-    , [sortedCol, sortDirection, race])
+        setRaceForDisplay (tmpR)
+    }, [sortedCol, sortDirection, race])
 
     const formForDisplay = useMemo(() => 
         form && form['horses'].length > 0 && form['horses'].sort((a, b) => {
@@ -344,68 +346,79 @@ const Predictor = () => {
 
     const [formInfos, setFormInfos] = useState ({})
     const [sliderValue, setSliderValue] = useState ({
-        '0': 0.5,
-        '1': 0.5,
-        '2': 0.5,
-        '3': 0.5,
-        '4': 0.5,
-        '5': 0.5,
-        '6': 0.5,
-        '7': 0.5,
-        '8': 0.5,
-        '9': 0.5,
-        '10': 0.5,
-        '11': 0.5,
-        '12': 0.5,
-        '13': 0.5,
-        '14': 0.5,
-        '15': 0.5,
-        '16': 0.5
+        'horse_barrier': 0.5,
+        'weight': 0.5,
+        'class': 0.5,
+        'average': 0.5,
+        'finishPercent': 0.5,
+        'winPercent': 0.5,
+        'placePercent': 0.5,
+        'condition': 0.5,
+        'distance': 0.5,
+        'track': 0.5,
+        'jockey': 0.5,
+        'trainer': 0.5,
+        'settling': 0.5,
+        'last_600': 0.5,
+        'speed': 0.5,
+        'lastFn': 0.5,
+        'lastMgn': 0.5
     })
     const [scores, setScores] = useState ()
 
     const calculateScores = useCallback(() => {
-        if (Object.keys(formInfos).length === 0) return
-        const higher_is_better = [0,1,2,3,4,5,6,7,8,9,10,11,12]
-        const lower_is_better = [13,14,15,16]
-        let data = {...formInfos}
+        // if (Object.keys(formInfos).length === 0) return
+        if (!form || !race) return
+        const higher_is_better = ['class', 'average', 'finishPercent', 'winPercent', 'placePercent', 'condition', 'distance', 'track', 'jockey', 'trainer', 'settling', 'last_600', 'speed']
+        const lower_is_better = ['horse_barrier', 'weight', 'lastFn', 'lastMgn']
+        let racedata = {}
         for (let col of [...higher_is_better, ...lower_is_better]) {
-            for (let name of Object.keys(formInfos)) {
-                if (col in [13, 14]) {data[name][col] = (1 - sliderValue[col]) * data[name][col]}
-                else {data[name][col] = sliderValue[col] * data[name][col]}
+            for (let horse of race['horses']) {
+                if (col in horse) {racedata[horse['horse_name']] = {...racedata[horse['horse_name']]}; racedata[horse['horse_name']][col] = Number(horse[col])}
+            }
+            for (let horse of form['horses']) {
+                if (col in horse) {racedata[horse['horse_name']] = {...racedata[horse['horse_name']]}; racedata[horse['horse_name']][col] = Number(horse[col])}
             }
         }
-        let min = new Array(17).fill(999999999), max = new Array(17).fill(0)
+        let min = {}, max = {}
         for (let col of [...higher_is_better, ...lower_is_better]) {
-            for (let name of Object.keys(formInfos)) {
-                if (data[name][col] > max[col]) {max[col] = data[name][col]}
-                if (data[name][col] < min[col]) {min[col] = data[name][col]}
+            min[col] = 999999999
+            max[col] = 0
+        }
+        for (let col of [...higher_is_better, ...lower_is_better]) {
+            for (let name of Object.keys(racedata)) {
+                if (racedata[name][col] > max[col]) {max[col] = racedata[name][col]}
+                if (racedata[name][col] < min[col]) {min[col] = racedata[name][col]}
             }
         }
         for (let col of higher_is_better) {
-            for (let name of Object.keys(formInfos)) {
-                data[name][col] = (data[name][col] - min[col]) / (max[col] - min[col])
+            for (let name of Object.keys(racedata)) {
+                racedata[name][col] = (racedata[name][col] - min[col]) / (max[col] - min[col])
             }
         }
-        let mint = new Array(17).fill(999999999), maxt = new Array(17).fill(0)
+        let mint = {}, maxt = {}
         for (let col of [...higher_is_better, ...lower_is_better]) {
-            for (let name of Object.keys(formInfos)) {
-                if (data[name][col] > maxt[col]) {maxt[col] = data[name][col]}
-                if (data[name][col] < mint[col]) {mint[col] = data[name][col]}
+            mint[col] = 999999999
+            maxt[col] = 0
+        }
+        for (let col of [...higher_is_better, ...lower_is_better]) {
+            for (let name of Object.keys(racedata)) {
+                if (racedata[name][col] > maxt[col]) {maxt[col] = racedata[name][col]}
+                if (racedata[name][col] < mint[col]) {mint[col] = racedata[name][col]}
             }
         }
         for (let col of lower_is_better) {
-            for (let name of Object.keys(formInfos)) {
-                data[name][col] = 1 - (data[name][col] - mint[col]) / (maxt[col]  - mint[col])
+            for (let name of Object.keys(racedata)) {
+                racedata[name][col] = 1 - (racedata[name][col] - mint[col]) / (maxt[col]  - mint[col])
             }
         }
         let mean = {};
         min = 999999999, max = 0
-        for (let name of Object.keys(formInfos)) {
+        for (let name of Object.keys(racedata)) {
             mean[name] = 0
             let sum = 0, cnt = 0
             for (let col of [...higher_is_better, ...lower_is_better]) {
-                if (!isNaN(data[name][col])) {sum += data[name][col]; cnt++}
+                if (!isNaN(racedata[name][col])) {sum += sliderValue[col] * racedata[name][col]; cnt++}
             }
             mean[name] = sum / cnt
             if (min > mean[name]) min = mean[name]
@@ -421,7 +434,7 @@ const Predictor = () => {
             }
         }
         setScores (tmpMean)
-    }, [formInfos, sliderValue])
+    }, [race, form, sliderValue])
 
     const checkScoresNaN = () => {
         if (!scores) {return false}
@@ -454,8 +467,6 @@ const Predictor = () => {
         }
     }, [startDateRef.current, venue, raceNum, marketRef.current, curCondition])
 
-    
-
     useEffect(() => {
         // eslint-disable-next-line no-undef
         const ws = new WebSocket(`${__WSURL__}`)
@@ -478,8 +489,11 @@ const Predictor = () => {
             }
         }
         ws.onmessage = (event) => {
-            if (event.data?.raceCard) { setRace (event.data?.raceCard)}
-            if (event.data?.raceForm) { setRace (event.data?.raceForm)}
+            if (event.data) {
+                const dataObj = JSON.parse (event.data)
+                if (dataObj.raceCard) { setRace (dataObj.raceCard)}
+                if (dataObj.raceForm) { setForm (dataObj.raceForm)}
+            }
         }
         ws.onclose = () => {
             console.log ("Close Connection!")
@@ -1108,71 +1122,71 @@ const Predictor = () => {
                     <CardBody className="flex flex-col gap-4 bg-white">
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Barrier</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['14'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '14': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['horse_barrier'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'horse_barrier': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Weight</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['13'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '13': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['weight'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'weight': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Class</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['3'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '3': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['class'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'class': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">AVG$</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['2'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '2': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['average'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'average': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Finish</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['11'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '11': e.target.value/100})} />
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['finishPercent'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'finishPercent': e.target.value/100})} />
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Win</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue"  defaultValue={sliderValue['0'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '0': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue"  defaultValue={sliderValue['winPercent'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'winPercent': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Place</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['1'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '1': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['placePercent'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'placePercent': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Condition</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['7'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '7': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['condition'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'condition': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Distance</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['5'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '5': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['distance'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'distance': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Track</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['4'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '4': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['track'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'track': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Jockey</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['10'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '10': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['jockey'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'jockey': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Trainer</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['12'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '12': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['trainer'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'trainer': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Settling</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['8'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '8': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['settling'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'settling': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">600m</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['6'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '6': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['last_600'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'last_600': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Speed</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['9'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '9': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['speed'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'speed': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Lst/Fn</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['15'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '15': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['lastFn'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'lastFn': e.target.value/100})}/>
                         </div>
                         <div className="grid grid-cols-12 items-center justify-between">
                             <span className="col-span-2 text-black text-right text-xs font-semibold leading-4 mr-3">Lst/Mgn</span>
-                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['16'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, '16': e.target.value/100})}/>
+                            <Slider className="col-span-10" step={10} min={0} color="blue" defaultValue={sliderValue['lastMgn'] * 100} onChange={(e)=>setSliderValue ({...sliderValue, 'lastMgn': e.target.value/100})}/>
                         </div>
                     </CardBody>
                 </Card>
