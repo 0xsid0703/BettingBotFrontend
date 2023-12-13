@@ -8,17 +8,17 @@ import {formattedNum} from "../../utils"
 /* eslint-disable react/prop-types */
 const Item = ({marketId, venue, pool, percent, runners, startTime}) => {
     const {setMarket} = useContext (marketContext)
-    // const {clock} = useContext (clockContext)
-    const [clock, setClock] = useState (false)
+    const {clock} = useContext (clockContext)
+    // const [clock, setClock] = useState (false)
 
     const [[h,m,s], setTime] = useState([0,0])
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setClock(!clock)
-        }, [1000])
-        return () => clearInterval(interval)
-    }, [])
+    // useEffect(() => {
+    //     const interval = setInterval(() => {
+    //         setClock(!clock)
+    //     }, [1000])
+    //     return () => clearInterval(interval)
+    // }, [])
 
     useEffect(() => {
         const delta = (new Date(startTime) - clock)/1000
