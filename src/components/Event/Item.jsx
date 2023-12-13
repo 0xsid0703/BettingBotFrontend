@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react"
 
 import { marketContext } from "../../contexts/marketContext"
-// import { clockContext } from '../../contexts/clockContext';
+import { clockContext } from '../../contexts/clockContext';
 
 import {formattedNum} from "../../utils"
 
