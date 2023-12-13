@@ -10,13 +10,14 @@ const Item = ({marketId, venue, pool, percent, runners, startTime}) => {
     const {setMarket} = useContext (marketContext)
     const {clock} = useContext (clockContext)
 
-    const [[h,m], setTime] = useState([0,0])
+    const [[h,m,s], setTime] = useState([0,0])
 
     useEffect(() => {
         const delta = (new Date(startTime) - clock)/1000
         let tmpH = parseInt (delta/3600)
         let tmpM = parseInt ((delta - tmpH * 3600)/60)
-        setTime ([tmpH, tmpM])
+        let tmpS = parseInt (delta % 60)
+        setTime ([tmpH, tmpM, tmpS])
     }, [startTime, clock])
 
     return (
@@ -26,7 +27,7 @@ const Item = ({marketId, venue, pool, percent, runners, startTime}) => {
             <div className="text-black-1 text-sm font-medium leading-6">{`Market: ${parseInt(percent)}%`}</div>
             {/* <div className="text-black-1 text-base font-medium leading-6">{`Runners: ${runners}`}</div> */}
             <div className="text-green-2 text-sm font-medium leading-6">
-                {h > 0 ? `${h}h ${m}m` : `${m}m`}
+                {h > 0 ? `${h}h ${m}m` : m > 0 ? `${m}m` : `${s}s`}
             </div>
         </div>
     )
