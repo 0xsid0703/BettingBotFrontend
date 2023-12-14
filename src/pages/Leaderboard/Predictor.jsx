@@ -555,15 +555,18 @@ const Predictor = () => {
     const [wholeData, setWholeData] = useState()
     useEffect(() => {
         let horses = []
-        console.log (checkScoresNaN(), checkFramedOdds(), sortDirection, sortedCol, "OOOOOOOOOO")
-        // console.log (!race, !form, !scores,!framedOdds, "PPPPPPPPPPPP")
         if (!race || !form || !scores || !framedOdds) return
         if (!checkScoresNaN()) return
         if (!checkFramedOdds()) return
         for (let rhorse of race['horses']) {
             for (let fhorse of form['horses']) {
                 if (parseInt(rhorse['tab_no']) === parseInt(fhorse['tab_no'])) {
-                    const tmpHorse = {...rhorse, ...fhorse}
+                    const tmpHorse = {
+                        ...rhorse,
+                        ...fhorse,
+                        'score': scores[rhorse['horse_name']],
+                        'framed_odds': framedOdds[rhorse['horse_name']],
+                    }
                     horses.push (tmpHorse)
                     break
                 }
@@ -575,7 +578,7 @@ const Predictor = () => {
                     if (parseFloat(a[sortedCol]) > parseFloat(b[sortedCol])) return 1
                     else return -1
                 } catch (e) {
-                    if (a[sortedCol] > b[sortedCol]) return 1
+                    if (parseFloat(a[sortedCol]) > parseFloat(b[sortedCol])) return 1
                     else return -1
                 }
             } else {
@@ -583,7 +586,7 @@ const Predictor = () => {
                     if (parseFloat(a[sortedCol]) > parseFloat(b[sortedCol])) return -1
                     else return 1
                 } catch (e) {
-                    if (a[sortedCol] > b[sortedCol]) return -1
+                    if (parseFloat(a[sortedCol]) > parseFloat(b[sortedCol])) return -1
                     else return 1
                 }
             }
