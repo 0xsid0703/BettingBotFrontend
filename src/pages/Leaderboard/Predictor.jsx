@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -18,7 +18,6 @@ import { marketContext } from '../../contexts/marketContext';
 import { eventsContext } from "../../contexts/eventsContext"
 import { getRaceCardByNum, getRaceFormByNum, setRaceCondition } from '../../apis'
 import ClockElement from "../../components/Tracks/ClockElement";
-// import PredictScoreChart from "../../components/ScoreChart/PredictScoreChart";
 
 import settingSvg from "../../assets/settings.svg"
 import gearSvg from '../../assets/gears/gear.svg'
@@ -265,6 +264,7 @@ const Predictor = () => {
                     .catch((err) => console.log (err))
                 getRaceFormByNum(getDateString(startDateRef.current), venue, num, marketRef.current.marketId)
                     .then((data) => {
+                        console.log (data, "#############")
                         setForm(data)
                     })
                     .catch((err) => console.log (err))
@@ -291,62 +291,6 @@ const Predictor = () => {
         }
     }, [curCondition])
 
-    // useEffect (() => {
-    //     if (intervalRef.current) clearInterval(intervalRef.current)
-    //     intervalRef.current = setInterval(async() => {
-    //         await initialize()
-    //     }, [15000])
-    //     return () => clearInterval(intervalRef.current)
-    // }, [initialize])
-
-    // const [raceForDisplay, setRaceForDisplay] = useState()
-    
-    // const raceForDisplay = useMemo(() => {
-    //     return race && race['horses'].length > 0 && race['horses'].sort((a, b) => {
-    //         if (sortDirection) {
-    //             try{
-    //                 if (Number(a[sortedCol]) > Number(b[sortedCol])) return 1
-    //                 else return -1
-    //             } catch (e) {
-    //                 if (a[sortedCol] > b[sortedCol]) return 1
-    //                 else return -1
-    //             }
-    //         } else {
-    //             try{
-    //                 if (Number(a[sortedCol]) > Number(b[sortedCol])) return -1
-    //                 else return 1
-    //             } catch (e) {
-    //                 if (a[sortedCol] > b[sortedCol]) return -1
-    //                 else return 1
-    //             }
-    //         }
-    //     })
-    // }, [sortedCol, sortDirection, race])
-
-    // const formForDisplay = useMemo(() => {
-    //     console.log (form && form['horses'], "<<<<")
-    //     return form && form['horses'].length > 0 && form['horses'].sort((a, b) => {
-    //         if (formSortDirection) {
-    //             try{
-    //                 if (parseFloat(a[formSortedCol]) > parseFloat(b[formSortedCol])) return 1
-    //                 else return -1
-    //             } catch (e) {
-    //                 if (a[formSortedCol] > b[formSortedCol]) return 1
-    //                 else return -1
-    //             }
-    //         } else {
-    //             try{
-    //                 if (parseFloat(a[formSortedCol]) > parseFloat(b[formSortedCol])) return -1
-    //                 else return 1
-    //             } catch (e) {
-    //                 if (a[formSortedCol] > b[formSortedCol]) return -1
-    //                 else return 1
-    //             }
-    //         }
-    //     })
-    // }, [formSortedCol, formSortDirection, form])
-
-    // const [formInfos, setFormInfos] = useState ({})
     const [sliderValue, setSliderValue] = useState ({
         'horse_barrier': 0.5,
         'weight': 0.5,
@@ -496,23 +440,6 @@ const Predictor = () => {
         calculateFramedOdds ()
     }, [calculateFramedOdds])
 
-    // const getScores = useCallback(async() => {
-    //     try {
-    //         if (startDateRef.current === undefined || venue === undefined || raceNum === undefined || marketRef.current === undefined) return
-    //         getFormScores(getDateString(startDateRef.current), venue, raceNum, marketRef.current.marketId)
-    //             .then((data) => {
-    //                 let tmp = {};
-    //                 data && data.map((item) => {
-    //                     tmp[item[0]] = [...item.slice(1, item.length)];
-    //                 })
-    //                 setFormInfos({...tmp})
-    //             })
-    //             .catch((err) => console.log (err))
-    //     } catch(e) {
-    //         console.log (e)
-    //     }
-    // }, [startDateRef.current, venue, raceNum, marketRef.current, curCondition])
-
     useEffect(() => {
         // eslint-disable-next-line no-undef
         const ws = new WebSocket(`${__WSURL__}`)
@@ -548,10 +475,6 @@ const Predictor = () => {
         return () => connection.current.close()
     }, [startDate, events, market])
 
-    // useEffect(() => {
-    //     getScores ()
-    // }, [getScores])
-
     const [wholeData, setWholeData] = useState()
     useEffect(() => {
         let horses = []
@@ -567,7 +490,12 @@ const Predictor = () => {
                         'score': scores[rhorse['horse_name']],
                         'framed_odds': framedOdds[rhorse['horse_name']],
                     }
-                    horses.push (tmpHorse)
+                    horses.push ({
+                        ...tmpHorse,
+                        'diff': curOdds === "BSP" ? 
+                        ((parseFloat(rhorse['betfair']) - parseFloat(framedOdds[rhorse['horse_name']])) * 100 / parseFloat(rhorse['betfair'])).toFixed(2):
+                        ((parseFloat(rhorse['odds']) - parseFloat(framedOdds[rhorse['horse_name']])) * 100 / parseFloat(rhorse['odds'])).toFixed(2)
+                    })
                     break
                 }
             }
@@ -601,7 +529,7 @@ const Predictor = () => {
             'condition': race['condition'],
             'horses': horses
         })
-    }, [scores, framedOdds, sortedCol, sortDirection])
+    }, [scores, framedOdds, sortedCol, sortDirection, curOdds])
 
     return (
         <div className="flex flex-col gap-5 p-[16px] 2xl:p-[58px] 4xl:p-[112px] bg-white min-w-[1440px]">
@@ -1245,7 +1173,7 @@ const Predictor = () => {
                                 </div>
                                 <div className="col-span-1 predictor-race-body">${parseFloat(framedOdds[horse['horse_name']]).toFixed(2)}</div>
                                 <div className="col-span-1 predictor-race-body">${curOdds === "BSP" ? (horse['betfair'] ? (horse['betfair']).toFixed(2) : 0) : (horse['odds'] ? (horse['odds']).toFixed(2) : 0)}</div>
-                                <div className="col-span-1 predictor-race-body">{parseInt(horse['diff'])}%</div>
+                                <div className="col-span-1 predictor-race-body">{ horse['diff'] }%</div>
                                 <div className={clsx(`col-span-1 predictor-race-body ${parseInt(horse['10m']) < 0? "text-green-2": "text-red-3"}`)}>{parseInt(horse['10m'])}%</div>
                                 <div className={clsx(`col-span-1 predictor-race-body ${parseInt(horse['5m']) < 0? "text-green-2": "text-red-3"}`)}>{parseInt(horse['5m'])}%</div>
                                 </div>
