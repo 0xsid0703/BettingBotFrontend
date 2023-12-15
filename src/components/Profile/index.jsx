@@ -210,11 +210,13 @@ const Profile = ({ kind, id }) => {
     if (filterObj['track']) {
         const [trackKey, trackValue] = filterObj['track']
         let tracks = {...TRACKS}
-        let tmpTrackAll = [...tracks[trackKey]["METRO"], ...tracks[trackKey]["PROVINCIAL"], ...tracks[trackKey]["COUNTRY"]]
-        tracks[trackKey]["ALL"] = tmpTrackAll
-        tmpData = tmpData.filter((race) => {
-            return tracks[trackKey][trackValue].includes(race['track_name'].toUpperCase())
-        })
+        if (trackKey !== "Australia") {
+          let tmpTrackAll = [...tracks[trackKey]["METRO"], ...tracks[trackKey]["PROVINCIAL"], ...tracks[trackKey]["COUNTRY"]]
+          tracks[trackKey]["ALL"] = tmpTrackAll
+          tmpData = tmpData.filter((race) => {
+              return tracks[trackKey][trackValue].includes(race['track_name'].toUpperCase())
+          })
+        }
     }
     if (
       realFilter["start"] !== "This Season" &&
@@ -271,6 +273,7 @@ const Profile = ({ kind, id }) => {
         });
       }
     }
+    console.log (tmpData, "EEEEEEEEEEE") 
     setData(tmpData);
   }, [filterObj, races]);
 
