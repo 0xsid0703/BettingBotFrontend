@@ -64,6 +64,7 @@ import greyBFSvg from '../../assets/gears/Grey-BlinkersFirstTime.svg'
 
 import { formattedNum,getDateString } from "../../utils";
 import clsx from "clsx";
+import { faHotdog } from "@fortawesome/free-solid-svg-icons";
 
 const IMAG_PATH = {
     'b': baySvg,
@@ -264,7 +265,6 @@ const Predictor = () => {
                     .catch((err) => console.log (err))
                 getRaceFormByNum(getDateString(startDateRef.current), venue, num, marketRef.current.marketId)
                     .then((data) => {
-                        console.log (data, "#############")
                         setForm(data)
                     })
                     .catch((err) => console.log (err))
@@ -397,7 +397,7 @@ const Predictor = () => {
         try {
             let totalProb = 0
             // eslint-disable-next-line no-unused-vars
-            for (let key of Object.keys(odds)) { if (odds[key] > 0) totalProb += 1 / odds[key] }
+            for (let key of Object.keys(odds)) { if (parseFloat(odds[key]) > 0) totalProb += 1 / parseFloat(odds[key]) }
             let framed_odds = {}, adjt_prob = {}
             let adjt_factor = totalProb
             for (let key of Object.keys(rawProb)) {
@@ -529,7 +529,7 @@ const Predictor = () => {
             'condition': race['condition'],
             'horses': horses
         })
-    }, [scores, framedOdds, sortedCol, sortDirection, curOdds])
+    }, [scores, framedOdds, sortedCol, sortDirection, curOdds, race, form])
 
     return (
         <div className="flex flex-col gap-5 p-[16px] 2xl:p-[58px] 4xl:p-[112px] bg-white min-w-[1440px]">
@@ -1171,9 +1171,10 @@ const Predictor = () => {
                                         <div className="flex flex-row items-center justify-end bg-blue-1 h-6 rounded-md text-white text-sm pr-2" style={{width: `${parseFloat(scores[horse['horse_name']])/10 * 100}%`}}>{parseFloat(scores[horse['horse_name']]).toFixed(2)}</div>
                                     </div>
                                 </div>
-                                <div className="col-span-1 predictor-race-body">${parseFloat(framedOdds[horse['horse_name']]).toFixed(2)}</div>
+                                <div className="col-span-1 predictor-race-body">${parseFloat(horse['framed_odds']).toFixed(2)}</div>
+                                {/* <div className="col-span-1 predictor-race-body">${parseFloat(framedOdds[horse['horse_name']]).toFixed(2)}</div> */}
                                 <div className="col-span-1 predictor-race-body">${curOdds === "BSP" ? (horse['betfair'] ? (horse['betfair']).toFixed(2) : 0) : (horse['odds'] ? (horse['odds']).toFixed(2) : 0)}</div>
-                                <div className="col-span-1 predictor-race-body">{ horse['diff'] }%</div>
+                                <div className="col-span-1 predictor-race-body">{ parseInt(horse['diff']) }%</div>
                                 <div className={clsx(`col-span-1 predictor-race-body ${parseInt(horse['10m']) < 0? "text-green-2": "text-red-3"}`)}>{parseInt(horse['10m'])}%</div>
                                 <div className={clsx(`col-span-1 predictor-race-body ${parseInt(horse['5m']) < 0? "text-green-2": "text-red-3"}`)}>{parseInt(horse['5m'])}%</div>
                                 </div>
