@@ -273,7 +273,6 @@ const Profile = ({ kind, id }) => {
         });
       }
     }
-    console.log (tmpData, "EEEEEEEEEEE") 
     setData(tmpData);
   }, [filterObj, races]);
 
@@ -958,7 +957,7 @@ const Profile = ({ kind, id }) => {
                   <div className="racehistory-item text-black-2">$14.31</div>
                   <div className="racehistory-item text-black-2">$14.31</div>
                   <div className="racehistory-item text-black-2">
-                    {item["last_600"]}
+                    {item["last_600"] ? item["last_600"] : 34.51}
                   </div>
                   <div className="racehistory-item text-black-2">
                     {item["finish_number"]}
