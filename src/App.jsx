@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { Route, Routes } from "react-router-dom";
 
 import LeaderboardLayout from './layouts/Leaderboard';
@@ -19,7 +19,8 @@ import { clockContext } from "./contexts/clockContext";
 function App() {
   const [market, setMarket] = useState ('')
   const [events, setEvents] = useState ([])
-  const [clock, setClock] = useState (new Date().getTime())
+  const clock = useRef (new Date().getTime())
+  const setClock = (t) => clock.current = t
   
   const marketValue = useMemo(
     () => ({ market, setMarket }),
@@ -37,7 +38,7 @@ function App() {
   );
 
   useEffect(() => {
-    const interval = setInterval(()=>setClock(new Date().getTime()), 15000)
+    const interval = setInterval(()=>setClock(new Date().getTime()), 1000)
     return () => clearInterval (interval)
   })
 
