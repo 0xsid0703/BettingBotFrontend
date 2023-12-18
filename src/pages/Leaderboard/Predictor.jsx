@@ -64,7 +64,6 @@ import greyBFSvg from '../../assets/gears/Grey-BlinkersFirstTime.svg'
 
 import { formattedNum,getDateString } from "../../utils";
 import clsx from "clsx";
-import { faHotdog } from "@fortawesome/free-solid-svg-icons";
 
 const IMAG_PATH = {
     'b': baySvg,
@@ -211,22 +210,25 @@ const Predictor = () => {
 
     useEffect(() => {
         startDateRef.current = startDate
-        setRace ()
-        setForm ()
+        // setRace ()
+        // setForm ()
+        setWholeData ()
         if (intervalRef.current) clearInterval(intervalRef.current)
     }, [startDate])
 
     useEffect(() => {
         eventsRef.current = events
-        setRace ()
-        setForm ()
+        // setRace ()
+        // setForm ()
+        setWholeData ()
         if (intervalRef.current) clearInterval(intervalRef.current)
     }, [events])
 
     useEffect(() => {
         marketRef.current = market
-        setRace ()
-        setForm ()
+        // setRace ()
+        // setForm ()
+        setWholeData ()
         if (intervalRef.current) clearInterval(intervalRef.current)
     }, [market])
 
@@ -439,7 +441,7 @@ const Predictor = () => {
     useEffect(() => {
         calculateFramedOdds ()
     }, [calculateFramedOdds])
-
+    
     useEffect(() => {
         // eslint-disable-next-line no-undef
         const ws = new WebSocket(`${__WSURL__}`)
@@ -493,8 +495,8 @@ const Predictor = () => {
                     horses.push ({
                         ...tmpHorse,
                         'diff': curOdds === "BSP" ? 
-                        ((parseFloat(rhorse['betfair']) - parseFloat(framedOdds[rhorse['horse_name']])) * 100 / parseFloat(rhorse['betfair'])).toFixed(2):
-                        ((parseFloat(rhorse['odds']) - parseFloat(framedOdds[rhorse['horse_name']])) * 100 / parseFloat(rhorse['odds'])).toFixed(2)
+                        ((parseFloat(rhorse['betfair']) - parseFloat(framedOdds[rhorse['horse_name']])) * 100 / parseFloat(framedOdds[rhorse['horse_name']])).toFixed(2):
+                        ((parseFloat(rhorse['odds']) - parseFloat(framedOdds[rhorse['horse_name']])) * 100 / parseFloat(framedOdds[rhorse['horse_name']])).toFixed(2)
                     })
                     break
                 }
@@ -580,7 +582,7 @@ const Predictor = () => {
                             <div className="flex flex-row items-center justify-center p-2 text-black-1 text-sm font-normal leading-6">
                                 {
                                     race && race['totalMatched'] !== undefined ? (
-                                        `$${formattedNum(race['totalMatched'])}`
+                                        `$${formattedNum(parseInt(race['totalMatched']))}`
                                     ) : (
                                         <div className="w-full">
                                         <Skeleton
