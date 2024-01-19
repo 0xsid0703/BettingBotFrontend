@@ -19,7 +19,7 @@ const Header = () => {
         <div className="flex flex-row items-center justify-between bg-grey-4 border-b border-grey-2">
             <div className="flex flex-row px-12 gap-8 text-black-1 text-[16px]">
                 <div className={clsx(`py-9 ${active === 0 && "border-b-[3px] border-blue-1"} cursor-pointer`)}>
-                    <a href={PATHS.PREDICTOR}>Predictor</a>
+                    <a href={PATHS.PREDICTOR}>Form Guide</a>
                 </div>
                 <div className={clsx(`py-9 ${active === 1 && "border-b-[3px] border-blue-1"} cursor-pointer`)}>
                     <a href={PATHS.HORSE}>Horses</a>
