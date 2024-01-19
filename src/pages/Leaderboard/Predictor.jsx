@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -17,9 +17,8 @@ import Event from "../../components/Event"
 
 import { marketContext } from '../../contexts/marketContext';
 import { eventsContext } from "../../contexts/eventsContext"
-import { getRaceCardByNum, getRaceFormByNum, setRaceCondition, getFormScores } from '../../apis'
+import { getRaceCardByNum, getRaceFormByNum, setRaceCondition } from '../../apis'
 import ClockElement from "../../components/Tracks/ClockElement";
-// import PredictScoreChart from "../../components/ScoreChart/PredictScoreChart";
 
 import settingSvg from "../../assets/settings.svg"
 import gearSvg from '../../assets/gears/gear.svg'
@@ -150,6 +149,7 @@ const SORT_FIELD = {
     SCORE: 'score',
     FRAMED: 'framed_odds',
     BETFAIR: 'betfair',
+    LIVE: 'live',
     DIFF: 'diff',
     TEN_DIFF: '10m',
     FIVE_DIFF: '5m',
@@ -195,9 +195,10 @@ const Predictor = () => {
     const [curTab, setCurTab] = useState (0)
     const [sortedCol, setSortedCol] = useState (SORT_FIELD.NO)
     const [sortDirection, setSortDirection] = useState(true)
-    const [formSortedCol, setFormSortedCol] = useState (SORT_FIELD.NO)
-    const [formSortDirection, setFormSortDirection] = useState(true)
     const [open, setOpen] = useState(false);
+    const [selectedSwitch, setSelectedSwitch] = useState (false)
+    const [curOdds, setCurOdds] = useState ("BSP")
+
     const handleOpen = () => setOpen((cur) => !cur);
     
     const connection = useRef (null)
@@ -210,22 +211,25 @@ const Predictor = () => {
 
     useEffect(() => {
         startDateRef.current = startDate
-        setRace ()
-        setForm ()
+        // setRace ()
+        // setForm ()
+        setWholeData ()
         if (intervalRef.current) clearInterval(intervalRef.current)
     }, [startDate])
 
     useEffect(() => {
         eventsRef.current = events
-        setRace ()
-        setForm ()
+        // setRace ()
+        // setForm ()
+        setWholeData ()
         if (intervalRef.current) clearInterval(intervalRef.current)
     }, [events])
 
     useEffect(() => {
         marketRef.current = market
-        setRace ()
-        setForm ()
+        // setRace ()
+        // setForm ()
+        setWholeData ()
         if (intervalRef.current) clearInterval(intervalRef.current)
     }, [market])
 
@@ -290,69 +294,14 @@ const Predictor = () => {
         }
     }, [curCondition])
 
-    // useEffect (() => {
-    //     if (intervalRef.current) clearInterval(intervalRef.current)
-    //     intervalRef.current = setInterval(async() => {
-    //         await initialize()
-    //     }, [15000])
-    //     return () => clearInterval(intervalRef.current)
-    // }, [initialize])
-
-    const [raceForDisplay, setRaceForDisplay] = useState()
-    useEffect(() => {
-        const tmpR = race && race['horses'].length > 0 && race['horses'].sort((a, b) => {
-            if (sortDirection) {
-                try{
-                    if (Number(a[sortedCol]) > Number(b[sortedCol])) return 1
-                    else return -1
-                } catch (e) {
-                    if (a[sortedCol] > b[sortedCol]) return 1
-                    else return -1
-                }
-            } else {
-                try{
-                    if (Number(a[sortedCol]) > Number(b[sortedCol])) return -1
-                    else return 1
-                } catch (e) {
-                    if (a[sortedCol] > b[sortedCol]) return -1
-                    else return 1
-                }
-            }
-        })
-        setRaceForDisplay (tmpR)
-    }, [sortedCol, sortDirection, race])
-
-    const formForDisplay = useMemo(() => 
-        form && form['horses'].length > 0 && form['horses'].sort((a, b) => {
-            if (formSortDirection) {
-                try{
-                    if (Number(a[sortedCol]) > Number(b[sortedCol])) return 1
-                    else return -1
-                } catch (e) {
-                    if (a[sortedCol] > b[sortedCol]) return 1
-                    else return -1
-                }
-            } else {
-                try{
-                    if (Number(a[sortedCol]) > Number(b[sortedCol])) return -1
-                    else return 1
-                } catch (e) {
-                    if (a[sortedCol] > b[sortedCol]) return -1
-                    else return 1
-                }
-            }
-        })
-    , [formSortedCol, formSortDirection, form])
-
-    const [formInfos, setFormInfos] = useState ({})
     const [sliderValue, setSliderValue] = useState ({
         'horse_barrier': 0.5,
         'weight': 0.5,
         'class': 0.5,
         'average': 0.5,
         'finishPercent': 0.5,
-        'winPercent': 0.5,
-        'placePercent': 0.5,
+        'winPercent': 0,
+        'placePercent': 0,
         'condition': 0.5,
         'distance': 0.5,
         'track': 0.5,
@@ -369,8 +318,8 @@ const Predictor = () => {
     const calculateScores = useCallback(() => {
         // if (Object.keys(formInfos).length === 0) return
         if (!form || !race) return
-        const higher_is_better = ['class', 'average', 'finishPercent', 'winPercent', 'placePercent', 'condition', 'distance', 'track', 'jockey', 'trainer', 'settling', 'last_600', 'speed']
-        const lower_is_better = ['horse_barrier', 'weight', 'lastFn', 'lastMgn']
+        const higher_is_better = ['class', 'average', 'finishPercent', 'winPercent', 'placePercent', 'condition', 'distance', 'track', 'jockey', 'trainer', 'settling', 'lastFn', 'speed']
+        const lower_is_better = ['horse_barrier', 'weight', 'last_600', 'lastMgn']
         let racedata = {}
         for (let col of [...higher_is_better, ...lower_is_better]) {
             for (let horse of race['horses']) {
@@ -436,6 +385,37 @@ const Predictor = () => {
         setScores (tmpMean)
     }, [race, form, sliderValue])
 
+    const [framedOdds, setFramedOdds] = useState ()
+
+    const calculateFramedOdds = useCallback(() => {
+        if (!race || !scores) return
+        let odds = {}
+        for (let horse of race['horses']) {
+            if ('odds' in horse) {odds[horse['horse_name']] = {...odds[horse['horse_name']]}; odds[horse['horse_name']] = Number(horse['odds'])}
+        }
+        let totalScores = 0
+        for (let key of Object.keys(scores)) { totalScores += scores[key] }
+        let rawProb = {}
+        for (let key of Object.keys(scores)) { rawProb[key] = scores[key] / totalScores }
+        try {
+            let totalProb = 0
+            // eslint-disable-next-line no-unused-vars
+            for (let key of Object.keys(odds)) { if (parseFloat(odds[key]) > 0) totalProb += 1 / parseFloat(odds[key]) }
+            let framed_odds = {}, adjt_prob = {}
+            let adjt_factor = totalProb
+            for (let key of Object.keys(rawProb)) {
+                adjt_prob[key] = rawProb[key] * adjt_factor
+                if (adjt_prob[key] > 0) {framed_odds[key] = 1 / adjt_prob[key]}
+                else {framed_odds[key] = 0}
+            }
+            setFramedOdds (framed_odds)
+        } catch (e) {
+            console.log (e)
+        }
+        
+    }, [scores, race])
+
+
     const checkScoresNaN = () => {
         if (!scores) {return false}
         for (let key of Object.keys(scores)) {
@@ -446,27 +426,25 @@ const Predictor = () => {
         return true
     }
 
+    const checkFramedOdds = () => {
+        if (!framedOdds) {return false}
+        for (let key of Object.keys(framedOdds)) {
+            if (isNaN (framedOdds[key]) || framedOdds[key] === "NaN" || framedOdds[key] === undefined) {
+                return false
+            }
+        }
+        return true
+    }
+
     useEffect(() => {
         calculateScores ()
     }, [calculateScores])
 
-    const getScores = useCallback(async() => {
-        try {
-            if (startDateRef.current === undefined || venue === undefined || raceNum === undefined || marketRef.current === undefined) return
-            getFormScores(getDateString(startDateRef.current), venue, raceNum, marketRef.current.marketId)
-                .then((data) => {
-                    let tmp = {};
-                    data && data.map((item) => {
-                        tmp[item[0]] = [...item.slice(1, item.length)];
-                    })
-                    setFormInfos({...tmp})
-                })
-                .catch((err) => console.log (err))
-        } catch(e) {
-            console.log (e)
-        }
-    }, [startDateRef.current, venue, raceNum, marketRef.current, curCondition])
 
+    useEffect(() => {
+        calculateFramedOdds ()
+    }, [calculateFramedOdds])
+    
     useEffect(() => {
         // eslint-disable-next-line no-undef
         const ws = new WebSocket(`${__WSURL__}`)
@@ -502,9 +480,61 @@ const Predictor = () => {
         return () => connection.current.close()
     }, [startDate, events, market])
 
+    const [wholeData, setWholeData] = useState()
     useEffect(() => {
-        getScores ()
-    }, [getScores])
+        let horses = []
+        if (!race || !form || !scores || !framedOdds) return
+        if (!checkScoresNaN()) return
+        if (!checkFramedOdds()) return
+        for (let rhorse of race['horses']) {
+            for (let fhorse of form['horses']) {
+                if (parseInt(rhorse['tab_no']) === parseInt(fhorse['tab_no'])) {
+                    const tmpHorse = {
+                        ...rhorse,
+                        ...fhorse,
+                        'score': scores[rhorse['horse_name']],
+                        'framed_odds': framedOdds[rhorse['horse_name']],
+                    }
+                    horses.push ({
+                        ...tmpHorse,
+                        'diff': curOdds === "BSP" ? 
+                        ((parseFloat(rhorse['betfair']) - parseFloat(framedOdds[rhorse['horse_name']])) * 100 / parseFloat(framedOdds[rhorse['horse_name']])).toFixed(2):
+                        ((parseFloat(rhorse['odds']) - parseFloat(framedOdds[rhorse['horse_name']])) * 100 / parseFloat(framedOdds[rhorse['horse_name']])).toFixed(2)
+                    })
+                    break
+                }
+            }
+        }
+        horses = horses.length > 0 && horses.sort((a, b) => {
+            if (sortDirection) {
+                try{
+                    if (parseFloat(a[sortedCol]) > parseFloat(b[sortedCol])) return 1
+                    else return -1
+                } catch (e) {
+                    if (parseFloat(a[sortedCol]) > parseFloat(b[sortedCol])) return 1
+                    else return -1
+                }
+            } else {
+                try{
+                    if (parseFloat(a[sortedCol]) > parseFloat(b[sortedCol])) return -1
+                    else return 1
+                } catch (e) {
+                    if (parseFloat(a[sortedCol]) > parseFloat(b[sortedCol])) return -1
+                    else return 1
+                }
+            }
+        })
+        setWholeData ({
+            'totalPrize': race['totalPrize'],
+            'totalMatched': race['totalMatched'],
+            'class': race['class'],
+            'classStr': race['classStr'],
+            'distance': race['distance'],
+            'startTime': race['startTime'],
+            'condition': race['condition'],
+            'horses': horses
+        })
+    }, [scores, framedOdds, sortedCol, sortDirection, curOdds, race, form])
 
     return (
         <div className="flex flex-col gap-5 p-[16px] 2xl:p-[58px] 4xl:p-[112px] bg-white min-w-[1440px]">
@@ -555,7 +585,7 @@ const Predictor = () => {
                             <div className="flex flex-row items-center justify-center p-2 text-black-1 text-sm font-normal leading-6">
                                 {
                                     race && race['totalMatched'] !== undefined ? (
-                                        `$${formattedNum(race['totalMatched'])}`
+                                        `$${formattedNum(parseInt(race['totalMatched']))}`
                                     ) : (
                                         <div className="w-full">
                                         <Skeleton
@@ -699,8 +729,8 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.NO)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.NO ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.NO)
+                                setSortDirection(sortedCol !== SORT_FIELD.NO ? true : !sortDirection)
                             }}
                         >
                             Num
@@ -708,8 +738,8 @@ const Predictor = () => {
                         <div
                             className="col-span-3 p-5 flex flex-row items-center justify-start h-12 cursor-pointer"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.HORSE)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.HORSE ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.HORSE)
+                                setSortDirection(sortedCol !== SORT_FIELD.HORSE ? true : !sortDirection)
                             }}
                         >
                             Horse
@@ -717,8 +747,8 @@ const Predictor = () => {
                         <div
                             className="col-span-3 p-5 flex flex-row items-center justify-start h-12 cursor-pointer"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.JOCKEY)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.JOCKEY ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.JOCKEY)
+                                setSortDirection(sortedCol !== SORT_FIELD.JOCKEY ? true : !sortDirection)
                             }}
                         >
                             Jockey
@@ -730,8 +760,8 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.CLASS)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.CLASS ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.CLASS)
+                                setSortDirection(sortedCol !== SORT_FIELD.CLASS ? true : !sortDirection)
                             }}
                         >
                             Class
@@ -739,8 +769,8 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.AVG)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.AVG ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.AVG)
+                                setSortDirection(sortedCol !== SORT_FIELD.AVG ? true : !sortDirection)
                             }}
                         >
                             AVG$
@@ -748,8 +778,8 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.FINISH)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.FINISH ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.FINISH)
+                                setSortDirection(sortedCol !== SORT_FIELD.FINISH ? true : !sortDirection)
                             }}
                         >
                             Finish
@@ -757,8 +787,8 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.WIN)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.WIN ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.WIN)
+                                setSortDirection(sortedCol !== SORT_FIELD.WIN ? true : !sortDirection)
                             }}
                         >
                             Win
@@ -766,8 +796,8 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.PLACE)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.PLACE ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.PLACE)
+                                setSortDirection(sortedCol !== SORT_FIELD.PLACE ? true : !sortDirection)
                             }}
                         >
                             Place
@@ -775,8 +805,8 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.CONDITION)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.CONDITION ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.CONDITION)
+                                setSortDirection(sortedCol !== SORT_FIELD.CONDITION ? true : !sortDirection)
                             }}
                         >
                             Condition
@@ -784,8 +814,8 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.DISTANCE)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.DISTANCE ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.DISTANCE)
+                                setSortDirection(sortedCol !== SORT_FIELD.DISTANCE ? true : !sortDirection)
                             }}
                         >
                             Distance
@@ -793,8 +823,8 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.TRACK_PERCENT)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.TRACK_PERCENT ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.TRACK_PERCENT)
+                                setSortDirection(sortedCol !== SORT_FIELD.TRACK_PERCENT ? true : !sortDirection)
                             }}
                         >
                             Track
@@ -802,8 +832,8 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.JOCKEY_PERCENT)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.JOCKEY_PERCENT ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.JOCKEY_PERCENT)
+                                setSortDirection(sortedCol !== SORT_FIELD.JOCKEY_PERCENT ? true : !sortDirection)
                             }}
                         >
                             Jockey
@@ -811,8 +841,8 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.TRAINER_PERCENT)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.TRAINER_PERCENT ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.TRAINER_PERCENT)
+                                setSortDirection(sortedCol !== SORT_FIELD.TRAINER_PERCENT ? true : !sortDirection)
                             }}
                         >
                             Trainer
@@ -820,8 +850,8 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.SETTLING)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.SETTLING ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.SETTLING)
+                                setSortDirection(sortedCol !== SORT_FIELD.SETTLING ? true : !sortDirection)
                             }}
                         >
                             Settling
@@ -829,8 +859,8 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.LAST600)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.LAST600 ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.LAST600)
+                                setSortDirection(sortedCol !== SORT_FIELD.LAST600 ? true : !sortDirection)
                             }}
                         >
                             600m
@@ -838,8 +868,8 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.SPEED)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.SPEED ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.SPEED)
+                                setSortDirection(sortedCol !== SORT_FIELD.SPEED ? true : !sortDirection)
                             }}
                         >
                             Speed
@@ -847,8 +877,8 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.LASTFN)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.LASTFN ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.LASTFN)
+                                setSortDirection(sortedCol !== SORT_FIELD.LASTFN ? true : !sortDirection)
                             }}
                         >
                             Lst/Fn
@@ -856,15 +886,15 @@ const Predictor = () => {
                         <div
                             className="col-span-1 predictor-race-header"
                             onClick={() => {
-                                setFormSortedCol(SORT_FIELD.LASTMGN)
-                                setFormSortDirection(formSortedCol !== SORT_FIELD.LASTMGN ? true : !formSortDirection)
+                                setSortedCol(SORT_FIELD.LASTMGN)
+                                setSortDirection(sortedCol !== SORT_FIELD.LASTMGN ? true : !sortDirection)
                             }}
                         >
                             Lst/Mgn
                         </div>
                     </div>
 
-                    { (!formForDisplay || (formForDisplay && formForDisplay.length == 0)) &&
+                    { (!wholeData || (wholeData['horses'] && wholeData['horses'].length == 0)) &&
                         Array.from({length: 8}).map((_, idx) => 
                             <div key={idx} className="py-5 px-5 h-full border-t border-grey-2 self-center w-full">
                                 <Skeleton
@@ -875,8 +905,8 @@ const Predictor = () => {
                             </div>
                         )
                     }
-                    {formForDisplay && formForDisplay.length > 0 &&
-                        formForDisplay.map ((horse, idx) =>
+                    {wholeData && wholeData['horses'] && wholeData['horses'].length > 0 &&
+                        wholeData['horses'].map ((horse, idx) =>
                             <div key={idx} className="grid grid-cols-24 text-black-2 border-t border-grey-2 font-normal text-sm leading-6 w-full">
                             <div className="col-span-1 predictor-race-body">
                                 {
@@ -1014,13 +1044,59 @@ const Predictor = () => {
                                 Framed
                             </div>
                             <div
-                                className="col-span-1 predictor-race-header"
+                                className="relative col-span-1 predictor-race-header"
                                 onClick={() => {
                                     setSortedCol(SORT_FIELD.BETFAIR)
                                     setSortDirection(sortedCol !== SORT_FIELD.BETFAIR ? true : !sortDirection)
                                 }}
                             >
-                                BSP
+                                <button
+                                    id="dropdownButton"
+                                    data-dropdown-toggle="dropdown"
+                                    className='text-black-2 w-full text-ellipsis overflow-hidden rounded-md tracking-wide text-center inline-flex items-center justify-center leading-8'
+                                    type="button"
+                                >
+                                    {curOdds}
+                                    <svg
+                                        className="w-2.5 h-2.5 ml-1"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 10 6"
+                                        onClick={()=>setSelectedSwitch(!selectedSwitch)}
+                                    >
+                                        <path
+                                            stroke="#6F6E84"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="m1 1 4 4 4-4"
+                                        />
+                                    </svg>
+                                </button>
+                                <div
+                                    id="dropdownOdds"
+                                    className={
+                                        selectedSwitch
+                                            ? `z-20 bg-v3-primary border absolute border-primary divide-y divide-gray-100 rounded-lg shadow bg-white top-12 overflow-y-auto max-h-[500px]`
+                                            : `hidden`
+                                    }
+                                    style={{ width: `${100}px` }}
+                                >
+                                    { ["BSP", "LIVE"].map ((item, idx) => 
+                                    <ul
+                                        className={`py-2 text-sm text-v3-primary font-medium dark:text-gray-200`}
+                                        aria-labelledby="dropdownButton"
+                                        key={idx}
+                                    >
+                                        <li onClick={() => {setCurOdds (item); setSelectedSwitch(false); setSortedCol(item==="BSP"?SORT_FIELD.BETFAIR:SORT_FIELD.LIVE)}}>
+                                            <a className="flex flex-row items-center px-4 py-2 hover:bg-dropdown cursor-pointer">
+                                                {item}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    )}
+                                </div>
                             </div>
                             <div
                                 className="col-span-1 predictor-race-header"
@@ -1051,7 +1127,7 @@ const Predictor = () => {
                             </div>
                         </div>
 
-                        { (!raceForDisplay || (raceForDisplay && raceForDisplay.length == 0) || !checkScoresNaN()) &&
+                        { (!wholeData || (wholeData['horses'] && wholeData['horses'].length == 0)) &&
                             Array.from({length: 8}).map((_, idx) => 
                                 <div key={idx} className="py-5 px-5 w-full h-full border-t border-grey-2 self-center">
                                     <Skeleton
@@ -1062,8 +1138,10 @@ const Predictor = () => {
                                 </div>
                             )
                         }
-                        {raceForDisplay && raceForDisplay.length > 0 && checkScoresNaN() &&
-                            raceForDisplay.map ((horse, idx) =>
+
+                        {wholeData && wholeData['horses'] && wholeData['horses'].length > 0 &&
+                            wholeData['horses'].map ((horse, idx) =>
+
                                 <div 
                                     key={idx} 
                                     className={clsx(`${horse['status'] === 'WINNER' ? 'bg-mark1': ''} grid grid-cols-24 text-black-2 border-t border-grey-2 font-normal text-sm leading-6 w-full`)}
@@ -1100,9 +1178,10 @@ const Predictor = () => {
                                         <div className="flex flex-row items-center justify-end bg-blue-1 h-6 rounded-md text-white text-sm pr-2" style={{width: `${parseFloat(scores[horse['horse_name']])/10 * 100}%`}}>{parseFloat(scores[horse['horse_name']]).toFixed(2)}</div>
                                     </div>
                                 </div>
-                                <div className="col-span-1 predictor-race-body">${horse['framed_odds'] ? (horse['framed_odds']).toFixed(2) : 0}</div>
-                                <div className="col-span-1 predictor-race-body">${horse['betfair'] ? (horse['betfair']).toFixed(2) : 0}</div>
-                                <div className="col-span-1 predictor-race-body">{parseInt(horse['diff'])}%</div>
+                                <div className="col-span-1 predictor-race-body">${parseFloat(horse['framed_odds']).toFixed(2)}</div>
+                                {/* <div className="col-span-1 predictor-race-body">${parseFloat(framedOdds[horse['horse_name']]).toFixed(2)}</div> */}
+                                <div className="col-span-1 predictor-race-body">${curOdds === "BSP" ? (horse['betfair'] ? (horse['betfair']).toFixed(2) : 0) : (horse['odds'] ? (horse['odds']).toFixed(2) : 0)}</div>
+                                <div className="col-span-1 predictor-race-body">{ parseInt(horse['diff']) }%</div>
                                 <div className={clsx(`col-span-1 predictor-race-body ${parseInt(horse['10m']) < 0? "text-green-2": "text-red-3"}`)}>{parseInt(horse['10m'])}%</div>
                                 <div className={clsx(`col-span-1 predictor-race-body ${parseInt(horse['5m']) < 0? "text-green-2": "text-red-3"}`)}>{parseInt(horse['5m'])}%</div>
                                 </div>
