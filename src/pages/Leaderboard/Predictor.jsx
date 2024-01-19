@@ -9,6 +9,7 @@ import {
     Card,
     Slider,
     CardBody,
+    slider,
 } from "@material-tailwind/react";
 
 import TracksForPlace from "../../components/Tracks/TracksForPlace"
@@ -414,6 +415,7 @@ const Predictor = () => {
         
     }, [scores, race])
 
+
     const checkScoresNaN = () => {
         if (!scores) {return false}
         for (let key of Object.keys(scores)) {
@@ -437,6 +439,7 @@ const Predictor = () => {
     useEffect(() => {
         calculateScores ()
     }, [calculateScores])
+
 
     useEffect(() => {
         calculateFramedOdds ()
@@ -1135,8 +1138,10 @@ const Predictor = () => {
                                 </div>
                             )
                         }
+
                         {wholeData && wholeData['horses'] && wholeData['horses'].length > 0 &&
                             wholeData['horses'].map ((horse, idx) =>
+
                                 <div 
                                     key={idx} 
                                     className={clsx(`${horse['status'] === 'WINNER' ? 'bg-mark1': ''} grid grid-cols-24 text-black-2 border-t border-grey-2 font-normal text-sm leading-6 w-full`)}
