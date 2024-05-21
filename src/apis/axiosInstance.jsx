@@ -10,7 +10,6 @@ const instance = axios.create({
     'Access-Control-Allow-Headers': 'Access-Control-Allow-Headers, Content-Type, Authorization',
     'Access-Control-Allow-Methods': '*',
     "Cross-Origin-Resource-Policy": '*',
-    "timeout": 1000,
   },
 });
 

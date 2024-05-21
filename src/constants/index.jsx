@@ -1,3 +1,44 @@
+import blackSvg from "../assets/gears/Black.svg";
+import blackCONBSvg from "../assets/gears/Black-CrossOverNoseBand.svg";
+import blackEMSvg from "../assets/gears/Black-EarMuffs.svg";
+import blackNRSvg from "../assets/gears/Black-NoseRoll.svg";
+import blackPSvg from "../assets/gears/Black-Pacifiers.svg";
+import blackWSvg from "../assets/gears/Black-Winkers.svg";
+import blackBSvg from "../assets/gears/Black-Blinkers.svg";
+import blackBFSvg from "../assets/gears/Black-BlinkersFirstTime.svg";
+import brownSvg from "../assets/gears/Brown.svg";
+import brownCONBSvg from "../assets/gears/Brown-CrossOverNoseBand.svg";
+import brownEMSvg from "../assets/gears/Brown-EarMuffs.svg";
+import brownNRSvg from "../assets/gears/Brown-NoseRoll.svg";
+import brownPSvg from "../assets/gears/Brown-Pacifiers.svg";
+import brownWSvg from "../assets/gears/Brown-Winkers.svg";
+import brownBSvg from "../assets/gears/Brown-Blinkers.svg";
+import brownBFSvg from "../assets/gears/Brown-BlinkersFirstTime.svg";
+import chestnutSvg from "../assets/gears/Chestnut.svg";
+import chestnutCONBSvg from "../assets/gears/Chestnut-CrossOverNoseBand.svg";
+import chestnutEMSvg from "../assets/gears/Chestnut-EarMuffs.svg";
+import chestnutNRSvg from "../assets/gears/Chestnut-NoseRoll.svg";
+import chestnutPSvg from "../assets/gears/Chestnut-Pacifiers.svg";
+import chestnutWSvg from "../assets/gears/Chestnut-Winkers.svg";
+import chestnutBSvg from "../assets/gears/Chestnut-Blinkers.svg";
+import chestnutBFSvg from "../assets/gears/Chestnut-BlinkersFirstTime.svg";
+import baySvg from "../assets/gears/Bay.svg";
+import bayBSvg from "../assets/gears/Bay-Blinkers.svg";
+import bayCONBSvg from "../assets/gears/Bay-CrossOverNoseBand.svg";
+import bayEMSvg from "../assets/gears/Bay-EarMuffs.svg";
+import bayNRSvg from "../assets/gears/Bay-NoseRoll.svg";
+import bayPSvg from "../assets/gears/Bay-Pacifiers.svg";
+import bayWSvg from "../assets/gears/Bay-Winkers.svg";
+import bayBFSvg from "../assets/gears/Bay-BlinkersFirstTime.svg";
+import greySvg from "../assets/gears/Grey.svg";
+import greyCONBSvg from "../assets/gears/Grey-CrossOverNoseBand.svg";
+import greyEMSvg from "../assets/gears/Grey-EarMuffs.svg";
+import greyNRSvg from "../assets/gears/Grey-NoseRoll.svg";
+import greyPSvg from "../assets/gears/Grey-Pacifiers.svg";
+import greyWSvg from "../assets/gears/Grey-Winkers.svg";
+import greyBSvg from "../assets/gears/Grey-Blinkers.svg";
+import greyBFSvg from "../assets/gears/Grey-BlinkersFirstTime.svg";
+
 export const CLASS_LEVEL = {
     "84": "Class 1",
     "85": "Class 2",
@@ -309,3 +350,126 @@ export const CLASS_POINT = {
     "JMPFL": "JMPFL",
     "Nov": "Nov",
 }
+
+export const IMAG_PATH = {
+    b: baySvg,
+    "b-CONB": bayCONBSvg,
+    "b-EM": bayEMSvg,
+    "b-NR": bayNRSvg,
+    "b-P": bayPSvg,
+    "b-W": bayWSvg,
+    "b-B": bayBSvg,
+    "b-BF": bayBFSvg,
+    bl: blackSvg,
+    "bl-CONB": blackCONBSvg,
+    "bl-EM": blackEMSvg,
+    "bl-NR": blackNRSvg,
+    "bl-P": blackPSvg,
+    "bl-W": blackWSvg,
+    "bl-B": blackBSvg,
+    "bl-BF": blackBFSvg,
+    br: brownSvg,
+    "br-CONB": brownCONBSvg,
+    "br-EM": brownEMSvg,
+    "br-NR": brownNRSvg,
+    "br-P": brownPSvg,
+    "br-W": brownWSvg,
+    "br-B": brownBSvg,
+    "br-BF": brownBFSvg,
+    "b/br": baySvg,
+    "b/br-B": bayBSvg,
+    "b/br-BF": bayBFSvg,
+    "br/bl": brownSvg,
+    "br/bl-B": brownBSvg,
+    "br/bl-BF": brownBFSvg,
+    gr: greySvg,
+    "gr-CONB": greyCONBSvg,
+    "gr-EM": greyEMSvg,
+    "gr-NR": greyNRSvg,
+    "gr-P": greyPSvg,
+    "gr-W": greyWSvg,
+    "gr-B": greyBSvg,
+    "gr-BF": greyBFSvg,
+    "gr/br": greySvg,
+    "gr/br-B": greyBSvg,
+    "gr/br-BF": greyBFSvg,
+    "gr/bl": blackSvg,
+    "gr/bl-B": blackBSvg,
+    "gr/bl-BF": blackBFSvg,
+    "gr/ro": greySvg,
+    "gr/ro-B": greyBSvg,
+    "gr/ro-BF": greyBFSvg,
+    "gr/b": greySvg,
+    "gr/b-B": greyBSvg,
+    "gr/b-BF": greyBFSvg,
+    "gr/ch": greySvg,
+    "gr/ch-B": greyBSvg,
+    "gr/ch-BF": greyBFSvg,
+    ch: chestnutSvg,
+    "ch-CONB": chestnutCONBSvg,
+    "ch-EM": chestnutEMSvg,
+    "ch-NR": chestnutNRSvg,
+    "ch-P": chestnutPSvg,
+    "ch-W": chestnutWSvg,
+    "ch-B": chestnutBSvg,
+    "ch-BF": chestnutBFSvg,
+    wh: greySvg,
+    "wh-B": greyBSvg,
+    "wh-BF": greyBFSvg,
+    "du/ch": chestnutSvg,
+    "du/ch-B": chestnutBSvg,
+    "du/ch-BF": chestnutBFSvg,
+    "wh/b": baySvg,
+    "wh/b-B": bayBSvg,
+    "wh/b-BF": bayBFSvg,
+};
+
+export const SORT_FIELD = {
+    NO: "tab_no",
+    HORSE: "horse_name",
+    JOCKEY: "jockey_name",
+    STARTS: "starts",
+    BARRIER: "horse_barrier",
+    WEIGHT: "weight",
+    SCORE: "score",
+    FRAMED: "framed_odds",
+    BETFAIR: "betfair",
+    LIVE: "live",
+    DIFF: "diff",
+    TEN_DIFF: "10m",
+    FIVE_DIFF: "5m",
+    CLASS: "class",
+    AVG: "average",
+    FINISH: "finishPercent",
+    WIN: "winPercent",
+    PLACE: "placePercent",
+    CONDITION: "condition",
+    DISTANCE: "distance",
+    TRACK_PERCENT: "track",
+    JOCKEY_PERCENT: "jockey",
+    TRAINER_PERCENT: "trainer",
+    SETTLING: "settling",
+    LAST600: "last_600",
+    SPEED: "speed",
+    LASTFN: "lastFn",
+    LASTMGN: "lastMgn",
+};
+
+export const CONDITION = {
+    GOOD: "Good",
+    HEAVY: "Heavy",
+    SOFT: "Soft",
+    DEAD: "Dead",
+    SYNTHETIC: "Synthetic",
+    FIRM: "Firm",
+};
+
+export const MARKETTYPE = {
+    WIN: "Win",
+    PLACE2: "Top 2 Finish",
+    PLACE3: "Top 3 Finish",
+    PLACE4: "Top 4 Finish",
+    MATCH_BET: "AvB",
+    MATCH_BET1: "AvB 1",
+    MATCH_BET2: "AvB 2",
+};

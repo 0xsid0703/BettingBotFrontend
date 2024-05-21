@@ -37,6 +37,7 @@ const Profile = ({ kind, id }) => {
     condition: "ALL CONDITIONS",
     distance: "ALL DISTANCES",
     start: kind === "horse" ? "Last 50" : "Last 500",
+    start: kind === "horse" ? "Last 50" : "Last 500",
   };
 
   const [filterObj, setFilter] = useState(initialValue);
@@ -96,7 +97,7 @@ const Profile = ({ kind, id }) => {
     if (tmp.length > 0) setHomeRace(tmp[0]);
   }, [id, kind]);
 
-  useEffect (() => {
+  useEffect(() => {
     let tmpSum = { Synthetic: 0, Firm: 0, Good: 0, Soft: 0, Heavy: 0 };
 
     for (let item of data) {
@@ -164,8 +165,10 @@ const Profile = ({ kind, id }) => {
 
       if (item["track_condition"] === "Heavy") tmpSum["Heavy"] += 1;
     }
+    console.log("=>>>=tmpSum===", tmpSum["Good"]);
+    console.log("=>>>=Daata.length===", data.length);
     setSum(tmpSum);
-  }, [data])
+  }, [data]);
 
   useEffect(() => {
     initialize();
@@ -181,10 +184,10 @@ const Profile = ({ kind, id }) => {
   useEffect(() => {
     let realFilter = {};
     for (let key of Object.keys(filterObj)) {
-        if (key === "track") continue
-        if (filterObj[key].startsWith("ALL ") === false) {
-            realFilter[key] = filterObj[key];
-        }
+      if (key === "track") continue;
+      if (filterObj[key].startsWith("ALL ") === false) {
+        realFilter[key] = filterObj[key];
+      }
     }
     let tmpData = races.filter((race) => {
       for (let key of Object.keys(realFilter)) {
@@ -207,16 +210,22 @@ const Profile = ({ kind, id }) => {
       }
       return true;
     });
-    if (filterObj['track']) {
-        const [trackKey, trackValue] = filterObj['track']
-        let tracks = {...TRACKS}
-        if (trackKey !== "Australia") {
-          let tmpTrackAll = [...tracks[trackKey]["METRO"], ...tracks[trackKey]["PROVINCIAL"], ...tracks[trackKey]["COUNTRY"]]
-          tracks[trackKey]["ALL"] = tmpTrackAll
-          tmpData = tmpData.filter((race) => {
-              return tracks[trackKey][trackValue].includes(race['track_name'].toUpperCase())
-          })
-        }
+    if (filterObj["track"]) {
+      const [trackKey, trackValue] = filterObj["track"];
+      let tracks = { ...TRACKS };
+      if (trackKey !== "Australia") {
+        let tmpTrackAll = [
+          ...tracks[trackKey]["METRO"],
+          ...tracks[trackKey]["PROVINCIAL"],
+          ...tracks[trackKey]["COUNTRY"],
+        ];
+        tracks[trackKey]["ALL"] = tmpTrackAll;
+        tmpData = tmpData.filter((race) => {
+          return tracks[trackKey][trackValue].includes(
+            race["track_name"].toUpperCase()
+          );
+        });
+      }
     }
     if (
       realFilter["start"] !== "This Season" &&
@@ -273,6 +282,7 @@ const Profile = ({ kind, id }) => {
         });
       }
     }
+    console.log("=>>>tmpData.lenght===", tmpData.length, "=tmpData==", tmpData);
     setData(tmpData);
   }, [filterObj, races]);
 
@@ -583,7 +593,12 @@ const Profile = ({ kind, id }) => {
                 )}
                 {homeRace ? (
                   <div className="horse-item-normal-black">
-                    <a className="text-link" href={`/trainer/au/${homeRace["trainer_id"]}`}>{homeRace["trainer_name"]}</a>
+                    <a
+                      className="text-link"
+                      href={`/trainer/au/${homeRace["trainer_id"]}`}
+                    >
+                      {homeRace["trainer_name"]}
+                    </a>
                   </div>
                 ) : (
                   <div className="pt-1 pb-3 px-2 w-full h-full border-t border-grey-2 self-center">
@@ -914,10 +929,15 @@ const Profile = ({ kind, id }) => {
                   </div>
                   <a
                     className="racehistory-item-start text-link col-span-3 px-5"
-                    href={kind === "horse" ? `/jockey/au/${item["jockey_id"]}` : `/horse/au/${item["horse_id"]}`}
+                    href={
+                      kind === "horse"
+                        ? `/jockey/au/${item["jockey_id"]}`
+                        : `/horse/au/${item["horse_id"]}`
+                    }
                   >
                     {kind === "horse" && item["jockey_name"]}
-                    {(kind === "jockey" || kind === "trainer") && item["horse_name"]}
+                    {(kind === "jockey" || kind === "trainer") &&
+                      item["horse_name"]}
                   </a>
                   <div className="racehistory-item-start text-black-2 col-span-3 px-5">
                     {item["track_name"]}
@@ -929,7 +949,9 @@ const Profile = ({ kind, id }) => {
                     {item["starters"]}
                   </div>
                   <div className="racehistory-item text-black-2">
-                    {CLASS_POINT[item["class"]] ? CLASS_POINT[item["class"]] : item["class"]}
+                    {CLASS_POINT[item["class"]]
+                      ? CLASS_POINT[item["class"]]
+                      : item["class"]}
                   </div>
                   <div className="racehistory-item text-black-2">
                     {item["barrier"]}
@@ -937,7 +959,9 @@ const Profile = ({ kind, id }) => {
                   <div className="racehistory-item text-black-2">
                     {item["weight"]}
                   </div>
-                  <div className="racehistory-item text-black-2">{`${parseInt(item["settling"])}`}</div>
+                  <div className="racehistory-item text-black-2">{`${parseInt(
+                    item["settling"]
+                  )}`}</div>
                   <div
                     className={clsx(
                       `racehistory-item ${
@@ -962,10 +986,16 @@ const Profile = ({ kind, id }) => {
                   <div className="racehistory-item text-black-2">
                     {item["finish_number"]}
                   </div>
-                  <div className="racehistory-item text-black-2">{`${parseInt(item["finish_percentage"])}`}</div>
-                  <div className="racehistory-item text-black-2">{`${(parseInt(
-                    item["time"] / 60).toString().padStart(2, '0')
-                  )}:${(parseInt(item["time"]) % 60).toString().padStart(2, '0')}`}</div>
+                  <div className="racehistory-item text-black-2">{`${parseInt(
+                    item["finish_percentage"]
+                  )}`}</div>
+                  <div className="racehistory-item text-black-2">{`${parseInt(
+                    item["time"] / 60
+                  )
+                    .toString()
+                    .padStart(2, "0")}:${(parseInt(item["time"]) % 60)
+                    .toString()
+                    .padStart(2, "0")}`}</div>
                   <div className="racehistory-item text-black-2">{`${(
                     (item["speed"] * 3600) /
                     1000
